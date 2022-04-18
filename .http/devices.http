@@ -1,0 +1,53 @@
+
+### User login
+
+POST {{hostname}}/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "brian@bnorm.com",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
+### Get all devices
+
+GET {{hostname}}/api/v1/devices
+Authorization: {{authorization}}
+Accept: application/json
+
+### Create device
+
+POST {{hostname}}/api/v1/devices
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Sample Device",
+  "key": "{{deviceKey}}"
+}
+
+> {% client.global.set("deviceId", response.body.id); %}
+
+### Get device
+
+GET {{hostname}}/api/v1/devices/{{deviceId}}
+Authorization: {{authorization}}
+Accept: application/json
+
+### Device login
+
+POST {{hostname}}/api/v1/devices/login
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id": "{{deviceId}}",
+  "key": "{{deviceKey}}"
+}
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}

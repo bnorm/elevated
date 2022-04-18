@@ -1,0 +1,52 @@
+
+### User login
+
+POST {{hostname}}/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "brian@bnorm.com",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
+### Get all sensors
+
+GET {{hostname}}/api/v1/sensors
+Authorization: {{authorization}}
+Accept: application/json
+
+### Create sensor
+
+POST {{hostname}}/api/v1/sensors
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Sample Sensor",
+  "deviceId": "{{deviceId}}"
+}
+
+> {% client.global.set("sensorId", response.body.id); %}
+
+
+### Get sensor readings
+
+GET {{hostname}}/api/v1/sensors/{{sensorId}}/readings?startTime=2022-04-19T00:00:00.000Z
+Authorization: {{authorization}}
+Accept: application/json
+
+### Record sensor readings
+
+POST {{hostname}}/api/v1/sensors/{{sensorId}}/readings/record
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "timestamp": "2022-04-19T16:30:00.000Z",
+  "value": {{$randomInt}}
+}

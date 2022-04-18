@@ -1,0 +1,55 @@
+[versions]
+kotlin = "1.6.20"
+coroutines = "1.6.1"
+springboot = "2.6.6"
+ktor = "2.0.0"
+sqldelight = "1.5.3"
+pi4j = "2.1.1"
+log4j = "2.17.0"
+junit = "5.8.2"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springboot" }
+#sqldelight = { id = "com.squareup.sqldelight", version.ref = "sqldelight" }
+#nebula-release = { id = "nebula.release", version = "15.3.0" }
+
+[libraries]
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.3.2" }
+
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-locations = { module = "io.ktor:ktor-server-locations", version.ref = "ktor" }
+ktor-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+sqldelight-driver = { module = "com.squareup.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "com.squareup.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }
+
+pi4j-core = { module = "com.pi4j:pi4j-core", version.ref = "pi4j" }
+pi4j-plugin-raspberrypi = { module = "com.pi4j:pi4j-plugin-raspberrypi", version.ref = "pi4j" }
+pi4j-plugin-pigpio = { module = "com.pi4j:pi4j-plugin-pigpio", version.ref = "pi4j" }
+pi4j-plugin-linuxfs = { module = "com.pi4j:pi4j-plugin-linuxfs", version.ref = "pi4j" }
+
+log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+log4j-slf4j = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "log4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-kotlin = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+[bundles]
+ktor = [
+    "ktor-server-netty",
+    "ktor-server-locations",
+    "ktor-content-negotiation",
+    "ktor-serialization-kotlinx-json",
+]
+sqldelight = ["sqldelight-driver", "sqldelight-coroutines"]
+pi4j = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]
+log4j-api = ["log4j-api"]
+log4j-runtime = ["log4j-core", "log4j-slf4j"]
+junit-api = ["junit-api", "junit-kotlin"]
+junit-runtime = ["junit-engine"]

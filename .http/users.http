@@ -1,0 +1,31 @@
+
+### Register user
+
+POST {{hostname}}/api/v1/users/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "brian@bnorm.com",
+  "password": "{{password}}",
+  "name": "Brian Norman"
+}
+
+### User login
+
+POST {{hostname}}/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "brian@bnorm.com",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
+### Get all users
+
+GET {{hostname}}/api/v1/users
+Authorization: {{authorization}}
+Accept: application/json

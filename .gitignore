@@ -1,0 +1,8 @@
+# Gradle
+.gradle/
+build/
+
+# Idea
+.idea/
+*.iml
+http-client.private.env.json

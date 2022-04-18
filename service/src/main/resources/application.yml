@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: elevated-users-service
+
+logging:
+  level:
+    root: info
