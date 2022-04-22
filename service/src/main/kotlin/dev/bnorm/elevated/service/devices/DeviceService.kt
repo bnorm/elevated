@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.toList
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class DeviceService(
@@ -38,12 +39,20 @@ class DeviceService(
         return deviceRepository.insert(prototype.toEntity()).toDto()
     }
 
+    suspend fun deleteDevice(deviceId: DeviceId) {
+        deviceRepository.delete(deviceId)
+    }
+
     fun getAllDevices(): Flow<Device> {
         return deviceRepository.findAll().map { it.toDto() }
     }
 
-    suspend fun getDeviceById(id: DeviceId): Device? {
-        return deviceRepository.findById(id)?.toDto()
+    suspend fun getDeviceById(deviceId: DeviceId): Device? {
+        return deviceRepository.findById(deviceId)?.toDto()
+    }
+
+    suspend fun updateDevice(deviceId: DeviceId, timestamp: Instant): Device? {
+        return deviceRepository.modify(deviceId, timestamp)?.toDto()
     }
 
     private suspend fun DeviceEntity.toDto(): Device {
@@ -52,6 +61,7 @@ class DeviceService(
             id = deviceId,
             name = name,
             sensors = sensorService.getSensorByDeviceId(deviceId).toList(),
+            lastActionTime = lastActionTime,
         )
     }
 

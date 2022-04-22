@@ -21,10 +21,13 @@ services:
   service:
     image: ghcr.io/bnorm/elevated-service:latest
     restart: unless-stopped
+    depends_on:
+      - mongodb
     ports:
       - "8080:8080"
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongodb/test
+      JWT_SECRET: ${JWT_SECRET}
 
   mongodb:
     image: mongo:5.0

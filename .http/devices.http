@@ -38,6 +38,29 @@ GET {{hostname}}/api/v1/devices/{{deviceId}}
 Authorization: {{authorization}}
 Accept: application/json
 
+> {% client.global.set("deviceId", response.body.id); %}
+
+### Get device actions
+
+GET {{hostname}}/api/v1/devices/{{deviceId}}/actions?submittedAfter=2000-01-01T00:00:00.000Z
+Authorization: {{authorization}}
+Accept: application/json
+
+### Submit device action
+
+POST {{hostname}}/api/v1/devices/{{deviceId}}/actions
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "args": {
+    "type": "PUMP_DISPENSE",
+    "pump": 1,
+    "amount": 1
+  }
+}
+
 ### Device login
 
 POST {{hostname}}/api/v1/devices/login

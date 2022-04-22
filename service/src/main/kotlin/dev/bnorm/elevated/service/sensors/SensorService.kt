@@ -14,6 +14,9 @@ class SensorService(
     suspend fun createSensor(prototype: SensorPrototype): Sensor {
         return sensorRepository.insert(prototype.toEntity()).toDto()
     }
+    suspend fun deleteSensor(sensorId: SensorId) {
+        sensorRepository.delete(sensorId)
+    }
 
     fun getAllSensors(): Flow<Sensor> {
         return sensorRepository.findAll().map { it.toDto() }

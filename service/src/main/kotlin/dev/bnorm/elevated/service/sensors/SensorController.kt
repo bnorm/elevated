@@ -3,6 +3,7 @@ package dev.bnorm.elevated.service.sensors
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,6 +21,12 @@ class SensorController(
     @PostMapping
     suspend fun createSensor(@RequestBody prototype: SensorPrototype): Sensor {
         return sensorService.createSensor(prototype)
+    }
+
+    @PreAuthorize("hasAuthority('SENSORS_WRITE')")
+    @DeleteMapping("/{sensorId}")
+    suspend fun deleteSensor(@PathVariable sensorId: String) {
+        sensorService.deleteSensor(SensorId(sensorId))
     }
 
     @PreAuthorize("hasAuthority('SENSORS_READ')")

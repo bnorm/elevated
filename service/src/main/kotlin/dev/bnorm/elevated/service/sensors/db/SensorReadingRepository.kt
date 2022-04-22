@@ -35,7 +35,7 @@ class SensorReadingRepository(
                     .timeSeries(
                         timeSeries(SensorReadingEntity::timestamp.name)
                             .metaField(SensorReadingEntity::sensorId.name)
-                            .granularity(Granularity.DEFAULT)
+                            .granularity(Granularity.MINUTES)
                     )
             ).awaitSingleOrNull()
         }

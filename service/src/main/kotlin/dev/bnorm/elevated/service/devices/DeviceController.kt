@@ -4,11 +4,13 @@ import dev.bnorm.elevated.service.auth.AuthenticatedDevice
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -21,6 +23,12 @@ class DeviceController(
     @PostMapping
     suspend fun createDevice(@RequestBody prototype: DevicePrototype): Device {
         return deviceService.createDevice(prototype)
+    }
+    @PreAuthorize("hasAuthority('DEVICES_WRITE')")
+    @DeleteMapping("/{deviceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    suspend fun deleteDevice(@PathVariable deviceId: String) {
+        deviceService.deleteDevice(DeviceId(deviceId))
     }
 
     @PostMapping("/login")

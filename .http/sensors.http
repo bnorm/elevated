@@ -32,6 +32,13 @@ Content-Type: application/json
 
 > {% client.global.set("sensorId", response.body.id); %}
 
+### Get sensor
+
+GET {{hostname}}/api/v1/sensors/{{sensorId}}
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.set("sensorId", response.body.id); %}
 
 ### Get sensor readings
 

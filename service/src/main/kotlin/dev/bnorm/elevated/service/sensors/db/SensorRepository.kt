@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.findAll
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import javax.annotation.PostConstruct
 
@@ -31,6 +32,13 @@ class SensorRepository(
 
     suspend fun insert(sensorEntity: SensorEntity): SensorEntity {
         return mongo.insert(sensorEntity).awaitSingle()
+    }
+
+    suspend fun delete(sensorId: SensorId) {
+        val query = Query(
+            SensorEntity::id isEqualTo sensorId.value,
+        )
+        mongo.remove<SensorEntity>(query).awaitSingle()
     }
 
     fun findAll(): Flow<SensorEntity> {
