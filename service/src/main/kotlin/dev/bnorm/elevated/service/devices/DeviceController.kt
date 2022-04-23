@@ -1,6 +1,10 @@
 package dev.bnorm.elevated.service.devices
 
-import dev.bnorm.elevated.service.auth.AuthenticatedDevice
+import dev.bnorm.elevated.model.auth.AuthenticatedDevice
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceLoginRequest
+import dev.bnorm.elevated.model.devices.DevicePrototype
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
@@ -24,6 +28,7 @@ class DeviceController(
     suspend fun createDevice(@RequestBody prototype: DevicePrototype): Device {
         return deviceService.createDevice(prototype)
     }
+
     @PreAuthorize("hasAuthority('DEVICES_WRITE')")
     @DeleteMapping("/{deviceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

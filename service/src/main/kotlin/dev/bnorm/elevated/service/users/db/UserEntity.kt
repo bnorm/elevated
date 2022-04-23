@@ -1,6 +1,6 @@
 package dev.bnorm.elevated.service.users.db
 
-import dev.bnorm.elevated.service.auth.Role
+import dev.bnorm.elevated.model.auth.Role
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 

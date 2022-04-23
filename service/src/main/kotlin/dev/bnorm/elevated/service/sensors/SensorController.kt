@@ -1,5 +1,8 @@
 package dev.bnorm.elevated.service.sensors
 
+import dev.bnorm.elevated.model.sensors.Sensor
+import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorPrototype
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize

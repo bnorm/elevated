@@ -1,5 +1,8 @@
 package dev.bnorm.elevated.service.sensors
 
+import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorReading
+import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import kotlinx.coroutines.flow.Flow
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping

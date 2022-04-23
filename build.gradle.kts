@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot") version "2.6.6" apply false
-    kotlin("jvm") version "1.6.20" apply false
-    kotlin("plugin.serialization") version "1.6.20" apply false
-    kotlin("plugin.spring") version "1.6.20" apply false
+    kotlin("jvm") version "1.6.10" apply false
+    kotlin("plugin.serialization") version "1.6.10" apply false
+    kotlin("plugin.spring") version "1.6.10" apply false
 }
 
 group = "com.bnorm.elevated"

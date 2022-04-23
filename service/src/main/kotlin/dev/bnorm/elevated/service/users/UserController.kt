@@ -1,6 +1,9 @@
 package dev.bnorm.elevated.service.users
 
-import dev.bnorm.elevated.service.auth.AuthenticatedUser
+import dev.bnorm.elevated.model.auth.AuthenticatedUser
+import dev.bnorm.elevated.model.users.User
+import dev.bnorm.elevated.model.users.UserLoginRequest
+import dev.bnorm.elevated.model.users.UserRegisterRequest
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize

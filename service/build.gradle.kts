@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     api(platform(project(":platform")))
+    api(project(":common:model"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -31,4 +32,10 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:mongodb")
+}
+
+tasks.processResources.configure {
+    from(tasks.getByPath(":frontend:webapp:jsBrowserDistribution")) {
+        into("static")
+    }
 }

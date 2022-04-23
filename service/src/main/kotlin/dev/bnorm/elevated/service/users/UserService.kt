@@ -1,9 +1,14 @@
 package dev.bnorm.elevated.service.users
 
-import dev.bnorm.elevated.service.auth.AuthenticatedUser
-import dev.bnorm.elevated.service.auth.AuthorizationToken
-import dev.bnorm.elevated.service.auth.JwtToken
-import dev.bnorm.elevated.service.auth.Role
+import dev.bnorm.elevated.model.auth.AuthenticatedUser
+import dev.bnorm.elevated.model.auth.AuthorizationToken
+import dev.bnorm.elevated.model.auth.JwtToken
+import dev.bnorm.elevated.model.auth.Role
+import dev.bnorm.elevated.model.users.Email
+import dev.bnorm.elevated.model.users.User
+import dev.bnorm.elevated.model.users.UserId
+import dev.bnorm.elevated.model.users.UserLoginRequest
+import dev.bnorm.elevated.model.users.UserRegisterRequest
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims

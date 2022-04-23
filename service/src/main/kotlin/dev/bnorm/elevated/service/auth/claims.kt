@@ -1,7 +1,8 @@
 package dev.bnorm.elevated.service.auth
 
-import dev.bnorm.elevated.service.devices.Device
-import dev.bnorm.elevated.service.users.User
+import dev.bnorm.elevated.model.auth.Role
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.users.User
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm
 import org.springframework.security.oauth2.jwt.JwsHeader
 import org.springframework.security.oauth2.jwt.Jwt

@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.service.users.db
 
-import dev.bnorm.elevated.service.users.Email
-import dev.bnorm.elevated.service.users.UserId
+import dev.bnorm.elevated.model.users.Email
+import dev.bnorm.elevated.model.users.UserId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle

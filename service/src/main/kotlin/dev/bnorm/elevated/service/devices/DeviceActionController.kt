@@ -1,5 +1,9 @@
 package dev.bnorm.elevated.service.devices
 
+import dev.bnorm.elevated.model.devices.DeviceAction
+import dev.bnorm.elevated.model.devices.DeviceActionId
+import dev.bnorm.elevated.model.devices.DeviceActionPrototype
+import dev.bnorm.elevated.model.devices.DeviceId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize

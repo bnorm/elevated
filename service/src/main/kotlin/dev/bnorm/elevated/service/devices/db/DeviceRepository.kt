@@ -1,6 +1,6 @@
 package dev.bnorm.elevated.service.devices.db
 
-import dev.bnorm.elevated.service.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
@@ -21,8 +21,8 @@ import java.time.Instant
 class DeviceRepository(
     private val mongo: ReactiveMongoOperations,
 ) {
-    suspend fun insert(sensorEntity: DeviceEntity): DeviceEntity {
-        return mongo.insert(sensorEntity).awaitSingle()
+    suspend fun insert(deviceEntity: DeviceEntity): DeviceEntity {
+        return mongo.insert(deviceEntity).awaitSingle()
     }
 
     suspend fun delete(deviceId: DeviceId) {

@@ -1,6 +1,6 @@
 package dev.bnorm.elevated.service.sensors.db
 
-import dev.bnorm.elevated.service.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle

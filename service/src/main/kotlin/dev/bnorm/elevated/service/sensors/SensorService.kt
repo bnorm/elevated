@@ -1,6 +1,9 @@
 package dev.bnorm.elevated.service.sensors
 
-import dev.bnorm.elevated.service.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.sensors.Sensor
+import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorPrototype
 import dev.bnorm.elevated.service.sensors.db.SensorEntity
 import dev.bnorm.elevated.service.sensors.db.SensorRepository
 import kotlinx.coroutines.flow.Flow

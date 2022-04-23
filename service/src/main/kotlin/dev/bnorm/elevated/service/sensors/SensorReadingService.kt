@@ -1,9 +1,14 @@
 package dev.bnorm.elevated.service.sensors
 
+import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorReading
+import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import dev.bnorm.elevated.service.sensors.db.SensorReadingEntity
 import dev.bnorm.elevated.service.sensors.db.SensorReadingRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.toJavaInstant
+import kotlinx.datetime.toKotlinInstant
 import org.springframework.stereotype.Service
 import java.time.Instant
 
@@ -26,7 +31,7 @@ class SensorReadingService(
     private fun SensorReadingEntity.toDto(): SensorReading {
         return SensorReading(
             sensorId = SensorId(sensorId),
-            timestamp = timestamp,
+            timestamp = timestamp.toKotlinInstant(),
             value = value,
         )
     }
@@ -34,7 +39,7 @@ class SensorReadingService(
     private fun SensorReadingPrototype.toEntity(sensorId: SensorId): SensorReadingEntity {
         return SensorReadingEntity(
             sensorId = sensorId.value,
-            timestamp = timestamp,
+            timestamp = timestamp.toJavaInstant(),
             value = value,
         )
     }

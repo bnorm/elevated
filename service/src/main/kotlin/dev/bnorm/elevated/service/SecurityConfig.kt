@@ -74,6 +74,7 @@ class SecurityConfig {
             disable()
         }
         authorizeExchange {
+            authorize("/ui/**", permitAll)
             authorize("/api/v1/users/login", permitAll)
             authorize("/api/v1/devices/login", permitAll)
             authorize("/api/v1/users/register", permitAll)

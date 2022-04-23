@@ -1,8 +1,12 @@
 package dev.bnorm.elevated.service.devices
 
-import dev.bnorm.elevated.service.auth.AuthenticatedDevice
-import dev.bnorm.elevated.service.auth.AuthorizationToken
-import dev.bnorm.elevated.service.auth.JwtToken
+import dev.bnorm.elevated.model.auth.AuthenticatedDevice
+import dev.bnorm.elevated.model.auth.AuthorizationToken
+import dev.bnorm.elevated.model.auth.JwtToken
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceLoginRequest
+import dev.bnorm.elevated.model.devices.DevicePrototype
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
@@ -13,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
+import kotlinx.datetime.toKotlinInstant
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.stereotype.Service
@@ -61,7 +66,7 @@ class DeviceService(
             id = deviceId,
             name = name,
             sensors = sensorService.getSensorByDeviceId(deviceId).toList(),
-            lastActionTime = lastActionTime,
+            lastActionTime = lastActionTime?.toKotlinInstant(),
         )
     }
 
