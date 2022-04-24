@@ -48,10 +48,3 @@ kotlin {
         }
     }
 }
-
-// TODO work around until Kotlin 1.6.20
-rootProject.plugins.withType<NodeJsRootPlugin> {
-    rootProject.configure<NodeJsRootExtension> {
-        nodeVersion = "16.14.2"
-    }
-}
