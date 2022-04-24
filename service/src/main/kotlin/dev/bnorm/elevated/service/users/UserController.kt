@@ -2,11 +2,14 @@ package dev.bnorm.elevated.service.users
 
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.users.User
+import dev.bnorm.elevated.model.users.UserId
 import dev.bnorm.elevated.model.users.UserLoginRequest
 import dev.bnorm.elevated.model.users.UserRegisterRequest
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -22,6 +25,12 @@ class UserController(
     @PostMapping("/register")
     suspend fun registerUser(@RequestBody request: UserRegisterRequest): User {
         return userService.registerUser(request)
+    }
+
+    @GetMapping("/current")
+    suspend fun getCurrentUser(@AuthenticationPrincipal jwt: Jwt): AuthenticatedUser {
+        return userService.getCurrentUser(UserId(jwt.subject))
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
     }
 
     @PostMapping("/login")

@@ -41,6 +41,10 @@ class UserService(
         }?.toDto()?.toAuthenticatedUser()
     }
 
+    suspend fun getCurrentUser(userId: UserId): AuthenticatedUser? {
+        return userRepository.findById(userId)?.toDto()?.toAuthenticatedUser()
+    }
+
     suspend fun registerUser(request: UserRegisterRequest): User {
         return userRepository.insert(request.toEntity()).toDto()
     }

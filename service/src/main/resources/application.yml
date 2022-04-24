@@ -8,3 +8,5 @@ spring:
 logging:
   level:
     root: info
+    org.mongodb: warn
+    dev.bnorm: debug

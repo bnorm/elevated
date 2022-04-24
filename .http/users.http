@@ -24,6 +24,14 @@ Content-Type: application/json
 
 > {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
 
+### User current user
+
+GET {{hostname}}/api/v1/users/current
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
 ### Get all users
 
 GET {{hostname}}/api/v1/users

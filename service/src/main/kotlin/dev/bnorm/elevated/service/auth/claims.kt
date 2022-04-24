@@ -19,7 +19,7 @@ fun User.toClaims(): JwtClaimsSet {
     return JwtClaimsSet.builder()
         .subject(id.value)
         .issuedAt(now)
-        .expiresAt(now + Duration.ofHours(2))
+        .expiresAt(now + Duration.ofHours(24))
         .claim(ROLE_CLAIM, role)
         .build()
 }
@@ -29,7 +29,7 @@ fun Device.toClaims(): JwtClaimsSet {
     return JwtClaimsSet.builder()
         .subject(id.value)
         .issuedAt(now)
-        .expiresAt(now + Duration.ofHours(2))
+        .expiresAt(now + Duration.ofHours(24))
         .claim(ROLE_CLAIM, Role.DEVICE)
         .build()
 }
