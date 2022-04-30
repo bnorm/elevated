@@ -1,4 +1,4 @@
-name: Service Deploy
+name: Application Deployment
 
 on:
   push:
@@ -50,16 +50,36 @@ jobs:
   application-deploy:
     runs-on: ubuntu-latest
     needs: service-build
+
+    permissions:
+      contents: read
+
     steps:
-      - uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v3
+
+      - name: Copy deployment configuration files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          strip_components: 1
+          source: "deploy/"
+          target: "~/"
+
+      - name: Deploy latest version of service
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             cd elevated
-            docker-compose pull
-            docker-compose up -d
+            docker compose pull service
+            docker compose up -d
+            docker compose exec -it nginx nginx -s reload
+            docker image prune -f
+
 #      - uses: softprops/action-gh-release@v1
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

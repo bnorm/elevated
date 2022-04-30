@@ -1,39 +1,47 @@
 version: "3"
 
 services:
-  swag:
-    image: lscr.io/linuxserver/swag
+  nginx:
+    image: nginx:mainline-alpine
     restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - URL=elevated.bnorm.dev
-      - VALIDATION=http
-    volumes:
-      - ./data/config:/config
     ports:
-      - "443:443"
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+      - ./dhparam:/etc/ssl/certs
+      - ./web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+
+#  certbot:
+#    image: certbot/certbot
+#    volumes:
+#      - ./web-root:/var/www/html
+#      - certbot-etc:/etc/letsencrypt
+#      - certbot-var:/var/lib/letsencrypt
+#    depends_on:
+#      - nginx
+#    command: certonly --webroot --webroot-path=/var/www/html --email brian@bnorm.com --agree-tos --no-eff-email --force-renewal -d elevated.bnorm.dev
 
   service:
     image: ghcr.io/bnorm/elevated-service:latest
     restart: unless-stopped
     depends_on:
       - mongodb
-    ports:
-      - "8080:8080"
+#      - kafka
     environment:
       SPRING_DATA_MONGODB_URI: mongodb://mongodb/test
+      SPRING_PROFILES_ACTIVE: cloud
       JWT_SECRET: ${JWT_SECRET}
 
   mongodb:
     image: mongo:5.0
     restart: unless-stopped
-    ports:
-      - "27017:27017"
+
+volumes:
+  certbot-etc:
+  certbot-var:
 
 #  zoo:
 #    image: confluentinc/cp-zookeeper:7.0.1

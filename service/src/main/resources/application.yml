@@ -1,11 +1,14 @@
 spring:
   application:
-    name: elevated-users-service
+    name: elevated-service
 
   webflux:
     static-path-pattern: /ui/**
 
 logging:
+  pattern:
+    mdc: "[requestId=%X{request.id} subject=%X{jwt.sub} role=%X{jwt.role} email=%X{jwt.email}]"
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(${logging.pattern.mdc}){green} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx}"
   level:
     root: info
     org.mongodb: warn

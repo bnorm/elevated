@@ -74,10 +74,17 @@ class SecurityConfig {
             disable()
         }
         authorizeExchange {
+            // UI related paths
+            authorize("/", permitAll)
             authorize("/ui/**", permitAll)
+
+            // API related paths
             authorize("/api/v1/users/login", permitAll)
             authorize("/api/v1/devices/login", permitAll)
             authorize("/api/v1/users/register", permitAll)
+            authorize("/api/**", authenticated)
+
+            // Catch-all
             authorize(anyExchange, authenticated)
         }
         oauth2ResourceServer {

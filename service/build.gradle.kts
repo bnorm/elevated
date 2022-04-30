@@ -9,6 +9,8 @@ dependencies {
     api(platform(project(":platform")))
     api(project(":common:model"))
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 

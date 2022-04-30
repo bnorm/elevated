@@ -13,6 +13,13 @@ import java.time.Duration
 import java.time.Instant
 
 const val ROLE_CLAIM = "role"
+const val EMAIL_CLAIM = "email"
+
+val Jwt.role: String?
+    get() = getClaimAsString(ROLE_CLAIM)
+
+val Jwt.email: String?
+    get() = getClaimAsString(EMAIL_CLAIM)
 
 fun User.toClaims(): JwtClaimsSet {
     val now = Instant.now()
@@ -20,6 +27,7 @@ fun User.toClaims(): JwtClaimsSet {
         .subject(id.value)
         .issuedAt(now)
         .expiresAt(now + Duration.ofHours(24))
+        .claim(EMAIL_CLAIM, email.value)
         .claim(ROLE_CLAIM, role)
         .build()
 }

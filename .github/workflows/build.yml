@@ -11,7 +11,8 @@ env:
 
 jobs:
 
-  project-gradle-build:
+  # TODO add JUnit report to PRs and artifacts
+  gradle-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
