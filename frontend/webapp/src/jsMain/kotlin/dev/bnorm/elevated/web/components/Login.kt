@@ -29,9 +29,11 @@ import org.jetbrains.compose.web.css.px
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
+import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun Login() {
+    var error by remember { mutableStateOf<String?>(null) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -40,10 +42,13 @@ fun Login() {
     val scope = rememberCoroutineScope()
     fun login() {
         scope.launch {
-            if (UserSession.login(Email(email), Password(password)) == null) {
-                email = ""
-                password = ""
+            runCatching {
+                UserSession.login(Email(email), Password(password))
+            }.onFailure {
+                error = "Unable to login: ${it.message}"
             }
+            email = ""
+            password = ""
         }
     }
 
@@ -62,6 +67,12 @@ fun Login() {
                 }
             }
         ) {
+            val errorMessage = error
+            if (errorMessage != null) {
+                // TODO style red or something
+                Text(errorMessage)
+            }
+
             Div(
                 attrs = {
                     style {

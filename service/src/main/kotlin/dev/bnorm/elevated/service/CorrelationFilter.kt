@@ -3,6 +3,7 @@ package dev.bnorm.elevated.service
 import dev.bnorm.elevated.service.auth.currentJwtToken
 import dev.bnorm.elevated.service.auth.email
 import dev.bnorm.elevated.service.auth.role
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
@@ -32,15 +33,23 @@ class CorrelationFilter : CoroutineWebFilter() {
         }
 
         withContext(MDCContext(context)) {
-            log.debug("marker=Http.Request.Start uri={}", exchange.request.path)
+            log.debug("marker=Http.Request.Start method={} path={}",
+                exchange.request.methodValue,
+                exchange.request.path)
             val start = Instant.now()
             try {
                 proceed(exchange)
-                log.debug("marker=Http.Request.Complete uri={} status={} duration={}",
-                    exchange.request.path, exchange.response.rawStatusCode, Duration.between(start, Instant.now()))
+                log.debug("marker=Http.Request.Complete method={} path={} duration={} status={}",
+                    exchange.request.methodValue, exchange.request.path, exchange.response.rawStatusCode,
+                    Duration.between(start, Instant.now()))
+            } catch (t: CancellationException) {
+                log.debug("marker=Http.Request.Cancelled method={} path={} duration={}",
+                    exchange.request.methodValue, exchange.request.path, Duration.between(start, Instant.now()))
+                throw t
             } catch (t: Throwable) {
-                log.debug("marker=Http.Request.Error uri={} status={} duration={}",
-                    exchange.request.path, exchange.response.rawStatusCode, Duration.between(start, Instant.now()), t)
+                log.debug("marker=Http.Request.Error method={} path={} duration={} status={}",
+                    exchange.request.methodValue, exchange.request.path, exchange.response.rawStatusCode,
+                    Duration.between(start, Instant.now()), t)
                 throw t
             }
         }

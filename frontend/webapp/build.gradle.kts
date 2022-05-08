@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
@@ -15,9 +13,18 @@ kotlin {
             }
             runTask {
                 // TODO: use dsl after KT-32016 will be fixed
+                val env: String? by project
+                val proxyServer: Any = when (env) {
+                    "prod" -> mapOf(
+                        "target" to "https://elevated.bnorm.dev",
+                        "secure" to false,
+                        "changeOrigin" to true,
+                    )
+                    else -> "http://localhost:8080"
+                }
                 devServer = KotlinWebpackConfig.DevServer(
                     port = 8081,
-                    proxy = mutableMapOf("/api/**" to "http://localhost:8080"),
+                    proxy = mutableMapOf("/api/**" to proxyServer),
                     static = mutableListOf("$buildDir/processedResources/js/main")
                 )
             }
@@ -41,6 +48,11 @@ kotlin {
                 implementation(npm("@material/textfield", mdcVersion))
                 implementation(npm("@material/layout-grid", mdcVersion))
                 implementation(npm("@material/dialog", mdcVersion))
+                implementation(npm("@material/tab-indicator", mdcVersion))
+                implementation(npm("@material/tab", mdcVersion))
+                implementation(npm("@material/tab-scroller", mdcVersion))
+                implementation(npm("@material/tab-bar", mdcVersion))
+                implementation(npm("@material/top-app-bar", mdcVersion))
 
                 implementation(compose.web.core)
                 implementation(compose.runtime)
