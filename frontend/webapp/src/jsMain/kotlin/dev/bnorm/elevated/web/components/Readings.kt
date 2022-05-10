@@ -2,20 +2,24 @@ package dev.bnorm.elevated.web.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import dev.bnorm.elevated.model.sensors.SensorReading
+import kotlinx.datetime.Instant
 import org.jetbrains.compose.web.attributes.height
 import org.jetbrains.compose.web.attributes.width
 import org.jetbrains.compose.web.dom.Canvas
-import org.w3c.dom.CanvasLineJoin
 import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.ROUND
+import kotlin.math.PI
 
 @Composable
 fun SensorChart(
     readings: List<SensorReading>,
+    selectedTimestamp: Instant? = null,
     width: Int = 300,
     height: Int = 300,
+    onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
     data class ChartSizing(
         val minX: Double,
@@ -57,8 +61,6 @@ fun SensorChart(
 
     fun CanvasRenderingContext2D.drawPath(readings: List<SensorReading>) {
         beginPath()
-        lineJoin = CanvasLineJoin.ROUND
-        strokeStyle = "black"
 
         var previous: SensorReading? = null
         var previousX: Double? = null
@@ -72,27 +74,96 @@ fun SensorChart(
             previousX = x
             previous = reading
         }
+
         stroke()
+    }
+
+    val selectedReading by derivedStateOf {
+        if (selectedTimestamp != null) toNearestReading(readings, selectedTimestamp) else null
     }
 
     Canvas(
         attrs = {
             width(width)
             height(height)
+
+            onMouseMove {
+                val selectedValue = chartSizing.minX + (it.offsetX / width) * chartSizing.spanX
+                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
+                onSelectedTimestamp(timestamp)
+            }
+            onMouseLeave {
+                onSelectedTimestamp(null)
+            }
         }
     ) {
-        DisposableEffect(readings) {
+        DisposableEffect(readings, selectedReading) {
             val ctx = scopeElement.getContext("2d") as? CanvasRenderingContext2D
+            val reading = selectedReading
 
             if (ctx != null) {
                 ctx.clearRect(0.0, 0.0, width.toDouble(), height.toDouble())
                 ctx.drawPath(readings)
 
-                // TODO add graph markers (min, max, etc)
-                // TODO add cursor selection
+                ctx.withStyle(
+                    font = "14px sanserif"
+                ) {
+                    fillText("${chartSizing.maxY}", 0.0, 14.0)
+                    fillText("${chartSizing.minY}", 0.0, height.toDouble())
+                }
+
+                ctx.withStyle(
+                    font = "14px sanserif"
+                ) {
+                    fillText("${(reading ?: readings.last()).value}", 0.0, 28.0)
+                }
+
+                if (reading != null) {
+                    val x = reading.toX()
+                    val y = reading.toY()
+
+                    ctx.withStyle(
+                        strokeStyle = "#28C1DA",
+                        lineDash = arrayOf(20.0, 20.0),
+                    ) {
+                        beginPath()
+                        moveTo(x, 0.0)
+                        lineTo(x, height.toDouble())
+                        stroke()
+                    }
+
+                    ctx.withStyle(
+                        fillStyle = "#28C1DA",
+                    ) {
+                        beginPath()
+                        arc(x, y, 3.0, 0.0, 2.0 * PI)
+                        fill()
+                    }
+                }
             }
 
             onDispose {}
         }
+    }
+}
+
+fun CanvasRenderingContext2D.withStyle(
+    font: String? = null,
+    lineDash: Array<Double>? = null,
+    strokeStyle: String? = null,
+    fillStyle: String? = null,
+    block: CanvasRenderingContext2D.() -> Unit,
+) {
+    save()
+
+    if (font != null) this.font = font
+    if (lineDash != null) setLineDash(lineDash)
+    if (strokeStyle != null) this.strokeStyle = strokeStyle
+    if (fillStyle != null) this.fillStyle = fillStyle
+
+    try {
+        block()
+    } finally {
+        restore()
     }
 }
