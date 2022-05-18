@@ -36,7 +36,9 @@ class DeviceActionService(
         deviceId: DeviceId,
         prototype: DeviceActionPrototype,
     ): DeviceAction {
-        return deviceActionRepository.insert(prototype.toEntity(deviceId)).toDto()
+        val action = deviceActionRepository.insert(prototype.toEntity(deviceId)).toDto()
+        deviceActions.emit(action)
+        return action
     }
 
     suspend fun complete(deviceId: DeviceId, deviceActionId: DeviceActionId): DeviceAction? {
@@ -55,7 +57,7 @@ class DeviceActionService(
         return null
     }
 
-    fun getActions(deviceId: DeviceId): Flow<DeviceAction> {
+    fun watchActions(deviceId: DeviceId): Flow<DeviceAction> {
         return deviceActions.filter { it.deviceId == deviceId }
     }
 

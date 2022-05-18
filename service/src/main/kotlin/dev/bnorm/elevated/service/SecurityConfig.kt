@@ -81,6 +81,7 @@ class SecurityConfig {
             // API related paths
             authorize("/api/v1/users/login", permitAll)
             authorize("/api/v1/devices/login", permitAll)
+            authorize("/api/v1/devices/*/connect", permitAll)
             authorize("/api/v1/users/register", permitAll)
             authorize("/api/**", authenticated)
 
