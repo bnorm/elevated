@@ -14,17 +14,29 @@ kotlin {
             runTask {
                 // TODO: use dsl after KT-32016 will be fixed
                 val env: String? by project
-                val proxyServer: Any = when (env) {
-                    "prod" -> mapOf(
-                        "target" to "https://elevated.bnorm.dev",
-                        "secure" to false,
-                        "changeOrigin" to true,
+                val proxy: MutableMap<String, Any> = when (env) {
+                    "prod" -> mutableMapOf(
+                        "/api/v1/devices/[a-zA-Z0-9]+/connect" to mapOf(
+                            "target" to "wss://elevated.bnorm.dev",
+                            "changeOrigin" to true,
+                            "ws" to true
+                        ),
+                        "/api/**" to mapOf(
+                            "target" to "https://elevated.bnorm.dev",
+                            "changeOrigin" to true,
+                        )
                     )
-                    else -> "http://localhost:8080"
+                    else -> mutableMapOf(
+                        "/api/v1/devices/[a-zA-Z0-9]+/connect" to mapOf(
+                            "target" to "ws://localhost:8080",
+                            "ws" to true
+                        ),
+                        "/api/**" to "http://localhost:8080",
+                    )
                 }
                 devServer = KotlinWebpackConfig.DevServer(
                     port = 8081,
-                    proxy = mutableMapOf("/api/**" to proxyServer),
+                    proxy = proxy,
                     static = mutableListOf("$buildDir/processedResources/js/main")
                 )
             }
@@ -39,6 +51,7 @@ kotlin {
                 val ktor_version = "1.6.8"
                 implementation("io.ktor:ktor-client-js:$ktor_version")
                 implementation("io.ktor:ktor-client-serialization:$ktor_version")
+                implementation("io.ktor:ktor-client-websockets:$ktor_version")
 
                 val mdcVersion = "13.0.0"
                 implementation(npm("@material/base", mdcVersion))

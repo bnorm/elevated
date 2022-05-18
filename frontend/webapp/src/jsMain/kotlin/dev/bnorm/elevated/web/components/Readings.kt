@@ -11,14 +11,16 @@ import org.jetbrains.compose.web.attributes.height
 import org.jetbrains.compose.web.attributes.width
 import org.jetbrains.compose.web.dom.Canvas
 import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.get
 import kotlin.math.PI
 
 @Composable
 fun SensorChart(
     readings: List<SensorReading>,
+    width: Int = 500,
+    height: Int = 500,
     selectedTimestamp: Instant? = null,
-    width: Int = 300,
-    height: Int = 300,
     onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
     data class ChartSizing(
@@ -92,7 +94,26 @@ fun SensorChart(
                 val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
                 onSelectedTimestamp(timestamp)
             }
+            onMouseDown {
+                val selectedValue = chartSizing.minX + (it.offsetX / width) * chartSizing.spanX
+                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
+                onSelectedTimestamp(timestamp)
+            }
+            onMouseUp {
+                onSelectedTimestamp(null)
+            }
             onMouseLeave {
+                onSelectedTimestamp(null)
+            }
+
+            onTouchMove {
+                val touch = it.touches[0]!!
+                val offsetX = (touch.pageX - (touch.target as HTMLElement).offsetLeft).toDouble()
+                val selectedValue = chartSizing.minX + (offsetX / width) * chartSizing.spanX
+                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
+                onSelectedTimestamp(timestamp)
+            }
+            onTouchEnd {
                 onSelectedTimestamp(null)
             }
         }
@@ -115,7 +136,7 @@ fun SensorChart(
                 ctx.withStyle(
                     font = "14px sanserif"
                 ) {
-                    fillText("${(reading ?: readings.last()).value}", 0.0, 28.0)
+                    fillText("${(reading ?: readings.lastOrNull())?.value ?: -1.0}", 0.0, 28.0)
                 }
 
                 if (reading != null) {

@@ -12,13 +12,14 @@ import io.ktor.client.features.DefaultRequest
 import io.ktor.client.features.HttpCallValidator
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
+import io.ktor.client.features.websocket.WebSockets
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
 import io.ktor.http.Url
 import kotlinx.browser.window
 
-private var authorization: String? by window.localStorage
+var authorization: String? by window.localStorage
 
 @OptIn(JwtTokenUsage::class)
 fun setAuthorization(token: AuthorizationToken) {
@@ -30,6 +31,8 @@ fun clearAuthorization() {
 }
 
 val client = HttpClient(Js) {
+    install(WebSockets)
+
     install(JsonFeature) {
         serializer = KotlinxSerializer()
     }

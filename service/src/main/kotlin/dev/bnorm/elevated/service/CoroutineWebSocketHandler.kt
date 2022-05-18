@@ -46,7 +46,7 @@ abstract class CoroutineWebSocketHandler : WebSocketHandler {
                 null
             } catch (t: Throwable) {
                 log.warn("marker=WebSocket.Error", t)
-                webSocketSession.close(CloseStatus.SERVER_ERROR).awaitSingleOrNull()
+                webSocketSession.close(CloseStatus.SERVER_ERROR.withNullableReason(t.message)).awaitSingleOrNull()
                 throw t
             }
         }
@@ -57,4 +57,9 @@ abstract class CoroutineWebSocketHandler : WebSocketHandler {
         sendChannel: SendChannel<String>,
         receiveChannel: ReceiveChannel<String>,
     )
+}
+
+fun CloseStatus.withNullableReason(reason: String?): CloseStatus {
+    reason ?: return this
+    return withReason(reason)
 }
