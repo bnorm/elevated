@@ -1,10 +1,6 @@
 name: Project Build
 
-on:
-  push:
-    branches: [ 'main' ]
-  pull_request:
-    branches: [ '*' ]
+on: [push, pull_request]
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
@@ -14,6 +10,11 @@ jobs:
   # TODO add JUnit report to PRs and artifacts
   gradle-build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1
@@ -23,3 +24,24 @@ jobs:
           java-version: 11
       - uses: gradle/gradle-build-action@v2
       - run: ./gradlew build
+
+      # Build elevated-service
+      # TODO if there are multiple services, can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
+      - uses: docker/metadata-action@v3
+        id: meta
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          images: ghcr.io/bnorm/elevated-service
+      - uses: docker/login-action@v1
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v2
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          context: ./service
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
