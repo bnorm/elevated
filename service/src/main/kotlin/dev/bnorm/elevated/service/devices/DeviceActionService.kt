@@ -26,6 +26,7 @@ class DeviceActionService(
     private val deviceActionRepository: DeviceActionRepository,
     private val deviceService: DeviceService,
 ) {
+    // TODO Replace with a mongo change stream?
     private val deviceActions = MutableSharedFlow<DeviceAction>(
         replay = 0,
         extraBufferCapacity = Channel.UNLIMITED,
@@ -70,7 +71,7 @@ class DeviceActionService(
     }
 
     suspend fun deleteAction(deviceId: DeviceId, deviceActionId: DeviceActionId) {
-        deviceActionRepository.delete(deviceId, deviceActionId)
+        deviceActionRepository.deleteById(deviceId, deviceActionId)
     }
 
     private fun DeviceActionEntity.toDto(): DeviceAction {

@@ -9,7 +9,6 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.CollectionOptions
 import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
 import org.springframework.data.mongodb.core.find
@@ -22,7 +21,6 @@ import org.springframework.data.mongodb.core.query.exists
 import org.springframework.data.mongodb.core.query.gt
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.remove
-import org.springframework.data.mongodb.core.timeseries.Granularity
 import org.springframework.stereotype.Repository
 import java.time.Instant
 import javax.annotation.PostConstruct
@@ -33,17 +31,6 @@ class DeviceActionRepository(
 ) {
     @PostConstruct
     fun setup(): Unit = runBlocking {
-        if (!mongo.collectionExists(DeviceActionEntity.COLLECTION_NAME).awaitSingle()) {
-            mongo.createCollection(
-                DeviceActionEntity.COLLECTION_NAME, CollectionOptions.empty()
-                    .timeSeries(
-                        CollectionOptions.TimeSeriesOptions.timeSeries(DeviceActionEntity::submitted.name)
-                            .metaField(DeviceActionEntity::deviceId.name)
-                            .granularity(Granularity.HOURS)
-                    )
-            ).awaitSingleOrNull()
-        }
-
         val indexOps = mongo.indexOps(DeviceActionEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
             on(DeviceActionEntity::deviceId.name, Sort.Direction.ASC)
@@ -106,13 +93,22 @@ class DeviceActionRepository(
         return mongo.find<DeviceActionEntity>(query).asFlow()
     }
 
-    suspend fun delete(
+    suspend fun deleteById(
         deviceId: DeviceId,
         deviceActionId: DeviceActionId,
     ) {
         val query = Query(
             Criteria().andOperator(
                 DeviceActionEntity::id isEqualTo deviceActionId.value,
+                DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            )
+        )
+        mongo.remove<DeviceActionEntity>(query).awaitSingleOrNull()
+    }
+
+    suspend fun deleteByDeviceId(deviceId: DeviceId) {
+        val query = Query(
+            Criteria().andOperator(
                 DeviceActionEntity::deviceId isEqualTo deviceId.value,
             )
         )

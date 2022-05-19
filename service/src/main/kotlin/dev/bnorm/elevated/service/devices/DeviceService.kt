@@ -10,6 +10,7 @@ import dev.bnorm.elevated.model.devices.DevicePrototype
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
+import dev.bnorm.elevated.service.devices.db.DeviceActionRepository
 import dev.bnorm.elevated.service.devices.db.DeviceEntity
 import dev.bnorm.elevated.service.devices.db.DeviceRepository
 import dev.bnorm.elevated.service.sensors.SensorService
@@ -26,6 +27,7 @@ import java.time.Instant
 @Service
 class DeviceService(
     private val deviceRepository: DeviceRepository,
+    private val deviceActionRepository: DeviceActionRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtEncoder: JwtEncoder,
     private val sensorService: SensorService,
@@ -46,6 +48,7 @@ class DeviceService(
 
     suspend fun deleteDevice(deviceId: DeviceId) {
         deviceRepository.delete(deviceId)
+        deviceActionRepository.deleteByDeviceId(deviceId)
     }
 
     fun getAllDevices(): Flow<Device> {
