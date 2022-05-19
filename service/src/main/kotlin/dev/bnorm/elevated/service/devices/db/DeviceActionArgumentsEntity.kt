@@ -10,5 +10,5 @@ sealed class DeviceActionArgumentsEntity
 @TypeAlias("PUMP_DISPENSE")
 class PumpDispenseArgumentsEntity(
     val pump: Int,
-    val amount: Int, // milliliters
+    val amount: Double, // milliliters
 ) : DeviceActionArgumentsEntity()

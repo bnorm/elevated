@@ -11,6 +11,7 @@ import io.ktor.http.URLProtocol
 import io.ktor.http.cio.websocket.Frame
 import io.ktor.http.cio.websocket.readText
 import io.ktor.http.takeFrom
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
@@ -46,6 +47,7 @@ object DeviceService {
                             .collect { flow.send(it) }
                     }
                 } catch (t: Throwable) {
+                    if (t is CancellationException) throw t
                     t.printStackTrace()
                 }
 

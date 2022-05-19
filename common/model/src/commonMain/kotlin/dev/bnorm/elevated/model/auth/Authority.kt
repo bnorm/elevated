@@ -3,6 +3,10 @@ package dev.bnorm.elevated.model.auth
 enum class Authority(
     vararg inherits: Authority
 ) {
+    ACTIONS_READ,
+    ACTIONS_WRITE(ACTIONS_READ),
+    ACTIONS_ADMIN(ACTIONS_WRITE),
+
     CHARTS_READ,
     CHARTS_WRITE(CHARTS_READ),
     CHARTS_ADMIN(CHARTS_WRITE),

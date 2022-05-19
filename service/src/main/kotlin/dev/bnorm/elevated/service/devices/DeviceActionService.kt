@@ -41,7 +41,11 @@ class DeviceActionService(
         return action
     }
 
-    suspend fun complete(deviceId: DeviceId, deviceActionId: DeviceActionId): DeviceAction? {
+    suspend fun getAction(deviceId: DeviceId, deviceActionId: DeviceActionId): DeviceAction? {
+        return deviceActionRepository.findById(deviceId, deviceActionId)?.toDto()
+    }
+
+    suspend fun completeAction(deviceId: DeviceId, deviceActionId: DeviceActionId): DeviceAction? {
         val timestamp = Instant.now()
         val device = deviceService.getDeviceById(deviceId)
         if (device != null) {
@@ -63,6 +67,10 @@ class DeviceActionService(
 
     fun getActions(deviceId: DeviceId, submittedAfter: Instant, limit: Int?): Flow<DeviceAction> {
         return deviceActionRepository.findByDeviceId(deviceId, submittedAfter, limit).map { it.toDto() }
+    }
+
+    suspend fun deleteAction(deviceId: DeviceId, deviceActionId: DeviceActionId) {
+        deviceActionRepository.delete(deviceId, deviceActionId)
     }
 
     private fun DeviceActionEntity.toDto(): DeviceAction {

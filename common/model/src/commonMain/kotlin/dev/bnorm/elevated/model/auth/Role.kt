@@ -4,6 +4,7 @@ enum class Role(
     vararg startingAuthorities: Authority
 ) {
     ADMIN(
+        Authority.ACTIONS_ADMIN,
         Authority.CHARTS_ADMIN,
         Authority.DEVICES_ADMIN,
         Authority.READINGS_ADMIN,
@@ -12,6 +13,7 @@ enum class Role(
     ),
 
     USER(
+        Authority.ACTIONS_READ,
         Authority.CHARTS_READ,
         Authority.DEVICES_READ,
         Authority.SENSORS_READ,
@@ -19,6 +21,7 @@ enum class Role(
     ),
 
     DEVICE(
+        Authority.ACTIONS_WRITE,
         Authority.DEVICES_READ,
         Authority.READINGS_WRITE,
     ),

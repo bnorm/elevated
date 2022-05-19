@@ -10,5 +10,5 @@ sealed class DeviceActionArguments
 @SerialName("PUMP_DISPENSE")
 class PumpDispenseArguments(
     val pump: Int,
-    val amount: Int, // milliliters
+    val amount: Double, // milliliters
 ) : DeviceActionArguments()

@@ -7,6 +7,7 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -23,7 +24,7 @@ import java.time.Instant
 class DeviceActionController(
     private val deviceActionService: DeviceActionService,
 ) {
-    @PreAuthorize("hasAuthority('DEVICES_WRITE')")
+    @PreAuthorize("hasAuthority('ACTIONS_WRITE')")
     @PostMapping
     suspend fun submitDeviceAction(
         @PathVariable deviceId: String,
@@ -32,9 +33,9 @@ class DeviceActionController(
         return deviceActionService.submitDeviceAction(DeviceId(deviceId), prototype)
     }
 
-    @PreAuthorize("hasAuthority('DEVICES_READ')")
+    @PreAuthorize("hasAuthority('ACTIONS_READ')")
     @GetMapping
-    suspend fun getDeviceAction(
+    fun getDeviceActions(
         @PathVariable deviceId: String,
         @RequestParam(required = true) submittedAfter: Instant,
         @RequestParam limit: Int?,
@@ -43,13 +44,31 @@ class DeviceActionController(
         return deviceActionService.getActions(DeviceId(deviceId), submittedAfter, limit)
     }
 
-    @PreAuthorize("hasAuthority('DEVICES_WRITE')")
-    @PutMapping("{actionId}/complete")
+    @PreAuthorize("hasAuthority('ACTIONS_READ')")
+    @GetMapping("{actionId}")
     suspend fun getDeviceAction(
         @PathVariable deviceId: String,
         @PathVariable actionId: String,
     ): DeviceAction? {
-        return deviceActionService.complete(DeviceId(deviceId), DeviceActionId(actionId))
+        return deviceActionService.getAction(DeviceId(deviceId), DeviceActionId(actionId))
+    }
+
+    @PreAuthorize("hasAuthority('ACTIONS_WRITE')")
+    @PutMapping("{actionId}/complete")
+    suspend fun completeDeviceAction(
+        @PathVariable deviceId: String,
+        @PathVariable actionId: String,
+    ): DeviceAction? {
+        return deviceActionService.completeAction(DeviceId(deviceId), DeviceActionId(actionId))
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @PreAuthorize("hasAuthority('ACTIONS_ADMIN')")
+    @DeleteMapping("{actionId}")
+    suspend fun deleteDeviceAction(
+        @PathVariable deviceId: String,
+        @PathVariable actionId: String,
+    ) {
+        deviceActionService.deleteAction(DeviceId(deviceId), DeviceActionId(actionId))
     }
 }

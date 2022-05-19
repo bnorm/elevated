@@ -14,12 +14,14 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findAndModify
+import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.exists
 import org.springframework.data.mongodb.core.query.gt
 import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.remove
 import org.springframework.data.mongodb.core.timeseries.Granularity
 import org.springframework.stereotype.Repository
 import java.time.Instant
@@ -51,6 +53,20 @@ class DeviceActionRepository(
 
     suspend fun insert(deviceActionEntity: DeviceActionEntity): DeviceActionEntity {
         return mongo.insert(deviceActionEntity).awaitSingle()
+    }
+
+    suspend fun findById(
+        deviceId: DeviceId,
+        deviceActionId: DeviceActionId,
+    ): DeviceActionEntity? {
+        val query = Query(
+            Criteria().andOperator(
+                DeviceActionEntity::id isEqualTo deviceActionId.value,
+                DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            )
+        )
+        return mongo.findOne<DeviceActionEntity>(query)
+            .awaitSingleOrNull()
     }
 
     suspend fun complete(
@@ -88,5 +104,18 @@ class DeviceActionRepository(
             .with(Sort.by(DeviceActionEntity::submitted.name))
             .apply { if (limit != null) limit(limit) }
         return mongo.find<DeviceActionEntity>(query).asFlow()
+    }
+
+    suspend fun delete(
+        deviceId: DeviceId,
+        deviceActionId: DeviceActionId,
+    ) {
+        val query = Query(
+            Criteria().andOperator(
+                DeviceActionEntity::id isEqualTo deviceActionId.value,
+                DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            )
+        )
+        mongo.remove<DeviceActionEntity>(query).awaitSingleOrNull()
     }
 }
