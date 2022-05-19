@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - uses: gradle/gradle-build-action@v2
-      - run: ./gradlew build
+      - run: ./gradlew check bootJar
 
       # Build elevated-service
       # TODO if there are multiple services, can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
@@ -45,3 +45,41 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  application-deploy:
+    runs-on: ubuntu-latest
+    needs: gradle-build
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Copy deployment configuration files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          strip_components: 1
+          source: "deploy/"
+          target: "~/"
+
+      - name: Deploy latest version of service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd elevated
+            docker compose pull service
+            docker compose up -d
+            docker compose exec -it nginx nginx -s reload
+            docker image prune -f
+
+#      - uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
