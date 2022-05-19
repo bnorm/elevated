@@ -31,7 +31,10 @@ jobs:
         id: meta
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
         with:
-          images: ghcr.io/bnorm/elevated-service
+          images: |
+            ghcr.io/bnorm/elevated-service
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
       - uses: docker/login-action@v1
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
         with:
