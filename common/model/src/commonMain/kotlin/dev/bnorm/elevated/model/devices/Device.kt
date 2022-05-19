@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 class Device(
     val id: DeviceId,
     val name: String,
+    val status: DeviceStatus,
     val sensors: List<Sensor>,
     val lastActionTime: Instant? = null,
 )

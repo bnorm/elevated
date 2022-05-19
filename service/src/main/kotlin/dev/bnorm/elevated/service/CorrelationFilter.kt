@@ -40,16 +40,16 @@ class CorrelationFilter : CoroutineWebFilter() {
             try {
                 proceed(exchange)
                 log.debug("marker=Http.Request.Complete method={} path={} duration={} status={}",
-                    exchange.request.methodValue, exchange.request.path, exchange.response.rawStatusCode,
-                    Duration.between(start, Instant.now()))
+                    exchange.request.methodValue, exchange.request.path, Duration.between(start, Instant.now()),
+                    exchange.response.rawStatusCode)
             } catch (t: CancellationException) {
                 log.debug("marker=Http.Request.Cancelled method={} path={} duration={}",
                     exchange.request.methodValue, exchange.request.path, Duration.between(start, Instant.now()))
                 throw t
             } catch (t: Throwable) {
                 log.debug("marker=Http.Request.Error method={} path={} duration={} status={}",
-                    exchange.request.methodValue, exchange.request.path, exchange.response.rawStatusCode,
-                    Duration.between(start, Instant.now()), t)
+                    exchange.request.methodValue, exchange.request.path, Duration.between(start, Instant.now()),
+                    exchange.response.rawStatusCode, t)
                 throw t
             }
         }

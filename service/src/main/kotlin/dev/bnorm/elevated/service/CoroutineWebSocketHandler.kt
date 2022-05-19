@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -44,6 +45,8 @@ abstract class CoroutineWebSocketHandler : WebSocketHandler {
                 webSocketSession.close(CloseStatus.NORMAL).awaitSingleOrNull()
 
                 null
+            } catch (t: CancellationException) {
+                throw t
             } catch (t: Throwable) {
                 log.warn("marker=WebSocket.Error", t)
                 webSocketSession.close(CloseStatus.SERVER_ERROR.withNullableReason(t.message)).awaitSingleOrNull()

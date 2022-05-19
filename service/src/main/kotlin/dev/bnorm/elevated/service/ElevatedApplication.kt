@@ -7,5 +7,6 @@ import org.springframework.boot.runApplication
 class ElevatedApplication
 
 fun main(args: Array<String>) {
+    System.setProperty("kotlinx.coroutines.debug", "on") // Enable Kotlin coroutines debugging
     runApplication<ElevatedApplication>(*args)
 }

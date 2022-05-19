@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service.devices.db
 
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant
@@ -8,6 +9,7 @@ import java.time.Instant
 class DeviceEntity(
     val name: String,
     val keyHash: String,
+    val status: DeviceStatus = DeviceStatus.Offline,
     val lastActionTime: Instant? = null,
 ) {
     @Id

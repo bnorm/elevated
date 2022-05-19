@@ -2,13 +2,17 @@ package dev.bnorm.elevated.service
 
 import dev.bnorm.elevated.model.devices.DeviceAction
 import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.service.devices.DeviceActionService
+import dev.bnorm.elevated.service.devices.DeviceService
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import org.springframework.http.server.PathContainer
@@ -21,6 +25,7 @@ import org.springframework.web.util.pattern.PathPatternParser
 
 @Component
 class DeviceWebSocketHandler(
+    private val deviceService: DeviceService,
     private val deviceActionService: DeviceActionService,
     private val reactiveJwtDecoder: ReactiveJwtDecoder,
     private val jwtAuthenticationConverter: ReactiveJwtAuthenticationConverter,
@@ -36,20 +41,27 @@ class DeviceWebSocketHandler(
         receiveChannel: ReceiveChannel<String>,
     ) {
         val match = pattern.matchAndExtract(PathContainer.parsePath(info.uri.path))
-        val deviceId = match?.uriVariables?.get("deviceId")
+        val deviceId = match?.uriVariables?.get("deviceId")?.let { DeviceId(it) }
         if (deviceId != null) {
             // Require the first incoming message to be the JWT token
             val token = receiveChannel.receive()
             jwtAuthenticationConverter.convert(reactiveJwtDecoder.decode(token).awaitSingle())!!.awaitSingle()
 
-            coroutineScope {
-                launch {
-                    deviceActionService.watchActions(DeviceId(deviceId))
-                        .collect { sendChannel.send(Json.Default.encodeToString(DeviceAction.serializer(), it)) }
+            deviceService.setDeviceStatus(deviceId, DeviceStatus.Online)
+            try {
+                coroutineScope {
+                    launch {
+                        deviceActionService.watchActions(deviceId)
+                            .collect { sendChannel.send(Json.Default.encodeToString(DeviceAction.serializer(), it)) }
+                    }
+                    launch {
+                        receiveChannel.consumeAsFlow()
+                            .collect { log.info("marker=WebSocket.DeviceAction.Incoming message=\"{}\"", it) }
+                    }
                 }
-                launch {
-                    receiveChannel.consumeAsFlow()
-                        .collect { log.info("marker=WebSocket.DeviceAction.Incoming message=\"{}\"", it) }
+            } finally {
+                withContext(NonCancellable) {
+                    deviceService.setDeviceStatus(deviceId, DeviceStatus.Offline)
                 }
             }
         }

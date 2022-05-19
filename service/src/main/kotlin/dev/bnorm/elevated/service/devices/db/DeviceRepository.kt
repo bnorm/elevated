@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.service.devices.db
 
 import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
@@ -49,6 +50,18 @@ class DeviceRepository(
         )
         val update = Update()
             .set(DeviceEntity::lastActionTime.name, timestamp)
+        val options = FindAndModifyOptions.options()
+            .returnNew(true)
+        return mongo.findAndModify<DeviceEntity>(query, update, options)
+            .awaitSingleOrNull()
+    }
+
+    suspend fun modify(id: DeviceId, status: DeviceStatus): DeviceEntity? {
+        val query = Query(
+            DeviceEntity::id isEqualTo id.value,
+        )
+        val update = Update()
+            .set(DeviceEntity::status.name, status)
         val options = FindAndModifyOptions.options()
             .returnNew(true)
         return mongo.findAndModify<DeviceEntity>(query, update, options)

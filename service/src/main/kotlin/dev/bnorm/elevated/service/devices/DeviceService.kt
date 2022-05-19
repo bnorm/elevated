@@ -7,6 +7,7 @@ import dev.bnorm.elevated.model.devices.Device
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceLoginRequest
 import dev.bnorm.elevated.model.devices.DevicePrototype
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
@@ -63,11 +64,16 @@ class DeviceService(
         return deviceRepository.modify(deviceId, timestamp)?.toDto()
     }
 
+    suspend fun setDeviceStatus(deviceId: DeviceId, status: DeviceStatus): Device? {
+        return deviceRepository.modify(deviceId, status)?.toDto()
+    }
+
     private suspend fun DeviceEntity.toDto(): Device {
         val deviceId = DeviceId(id)
         return Device(
             id = deviceId,
             name = name,
+            status = status,
             sensors = sensorService.getSensorByDeviceId(deviceId).toList(),
             lastActionTime = lastActionTime?.toKotlinInstant(),
         )
