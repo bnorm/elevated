@@ -48,6 +48,7 @@ class DeviceWebSocketHandler(
             jwtAuthenticationConverter.convert(reactiveJwtDecoder.decode(token).awaitSingle())!!.awaitSingle()
 
             deviceService.setDeviceStatus(deviceId, DeviceStatus.Online)
+            log.info("marker=WebSocket.Device deviceId={} message=\"Device is online\"", deviceId.value)
             try {
                 coroutineScope {
                     launch {
@@ -61,6 +62,7 @@ class DeviceWebSocketHandler(
                 }
             } finally {
                 withContext(NonCancellable) {
+                    log.info("marker=WebSocket.Device deviceId={} message=\"Device is offline\"", deviceId.value)
                     deviceService.setDeviceStatus(deviceId, DeviceStatus.Offline)
                 }
             }
