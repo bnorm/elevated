@@ -51,13 +51,17 @@ class DeviceWebSocketHandler(
             log.info("marker=WebSocket.Device deviceId={} message=\"Device is online\"", deviceId.value)
             try {
                 coroutineScope {
-                    launch {
-                        deviceActionService.watchActions(deviceId)
-                            .collect { sendChannel.send(Json.Default.encodeToString(DeviceAction.serializer(), it)) }
-                    }
-                    launch {
+                    val incoming = launch {
                         receiveChannel.consumeAsFlow()
                             .collect { log.info("marker=WebSocket.DeviceAction.Incoming message=\"{}\"", it) }
+                    }
+                    launch {
+                        deviceActionService.watchActions(deviceId).collect {
+                            log.info("marker=WebSocket.DeviceAction.Outgoing action={}", it)
+                            sendChannel.send(Json.Default.encodeToString(DeviceAction.serializer(), it))
+                        }
+                        incoming.cancel()
+                        log.info("marker=WebSocket.DeviceAction.Outgoing message=\"Finished sending actions\"")
                     }
                 }
             } finally {
