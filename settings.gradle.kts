@@ -26,7 +26,6 @@ rootProject.name = "elevated"
 
 include("common:model")
 include("frontend:android")
-include("frontend:android:app")
 include("frontend:webapp")
 include("platform")
 include("service")
