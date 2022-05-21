@@ -2,20 +2,18 @@ package dev.bnorm.elevated
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dev.bnorm.elevated.state.KeyStore
 import dev.bnorm.elevated.state.UserSession
 import dev.bnorm.elevated.state.UserState
-import dev.bnorm.elevated.ui.Login
-import dev.bnorm.elevated.ui.panes.ChartPane
-import dev.bnorm.elevated.ui.panes.ChartPaneState
+import dev.bnorm.elevated.ui.panes.Login
+import dev.bnorm.elevated.ui.panes.Home
 import dev.bnorm.elevated.ui.theme.ElevatedTheme
 import kotlinx.serialization.json.Json
 import okhttp3.HttpUrl
@@ -70,29 +68,10 @@ fun MainContent(client: ElevatedClient, userSession: UserSession) {
     LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
 
     ElevatedTheme {
-        Surface(color = MaterialTheme.colors.background) {
-            when (userState) {
-                is UserState.Authenticating -> Unit
-                is UserState.Unauthenticated -> Login(userSession)
-                is UserState.Authenticated -> Home(client)
-            }
+        when (userState) {
+            is UserState.Authenticating -> Unit
+            is UserState.Unauthenticated -> Login(userSession)
+            is UserState.Authenticated -> Home(client)
         }
     }
 }
-
-@Composable
-fun Home(client: ElevatedClient) {
-    val state = ChartPaneState(client)
-
-    Column {
-        ChartPane(state)
-    }
-}
-
-//@Preview
-//@Composable
-//fun PreviewMainContent() {
-//    MainContent(
-//        client = MockElevatedService(),
-//    )
-//}

@@ -12,8 +12,11 @@ import dev.bnorm.elevated.ElevatedClient
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.ui.component.LongInputField
 import dev.bnorm.elevated.ui.component.SensorReadingChart
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
@@ -26,6 +29,7 @@ sealed class SensorReadingResult {
 
 class ChartPaneState(
     client: ElevatedClient,
+    scope: CoroutineScope,
 ) {
     var duration: Duration by mutableStateOf(2.hours)
 
@@ -37,6 +41,11 @@ class ChartPaneState(
                 SensorReadingResult.Loaded(readings.sortedBy { it.timestamp })
             }.getOrElse { SensorReadingResult.Error(it) }
         }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = SensorReadingResult.Loading,
+        )
 
     val ecReadings = snapshotFlow { Clock.System.now() - duration }
         .debounce(500)
@@ -46,12 +55,17 @@ class ChartPaneState(
                 SensorReadingResult.Loaded(readings.sortedBy { it.timestamp })
             }.getOrElse { SensorReadingResult.Error(it) }
         }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = SensorReadingResult.Loading,
+        )
 }
 
 @Composable
 fun ChartPane(state: ChartPaneState) {
-    val phReadings by state.phReadings.collectAsState(SensorReadingResult.Loading)
-    val ecReadings by state.ecReadings.collectAsState(SensorReadingResult.Loading)
+    val phReadings by state.phReadings.collectAsState()
+    val ecReadings by state.ecReadings.collectAsState()
 
     @Composable
     fun Chart(name: String, result: SensorReadingResult) {

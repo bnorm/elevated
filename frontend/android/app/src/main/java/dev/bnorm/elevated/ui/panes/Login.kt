@@ -1,4 +1,4 @@
-package dev.bnorm.elevated.ui
+package dev.bnorm.elevated.ui.panes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.state.UserSession
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
 @Composable
@@ -26,27 +27,20 @@ fun Login(userSession: UserSession) {
     val scope = rememberCoroutineScope()
     fun login() {
         scope.launch {
-            runCatching {
+            try {
                 userSession.login(Email(email), Password(password))
-            }.onFailure {
-                error = "Unable to login: ${it.message}"
+            } catch (t: Throwable) {
+                if (t is CancellationException) throw t
+                error = "Unable to login: ${t.message}"
             }
             email = ""
             password = ""
         }
     }
 
-    Column(
-//        attrs = {
-//            style {
-//                width(400.px)
-//                property("margin", "20px auto")
-//            }
-//        }
-    ) {
+    Column {
         val errorMessage = error
         if (errorMessage != null) {
-            // TODO style red or something
             Text(errorMessage)
         }
 
@@ -59,10 +53,6 @@ fun Login(userSession: UserSession) {
                 autoCorrect = false,
                 keyboardType = KeyboardType.Email,
             ),
-//                style { width(300.px) }
-//                type(InputType.Email)
-//                required(true)
-//                onInput { email = it.value }
         )
 
         OutlinedTextField(
@@ -85,11 +75,8 @@ fun Login(userSession: UserSession) {
                     Icon(imageVector = image, description)
                 }
             }
-//                style { width(300.px) }
-//                required(true)
-//                onInput { password = it.value }
-//            },
         )
+
         Button(
             enabled = email.isNotEmpty() && password.isNotEmpty(),
             onClick = {
