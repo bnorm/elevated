@@ -3,6 +3,10 @@ package dev.bnorm.elevated.ui.component
 import android.graphics.Typeface
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -20,7 +24,8 @@ import kotlinx.datetime.Instant
 fun SensorReadingGraph(
     readings: List<SensorReading>,
     modifier: Modifier = Modifier,
-    selectedReading: (SensorReading?) -> Unit = {},
+    selectedTimestamp: Instant? = null,
+    onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
     data class ChartSizing(
         val minX: Double,
@@ -56,8 +61,6 @@ fun SensorReadingGraph(
 
     // TODO SampledReadings
 
-    var selectedReading by remember { mutableStateOf<SensorReading?>(null) }
-
     fun SensorReading.toX(): Float {
         return (size.width.toDouble() * (timestamp.epochSeconds.toDouble() - chartSizing.minX) / chartSizing.spanX).toFloat()
     }
@@ -83,83 +86,93 @@ fun SensorReadingGraph(
         path
     }
 
-    fun toNearestReading(x: Float): SensorReading {
-        val selectedValue = chartSizing.minX + (x / size.width) * chartSizing.spanX
-        val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
-
-        val index = readings.binarySearchBy(timestamp) { it.timestamp }
-        val insertIndex = -(index + 1)
-        val prev = insertIndex - 1
-        val next = insertIndex
-
-        val reading = when {
-            index >= 0 -> readings[index]
-            prev < 0 -> readings[next]
-            next >= readings.size -> readings[prev]
-            else -> {
-                val prevReading = readings[prev]
-                val nextReading = readings[next]
-                if (timestamp - prevReading.timestamp < nextReading.timestamp - timestamp) {
-                    prevReading
-                } else {
-                    nextReading
-                }
-            }
-        }
-
-        return reading
+    val selectedReading = remember(key1 = selectedTimestamp) {
+        if (selectedTimestamp != null) toNearestReading(readings, selectedTimestamp) else null
     }
 
-    Canvas(
-        modifier = modifier
-            .pointerInteropFilter {
-                selectedReading = when (it.action) {
-                    MotionEvent.ACTION_DOWN -> toNearestReading(it.x)
-                    MotionEvent.ACTION_MOVE -> toNearestReading(it.x)
-                    else -> null
-                }
-                selectedReading(selectedReading)
-                true
+    Column(modifier = modifier) {
+        Row {
+            val reading = selectedReading ?: readings.lastOrNull()
+            if (reading != null) {
+                Text("${reading.value} at ${reading.timestamp}")
             }
-    ) {
-        size = this.size
-
-        drawPath(
-            path = path,
-            style = Stroke(width = 5.0f),
-            brush = SolidColor(Color(40, 193, 218)),
-        )
-
-        val reading = selectedReading
-        if (reading != null) {
-            val x = reading.toX()
-            val y = reading.toY()
-
-            drawLine(
-                start = Offset(x, 0f),
-                end = Offset(x, size.height),
-                brush = SolidColor(Color(40, 193, 218)),
-                strokeWidth = 5f,
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f))
-            )
-
-            drawCircle(
-                center = Offset(x, y),
-                radius = 10f,
-                brush = SolidColor(Color(40, 193, 218)),
-            )
         }
+        Canvas(
+            modifier = Modifier.fillMaxSize()
+                .pointerInteropFilter {
+                    val timestamp = when (it.action) {
+                        MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                            val selectedValue = chartSizing.minX + (it.x / size.width) * chartSizing.spanX
+                            Instant.fromEpochSeconds(selectedValue.toLong())
+                        }
+                        else -> null
+                    }
+                    onSelectedTimestamp(timestamp)
+                    true
+                }
+        ) {
+            size = this.size
 
-        drawIntoCanvas {
-            val paint = Paint().asFrameworkPaint()
-            paint.apply {
-                color = Color(40, 193, 218).toArgb()
-                isAntiAlias = true
-                textSize = 24f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            drawPath(
+                path = path,
+                style = Stroke(width = 5.0f),
+                brush = SolidColor(Color(40, 193, 218)),
+            )
+
+            if (selectedReading != null) {
+                val x = selectedReading.toX()
+                val y = selectedReading.toY()
+
+                drawLine(
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
+                    brush = SolidColor(Color(40, 193, 218)),
+                    strokeWidth = 5f,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f))
+                )
+
+                drawCircle(
+                    center = Offset(x, y),
+                    radius = 10f,
+                    brush = SolidColor(Color(40, 193, 218)),
+                )
             }
-            it.nativeCanvas.drawText("${chartSizing.maxY}", 0.0f, 10.0f, paint)
-            it.nativeCanvas.drawText("${chartSizing.minY}", 0.0f, size.height, paint)
+
+            drawIntoCanvas {
+                val paint = Paint().asFrameworkPaint()
+                paint.apply {
+                    color = Color(40, 193, 218).toArgb()
+                    isAntiAlias = true
+                    textSize = 24f
+                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                }
+                it.nativeCanvas.drawText("${chartSizing.maxY}", 0.0f, 10.0f, paint)
+                it.nativeCanvas.drawText("${chartSizing.minY}", 0.0f, size.height, paint)
+            }
         }
     }
+}
+
+fun toNearestReading(readings: List<SensorReading>, timestamp: Instant): SensorReading {
+    val index = readings.binarySearchBy(timestamp) { it.timestamp }
+    val insertIndex = -(index + 1)
+    val prev = insertIndex - 1
+    val next = insertIndex
+
+    val reading = when {
+        index >= 0 -> readings[index]
+        prev < 0 -> readings[next]
+        next >= readings.size -> readings[prev]
+        else -> {
+            val prevReading = readings[prev]
+            val nextReading = readings[next]
+            if (timestamp - prevReading.timestamp < nextReading.timestamp - timestamp) {
+                prevReading
+            } else {
+                nextReading
+            }
+        }
+    }
+
+    return reading
 }

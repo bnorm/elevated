@@ -11,13 +11,14 @@ import androidx.compose.ui.unit.dp
 import dev.bnorm.elevated.ElevatedClient
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.ui.component.LongInputField
-import dev.bnorm.elevated.ui.component.SensorReadingChart
+import dev.bnorm.elevated.ui.component.SensorReadingGraph
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
@@ -64,6 +65,7 @@ class ChartPaneState(
 
 @Composable
 fun ChartPane(state: ChartPaneState) {
+    var selectedTimestamp by remember { mutableStateOf<Instant?>(null) }
     val phReadings by state.phReadings.collectAsState()
     val ecReadings by state.ecReadings.collectAsState()
 
@@ -73,13 +75,16 @@ fun ChartPane(state: ChartPaneState) {
         when (result) {
             SensorReadingResult.Loading -> Text(text = "Loading sensor $name readings...")
             is SensorReadingResult.Error -> Text(text = "Error loading sensor $name readings! ${result.exception.message}")
-            is SensorReadingResult.Loaded ->
-                SensorReadingChart(
+            is SensorReadingResult.Loaded -> {
+                SensorReadingGraph(
                     readings = result.readings,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .height(200.dp),
+                    selectedTimestamp = selectedTimestamp,
+                    onSelectedTimestamp = { selectedTimestamp = it }
                 )
+            }
         }
     }
 

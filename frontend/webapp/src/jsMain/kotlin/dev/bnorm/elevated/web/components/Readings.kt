@@ -2,8 +2,6 @@ package dev.bnorm.elevated.web.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import dev.bnorm.elevated.model.sensors.SensorReading
 import kotlinx.datetime.Instant
@@ -80,7 +78,7 @@ fun SensorChart(
         stroke()
     }
 
-    val selectedReading by derivedStateOf {
+    val selectedReading = remember(key1 = selectedTimestamp) {
         if (selectedTimestamp != null) toNearestReading(readings, selectedTimestamp) else null
     }
 
