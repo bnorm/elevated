@@ -7,17 +7,21 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
-    id("org.springframework.boot") version "2.6.6" apply false
-    kotlin("multiplatform") version "1.6.10" apply false
-    kotlin("plugin.serialization") version "1.6.10" apply false
-    kotlin("plugin.spring") version "1.6.10" apply false
+    // this is necessary to avoid the plugins to be loaded multiple times in each subproject's classloader
+    kotlin("jvm") apply false
+    kotlin("multiplatform") apply false
+    kotlin("android") apply false
+    id("com.android.application") apply false
+    id("com.android.library") apply false
+    id("org.jetbrains.compose") apply false
 }
 
-group = "com.bnorm.elevated"
-
 allprojects {
+    group = "com.bnorm.elevated"
+
     repositories {
         mavenCentral()
+        google()
     }
 
     tasks.withType<Test> {

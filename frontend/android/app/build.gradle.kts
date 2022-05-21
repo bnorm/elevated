@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("org.jetbrains.compose")
     kotlin("android")
     kotlin("plugin.serialization")
 }
@@ -9,8 +10,8 @@ android {
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
-        applicationId = "dev.bnorm.hydro"
-        minSdk = 22
+        applicationId = "dev.bnorm.elevated"
+        minSdk = 26
         targetSdk = 31
         versionCode = 1
         versionName = "1.0"
@@ -40,7 +41,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0"
     }
-    namespace = "dev.bnorm.hydro"
+    namespace = "dev.bnorm.elevated"
 
     packagingOptions {
         resources.excludes += "**/attach_hotspot_windows.dll"
@@ -51,7 +52,7 @@ android {
 }
 
 dependencies {
-    implementation("dev.bnorm.elevated:common-model")
+    implementation(project(":common:model"))
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")
