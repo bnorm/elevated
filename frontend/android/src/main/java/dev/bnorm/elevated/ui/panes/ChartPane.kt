@@ -1,3 +1,5 @@
+@file:OptIn(FlowPreview::class)
+
 package dev.bnorm.elevated.ui.panes
 
 import androidx.compose.foundation.layout.Column
@@ -14,6 +16,7 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.ui.component.LongInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
@@ -36,7 +39,7 @@ class ChartPaneState(
     var duration: Duration by mutableStateOf(2.hours)
 
     val phReadings = snapshotFlow { Clock.System.now() - duration }
-        .debounce(500)
+        .debounce(250)
         .map { after ->
             runCatching {
                 val readings = client.getSensorReadings(SensorId("6278048e770bd023d5d971ea"), after)
@@ -50,7 +53,7 @@ class ChartPaneState(
         )
 
     val ecReadings = snapshotFlow { Clock.System.now() - duration }
-        .debounce(500)
+        .debounce(250)
         .map { after ->
             runCatching {
                 val readings = client.getSensorReadings(SensorId("6278049d770bd023d5d971eb"), after)

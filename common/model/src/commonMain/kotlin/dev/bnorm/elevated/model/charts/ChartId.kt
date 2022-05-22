@@ -7,4 +7,6 @@ import kotlin.jvm.JvmInline
 @JvmInline
 value class ChartId(
     val value: String,
-)
+) {
+    override fun toString(): String = value
+}

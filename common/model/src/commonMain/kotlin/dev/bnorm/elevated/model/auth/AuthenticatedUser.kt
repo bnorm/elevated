@@ -4,7 +4,7 @@ import dev.bnorm.elevated.model.users.User
 import kotlinx.serialization.Serializable
 
 @Serializable
-class AuthenticatedUser(
+data class AuthenticatedUser(
     val token: AuthorizationToken,
     val user: User,
     val authorities: Set<Authority>,

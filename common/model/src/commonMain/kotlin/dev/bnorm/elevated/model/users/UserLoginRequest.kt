@@ -4,7 +4,7 @@ import dev.bnorm.elevated.model.auth.Password
 import kotlinx.serialization.Serializable
 
 @Serializable
-class UserLoginRequest(
+data class UserLoginRequest(
     val email: Email,
     val password: Password,
 )

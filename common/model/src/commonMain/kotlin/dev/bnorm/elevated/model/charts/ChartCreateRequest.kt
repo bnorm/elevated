@@ -3,7 +3,7 @@ package dev.bnorm.elevated.model.charts
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ChartCreateRequest(
+data class ChartCreateRequest(
     val name: String,
     val targetEcLow: Long,
     val targetEcHigh: Long,

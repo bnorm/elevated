@@ -8,7 +8,7 @@ sealed class DeviceActionArguments
 
 @Serializable
 @SerialName("PUMP_DISPENSE")
-class PumpDispenseArguments(
+data class PumpDispenseArguments(
     val pump: Int,
     val amount: Double, // milliliters
 ) : DeviceActionArguments()

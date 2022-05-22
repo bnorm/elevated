@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DeviceAction(
+data class DeviceAction(
     val id: DeviceActionId,
     val deviceId: DeviceId,
     val submitted: Instant,

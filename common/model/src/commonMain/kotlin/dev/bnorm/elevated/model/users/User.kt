@@ -4,7 +4,7 @@ import dev.bnorm.elevated.model.auth.Role
 import kotlinx.serialization.Serializable
 
 @Serializable
-class User(
+data class User(
     val id: UserId,
     val email: Email,
     val name: String,

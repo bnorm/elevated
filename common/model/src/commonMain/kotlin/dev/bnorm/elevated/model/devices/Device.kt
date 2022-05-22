@@ -6,7 +6,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Device(
+data class Device(
     val id: DeviceId,
     val name: String,
     val status: DeviceStatus,

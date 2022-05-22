@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-class SensorReadingPrototype(
+data class SensorReadingPrototype(
     val value: Double,
     val timestamp: Instant,
 )

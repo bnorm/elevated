@@ -5,7 +5,7 @@ import dev.bnorm.elevated.model.charts.ChartId
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DevicePatchRequest(
+data class DevicePatchRequest(
     val name: String? = null,
     val key: Password? = null,
     val chartId: ChartId? = null,

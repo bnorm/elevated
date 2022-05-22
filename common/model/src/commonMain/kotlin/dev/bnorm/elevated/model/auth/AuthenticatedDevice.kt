@@ -4,7 +4,7 @@ import dev.bnorm.elevated.model.devices.Device
 import kotlinx.serialization.Serializable
 
 @Serializable
-class AuthenticatedDevice(
+data class AuthenticatedDevice(
     val token: AuthorizationToken,
     val device: Device,
 )

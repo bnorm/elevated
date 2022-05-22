@@ -28,8 +28,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -47,6 +47,10 @@ android {
         resources.excludes += "META-INF/licenses/**"
         resources.excludes += "META-INF/AL2.0"
         resources.excludes += "META-INF/LGPL2.1"
+    }
+
+    lint {
+        isAbortOnError = false
     }
 }
 
