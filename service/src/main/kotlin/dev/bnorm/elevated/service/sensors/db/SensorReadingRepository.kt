@@ -29,8 +29,8 @@ class SensorReadingRepository(
             mongo.createCollection(
                 SensorReadingEntity.COLLECTION_NAME, CollectionOptions.empty()
                     .timeSeries(
-                        timeSeries(SensorReadingEntity::timestamp.name)
-                            .metaField(SensorReadingEntity::sensorId.name)
+                        timeSeries(SensorReadingEntity::timestamp.toPath())
+                            .metaField(SensorReadingEntity::sensorId.toPath())
                             .granularity(Granularity.MINUTES)
                     )
             ).awaitSingleOrNull()
@@ -38,8 +38,8 @@ class SensorReadingRepository(
 
         val indexOps = mongo.indexOps(SensorReadingEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(SensorReadingEntity::sensorId.name, Sort.Direction.ASC)
-            on(SensorReadingEntity::timestamp.name, Sort.Direction.ASC)
+            on(SensorReadingEntity::sensorId.toPath(), Sort.Direction.ASC)
+            on(SensorReadingEntity::timestamp.toPath(), Sort.Direction.ASC)
         }
     }
 

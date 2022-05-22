@@ -4,25 +4,29 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.produceIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.asFlux
-import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
-import kotlinx.coroutines.reactor.flux
 import kotlinx.coroutines.reactor.mono
-import kotlinx.coroutines.selects.select
 import org.slf4j.LoggerFactory
-import org.springframework.web.reactive.socket.CloseStatus
-import org.springframework.web.reactive.socket.HandshakeInfo
-import org.springframework.web.reactive.socket.WebSocketHandler
-import org.springframework.web.reactive.socket.WebSocketMessage
-import org.springframework.web.reactive.socket.WebSocketSession
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.web.reactive.socket.*
 import reactor.core.publisher.Mono
 import java.time.Duration
+
+sealed class Frame {
+    class Text(val data: String) : Frame()
+    class Binary(val data: ByteArray) : Frame()
+    object Ping : Frame()
+    object Pong : Frame()
+}
 
 abstract class CoroutineWebSocketHandler(
     private val pingInterval: Duration = Duration.ofSeconds(30),
@@ -34,26 +38,51 @@ abstract class CoroutineWebSocketHandler(
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
         return mono {
             try {
-                val sendChannel = Channel<String>()
+                val sendChannel = Channel<Frame>()
 
                 launch {
-                    webSocketSession.send(flux {
-                        while (isActive) {
-                            select<Unit> {
-                                sendChannel.onReceive {
-                                    send(webSocketSession.textMessage(it))
+                    while (isActive) {
+                        delay(pingInterval.toMillis())
+                        sendChannel.send(Frame.Ping)
+                    }
+                }
+
+                launch {
+                    webSocketSession.send(
+                        sendChannel.consumeAsFlow()
+                            .map { frame ->
+                                when (frame) {
+                                    is Frame.Text -> webSocketSession.textMessage(frame.data)
+                                    is Frame.Binary -> webSocketSession.binaryMessage { factory ->
+                                        factory.wrap(frame.data)
+                                    }
+                                    Frame.Ping -> webSocketSession.pingMessage { it.allocateBuffer() }
+                                    Frame.Pong -> webSocketSession.pongMessage { it.allocateBuffer() }
                                 }
-                                onTimeout(pingInterval.toMillis()) {
-                                    send(webSocketSession.pingMessage { it.allocateBuffer(0) })
-                                }
-                            }
-                        }
-                    }).awaitSingleOrNull()
+                            }.asFlux()
+                    ).awaitSingleOrNull()
                 }
 
                 val receiveChannel = webSocketSession.receive()
-                    .map { it.payloadAsText } // this must be before asFlow() - byte buffer dereferenced on discard?
+                    .map {
+                        // this must be before asFlow() - byte buffer dereferenced on discard?
+                        @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+                        when (it.type) {
+                            WebSocketMessage.Type.TEXT -> Frame.Text(it.payloadAsText)
+                            WebSocketMessage.Type.BINARY -> Frame.Binary(it.payload.toByteArray())
+                            WebSocketMessage.Type.PING -> Frame.Ping
+                            WebSocketMessage.Type.PONG -> Frame.Pong
+                        }
+                    }
                     .asFlow()
+                    .transform { frame ->
+                        when (frame) {
+                            is Frame.Text -> emit(frame)
+                            is Frame.Binary -> emit(frame)
+                            Frame.Ping -> sendChannel.send(Frame.Pong)
+                            Frame.Pong -> Unit
+                        }
+                    }
                     .produceIn(this)
 
                 handle(webSocketSession.handshakeInfo, sendChannel, receiveChannel)
@@ -72,9 +101,15 @@ abstract class CoroutineWebSocketHandler(
 
     abstract suspend fun handle(
         info: HandshakeInfo,
-        sendChannel: SendChannel<String>,
-        receiveChannel: ReceiveChannel<String>,
+        sendChannel: SendChannel<Frame>,
+        receiveChannel: ReceiveChannel<Frame>,
     )
+}
+
+private fun DataBuffer.toByteArray(): ByteArray {
+    val buffer = ByteArray(readableByteCount())
+    read(buffer)
+    return buffer
 }
 
 fun CloseStatus.withNullableReason(reason: String?): CloseStatus {

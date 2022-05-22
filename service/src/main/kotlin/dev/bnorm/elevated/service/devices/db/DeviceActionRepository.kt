@@ -9,18 +9,8 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.FindAndModifyOptions
-import org.springframework.data.mongodb.core.ReactiveMongoOperations
-import org.springframework.data.mongodb.core.find
-import org.springframework.data.mongodb.core.findAndModify
-import org.springframework.data.mongodb.core.findOne
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
-import org.springframework.data.mongodb.core.query.exists
-import org.springframework.data.mongodb.core.query.gt
-import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.data.mongodb.core.remove
+import org.springframework.data.mongodb.core.*
+import org.springframework.data.mongodb.core.query.*
 import org.springframework.stereotype.Repository
 import java.time.Instant
 import javax.annotation.PostConstruct
@@ -33,8 +23,8 @@ class DeviceActionRepository(
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(DeviceActionEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(DeviceActionEntity::deviceId.name, Sort.Direction.ASC)
-            on(DeviceActionEntity::submitted.name, Sort.Direction.ASC)
+            on(DeviceActionEntity::deviceId.toPath(), Sort.Direction.ASC)
+            on(DeviceActionEntity::submitted.toPath(), Sort.Direction.ASC)
         }
     }
 
@@ -69,7 +59,7 @@ class DeviceActionRepository(
             )
         )
         val update = Update().apply {
-            set(DeviceActionEntity::completed.name, timestamp)
+            set(DeviceActionEntity::completed.toPath(), timestamp)
         }
         val options = FindAndModifyOptions.options()
             .returnNew(true)
@@ -88,7 +78,7 @@ class DeviceActionRepository(
                 DeviceActionEntity::submitted gt submittedAfter,
             )
         )
-            .with(Sort.by(DeviceActionEntity::submitted.name))
+            .with(Sort.by(DeviceActionEntity::submitted.toPath()))
             .apply { if (limit != null) limit(limit) }
         return mongo.find<DeviceActionEntity>(query).asFlow()
     }

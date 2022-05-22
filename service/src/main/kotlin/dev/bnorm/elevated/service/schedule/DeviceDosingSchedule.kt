@@ -2,6 +2,8 @@ package dev.bnorm.elevated.service.schedule
 
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceActionPrototype
+import dev.bnorm.elevated.model.devices.PumpDispenseArguments
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.service.ApplicationCoroutineScope
@@ -19,6 +21,7 @@ import kotlinx.datetime.Clock
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import javax.annotation.PostConstruct
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
 @Component
@@ -34,7 +37,7 @@ class DeviceDosingSchedule(
 
     @PostConstruct
     fun schedule() {
-        applicationCoroutineScope.schedule(name = "Dose Active Chart", frequency = 1.minutes) {
+        applicationCoroutineScope.schedule(name = "Dose Active Chart", frequency = 4.hours) {
             // Starts at hour 0 UTC - 6 PM CST
             // 6 PM .. 10 PM .. 2 AM .. 6 AM .. 10 AM .. 2 PM ..
             for (device in deviceService.getAllDevices().toList()) {
@@ -90,6 +93,6 @@ class DeviceDosingSchedule(
     }
 
     private suspend fun dispense(device: Device, pump: Int, amount: Double) {
-        // deviceActionService.submitDeviceAction(device.id, DeviceActionPrototype(PumpDispenseArguments(pump, amount)))
+        deviceActionService.submitDeviceAction(device.id, DeviceActionPrototype(PumpDispenseArguments(pump, amount)))
     }
 }

@@ -4,6 +4,7 @@ import dev.bnorm.elevated.model.devices.DeviceAction
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.service.CoroutineWebSocketHandler
+import dev.bnorm.elevated.service.Frame
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -36,14 +37,15 @@ class DeviceWebSocketHandler(
 
     override suspend fun handle(
         info: HandshakeInfo,
-        sendChannel: SendChannel<String>,
-        receiveChannel: ReceiveChannel<String>,
+        sendChannel: SendChannel<Frame>,
+        receiveChannel: ReceiveChannel<Frame>,
     ) {
         val match = pattern.matchAndExtract(PathContainer.parsePath(info.uri.path))
         val deviceId = match?.uriVariables?.get("deviceId")?.let { DeviceId(it) }
         if (deviceId != null) {
             // Require the first incoming message to be the JWT token
-            val token = receiveChannel.receive()
+            val tokenFrame = receiveChannel.receive()
+            val token = (tokenFrame as? Frame.Text)?.data ?: return
             jwtAuthenticationConverter.convert(reactiveJwtDecoder.decode(token).awaitSingle())!!.awaitSingle()
 
             deviceService.setDeviceStatus(deviceId, DeviceStatus.Online)
@@ -57,7 +59,7 @@ class DeviceWebSocketHandler(
                     launch {
                         deviceActionService.watchActions(deviceId).collect {
                             log.info("marker=WebSocket.DeviceAction.Outgoing action={}", it)
-                            sendChannel.send(Json.Default.encodeToString(DeviceAction.serializer(), it))
+                            sendChannel.send(Frame.Text(Json.Default.encodeToString(DeviceAction.serializer(), it)))
                         }
                         incoming.cancel()
                         log.info("marker=WebSocket.DeviceAction.Outgoing message=\"Finished sending actions\"")

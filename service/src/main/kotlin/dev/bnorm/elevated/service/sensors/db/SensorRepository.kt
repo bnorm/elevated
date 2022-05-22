@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.findAll
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.query.toPath
 import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import javax.annotation.PostConstruct
@@ -26,7 +27,7 @@ class SensorRepository(
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(SensorEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(SensorEntity::deviceId.name, Sort.Direction.ASC)
+            on(SensorEntity::deviceId.toPath(), Sort.Direction.ASC)
         }
     }
 

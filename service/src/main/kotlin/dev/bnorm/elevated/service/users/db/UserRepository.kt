@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.index.Index
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.query.toPath
 import org.springframework.stereotype.Repository
 import javax.annotation.PostConstruct
 
@@ -24,7 +25,8 @@ class UserRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(UserEntity.COLLECTION_NAME)
-        indexOps.ensureIndex(Index(UserEntity::email.name, Sort.Direction.ASC).unique().background()).awaitSingleOrNull()
+        indexOps.ensureIndex(Index(UserEntity::email.toPath(), Sort.Direction.ASC).unique().background())
+            .awaitSingleOrNull()
     }
 
     fun getAllUsers(): Flow<UserEntity> {

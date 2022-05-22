@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.index.Index
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.query.toPath
 import org.springframework.stereotype.Repository
 import javax.annotation.PostConstruct
 
@@ -23,7 +24,7 @@ class ChartRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(ChartEntity.COLLECTION_NAME)
-        indexOps.ensureIndex(Index(ChartEntity::name.name, Sort.Direction.ASC).unique().background())
+        indexOps.ensureIndex(Index(ChartEntity::name.toPath(), Sort.Direction.ASC).unique().background())
             .awaitSingleOrNull()
     }
 
