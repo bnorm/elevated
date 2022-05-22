@@ -47,7 +47,7 @@ class DeviceRepository(
             patch(DeviceEntity::keyHash, deviceUpdate.keyHash)
             patch(DeviceEntity::status, deviceUpdate.status)
             patch(DeviceEntity::lastActionTime, deviceUpdate.lastActionTime)
-            patch(DeviceEntity::chartId, deviceUpdate.chartId)
+            patch(DeviceEntity::chartId, deviceUpdate.chartId?.value)
         }
         val options = FindAndModifyOptions.options()
             .returnNew(true)
