@@ -7,8 +7,9 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.KeyboardType
-import dev.bnorm.elevated.ElevatedClient
+import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.devices.DeviceActionPrototype
+import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.PumpDispenseArguments
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +42,7 @@ fun PumpsList(client: ElevatedClient) {
                     for (state in dispense) {
                         launch {
                             client.submitDeviceAction(
-                                deviceId = "62780348770bd023d5d971e9",
+                                deviceId = DeviceId("62780348770bd023d5d971e9"),
                                 request = DeviceActionPrototype(
                                     args = PumpDispenseArguments(
                                         pump = state.pump,

@@ -2,7 +2,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.compose")
     kotlin("android")
-    kotlin("plugin.serialization")
 }
 
 android {
@@ -52,7 +51,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":common:model"))
+    implementation(project(":common:client"))
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")
@@ -67,9 +66,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.4.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
     testImplementation("junit:junit:4.13.2")
 

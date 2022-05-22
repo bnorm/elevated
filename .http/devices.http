@@ -20,23 +20,43 @@ Accept: application/json
 
 ### Create device
 
-POST {{hostname}}/api/v1/devices
-Authorization: {{authorization}}
-Accept: application/json
-Content-Type: application/json
+#POST {{hostname}}/api/v1/devices
+#Authorization: {{authorization}}
+#Accept: application/json
+#Content-Type: application/json
+#
+#{
+#  "name": "Sample Device",
+#  "key": "{{deviceKey}}"
+#}
+#
+#> {% client.global.set("deviceId", response.body.id); %}
 
-{
-  "name": "Sample Device",
-  "key": "{{deviceKey}}"
-}
+### Delete device
 
-> {% client.global.set("deviceId", response.body.id); %}
+#DELETE {{hostname}}/api/v1/devices/{{deviceId}}
+#Authorization: {{authorization}}
+#Accept: application/json
+#
+#> {% client.global.clear("deviceId"); %}
 
 ### Get device
 
 GET {{hostname}}/api/v1/devices/{{deviceId}}
 Authorization: {{authorization}}
 Accept: application/json
+
+> {% client.global.set("deviceId", response.body.id); %}
+
+### Patch device
+
+PATCH {{hostname}}/api/v1/devices/{{deviceId}}
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+}
 
 > {% client.global.set("deviceId", response.body.id); %}
 
@@ -56,10 +76,28 @@ Content-Type: application/json
 {
   "args": {
     "type": "PUMP_DISPENSE",
-    "pump": 1,
+    "pump": 5,
     "amount": 1
   }
 }
+
+> {% client.global.set("actionId", response.body.id); %}
+
+### Get device action
+
+GET {{hostname}}/api/v1/devices/{{deviceId}}/actions/{{actionId}}
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.set("actionId", response.body.id); %}
+
+### Delete device action
+
+DELETE {{hostname}}/api/v1/devices/{{deviceId}}/actions/{{actionId}}
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.clear("actionId"); %}
 
 ### Device login
 

@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import dev.bnorm.elevated.model.sensors.SensorReading
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -94,7 +96,7 @@ fun SensorReadingGraph(
         Row {
             val reading = selectedReading ?: readings.lastOrNull()
             if (reading != null) {
-                Text("${reading.value} at ${reading.timestamp}")
+                Text("${reading.value} at ${reading.timestamp.toLocalDateTime(TimeZone.currentSystemDefault())}")
             }
         }
         Canvas(

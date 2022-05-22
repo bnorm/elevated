@@ -24,9 +24,11 @@ pluginManagement {
 
 rootProject.name = "elevated"
 
+include("common:client")
 include("common:model")
 include("frontend:android")
 include("frontend:webapp")
+include("iot:raspberry")
 include("platform")
 include("service")
 

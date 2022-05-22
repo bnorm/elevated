@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.state
 
 import android.util.Log
-import dev.bnorm.elevated.ElevatedClient
+import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
@@ -12,7 +12,7 @@ import retrofit2.HttpException
 
 class UserSession(
     private val client: ElevatedClient,
-    private val store: KeyStore,
+    private val store: SparedPreferenceTokenStore,
 ) {
     private val mutableState = MutableStateFlow<UserState>(UserState.Authenticating)
     val state = mutableState.asStateFlow()

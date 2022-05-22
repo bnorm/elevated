@@ -1,20 +1,17 @@
-package dev.bnorm.elevated.state
+package dev.bnorm.elevated.client
 
-import android.content.SharedPreferences
 import dev.bnorm.elevated.model.auth.AuthorizationToken
 import dev.bnorm.elevated.model.auth.JwtTokenUsage
 
-class KeyStore(
-    private val preferences: SharedPreferences
-) {
+interface TokenStore {
     var authorization: String?
-        get() = preferences.getString("TOKEN", null)
-        set(value) {
-            preferences.edit().putString("TOKEN", value).apply()
-        }
 
     @OptIn(JwtTokenUsage::class)
     fun setAuthorization(token: AuthorizationToken) {
         authorization = "${token.type} ${token.value.value}"
+    }
+
+    class Memory : TokenStore {
+        override var authorization: String? = null
     }
 }

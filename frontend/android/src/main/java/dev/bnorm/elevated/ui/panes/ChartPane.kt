@@ -8,7 +8,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.bnorm.elevated.ElevatedClient
+import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.ui.component.LongInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
@@ -38,7 +39,7 @@ class ChartPaneState(
         .debounce(500)
         .map { after ->
             runCatching {
-                val readings = client.getSensorReadings("6278048e770bd023d5d971ea", after)
+                val readings = client.getSensorReadings(SensorId("6278048e770bd023d5d971ea"), after)
                 SensorReadingResult.Loaded(readings.sortedBy { it.timestamp })
             }.getOrElse { SensorReadingResult.Error(it) }
         }
@@ -52,7 +53,7 @@ class ChartPaneState(
         .debounce(500)
         .map { after ->
             runCatching {
-                val readings = client.getSensorReadings("6278049d770bd023d5d971eb", after)
+                val readings = client.getSensorReadings(SensorId("6278049d770bd023d5d971eb"), after)
                 SensorReadingResult.Loaded(readings.sortedBy { it.timestamp })
             }.getOrElse { SensorReadingResult.Error(it) }
         }

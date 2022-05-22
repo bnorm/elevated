@@ -46,12 +46,7 @@ kotlin {
     sourceSets {
         val jsMain by getting {
             dependencies {
-                implementation(project(":common:model"))
-
-                val ktor_version = "1.6.8"
-                implementation("io.ktor:ktor-client-js:$ktor_version")
-                implementation("io.ktor:ktor-client-serialization:$ktor_version")
-                implementation("io.ktor:ktor-client-websockets:$ktor_version")
+                implementation(project(":common:client"))
 
                 val mdcVersion = "13.0.0"
                 implementation(npm("@material/base", mdcVersion))

@@ -7,7 +7,7 @@ import androidx.compose.material.icons.filled.RotateRight
 import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.vector.ImageVector
-import dev.bnorm.elevated.ElevatedClient
+import dev.bnorm.elevated.client.ElevatedClient
 import kotlinx.coroutines.Dispatchers
 
 enum class HomeTab(

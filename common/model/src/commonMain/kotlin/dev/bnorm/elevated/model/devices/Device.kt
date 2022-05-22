@@ -11,6 +11,6 @@ class Device(
     val name: String,
     val status: DeviceStatus,
     val sensors: List<Sensor>,
-    val lastActionTime: Instant?,
-    val chart: Chart?,
+    val lastActionTime: Instant? = null,
+    val chart: Chart? = null,
 )
