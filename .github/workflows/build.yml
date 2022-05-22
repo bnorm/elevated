@@ -65,6 +65,7 @@ jobs:
         with:
           context: ./iot/raspberry
           push: true
+          platforms: linux/arm/v7
           tags: ${{ steps.meta-iot-raspberry.outputs.tags }}
           labels: ${{ steps.meta-iot-raspberry.outputs.labels }}
 

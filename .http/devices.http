@@ -18,7 +18,7 @@ GET {{hostname}}/api/v1/devices
 Authorization: {{authorization}}
 Accept: application/json
 
-### Create device
+## Create device
 
 #POST {{hostname}}/api/v1/devices
 #Authorization: {{authorization}}
@@ -32,7 +32,7 @@ Accept: application/json
 #
 #> {% client.global.set("deviceId", response.body.id); %}
 
-### Delete device
+## Delete device
 
 #DELETE {{hostname}}/api/v1/devices/{{deviceId}}
 #Authorization: {{authorization}}
@@ -46,8 +46,6 @@ GET {{hostname}}/api/v1/devices/{{deviceId}}
 Authorization: {{authorization}}
 Accept: application/json
 
-> {% client.global.set("deviceId", response.body.id); %}
-
 ### Patch device
 
 PATCH {{hostname}}/api/v1/devices/{{deviceId}}
@@ -57,8 +55,6 @@ Content-Type: application/json
 
 {
 }
-
-> {% client.global.set("deviceId", response.body.id); %}
 
 ### Get device actions
 
