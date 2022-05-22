@@ -13,11 +13,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoOperations
 import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.index.Index
 import org.springframework.data.mongodb.core.index.ReactiveIndexOperations
-import org.springframework.data.mongodb.core.query.Criteria
-import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.gte
-import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.data.mongodb.core.query.lt
+import org.springframework.data.mongodb.core.query.*
 import org.springframework.data.mongodb.core.timeseries.Granularity
 import org.springframework.stereotype.Repository
 import java.time.Instant
@@ -63,6 +59,21 @@ class SensorReadingRepository(
                 SensorReadingEntity::timestamp lt endTime,
             )
         )
+        return mongo.find<SensorReadingEntity>(query).asFlow()
+    }
+
+    fun findLatestBySensorId(
+        sensorId: SensorId,
+        count: Int,
+    ): Flow<SensorReadingEntity> {
+        val query = Query(
+            Criteria().andOperator(
+                SensorReadingEntity::sensorId isEqualTo sensorId.value,
+            )
+        )
+            .with(Sort.by(SensorReadingEntity::timestamp.toPath()).descending())
+            .limit(count)
+
         return mongo.find<SensorReadingEntity>(query).asFlow()
     }
 }

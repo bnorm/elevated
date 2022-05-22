@@ -28,6 +28,13 @@ class SensorReadingService(
         return sensorReadingRepository.findBySensorId(sensorId, startTime, endTime).map { it.toDto() }
     }
 
+    fun getLatestSensorReading(
+        sensorId: SensorId,
+        count: Int = 1,
+    ): Flow<SensorReading> {
+        return sensorReadingRepository.findLatestBySensorId(sensorId, count).map { it.toDto() }
+    }
+
     private fun SensorReadingEntity.toDto(): SensorReading {
         return SensorReading(
             sensorId = SensorId(sensorId),
