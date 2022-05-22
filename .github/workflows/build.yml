@@ -25,29 +25,48 @@ jobs:
       - uses: gradle/gradle-build-action@v2
       - run: ./gradlew check bootJar
 
-      # Build elevated-service
-      # TODO if there are multiple services, can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
-      - uses: docker/metadata-action@v3
-        id: meta
-        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
-        with:
-          images: |
-            ghcr.io/bnorm/elevated-service
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
       - uses: docker/login-action@v1
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build elevated-service
+      # TODO can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
+      - uses: docker/metadata-action@v3
+        id: meta-service
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          images: |
+            ghcr.io/bnorm/elevated-service
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
       - uses: docker/build-push-action@v2
         if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
         with:
           context: ./service
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta-service.outputs.tags }}
+          labels: ${{ steps.meta-service.outputs.labels }}
+
+      # Build elevated-raspberry
+      # TODO can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
+      - uses: docker/metadata-action@v3
+        id: meta-iot-raspberry
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          images: |
+            ghcr.io/bnorm/elevated-iot-raspberry
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+      - uses: docker/build-push-action@v2
+        if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
+        with:
+          context: ./iot/raspberry
+          push: true
+          tags: ${{ steps.meta-iot-raspberry.outputs.tags }}
+          labels: ${{ steps.meta-iot-raspberry.outputs.labels }}
 
   application-deploy:
     runs-on: ubuntu-latest

@@ -16,6 +16,9 @@ dependencies {
     implementation("com.pi4j:pi4j-plugin-raspberrypi:2.1.1")
     implementation("com.pi4j:pi4j-plugin-pigpio:2.1.1")
     implementation("com.pi4j:pi4j-plugin-linuxfs:2.1.1")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }
 
 application {
