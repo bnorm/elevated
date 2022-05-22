@@ -3,18 +3,19 @@ package dev.bnorm.elevated.service.devices
 import dev.bnorm.elevated.model.auth.AuthenticatedDevice
 import dev.bnorm.elevated.model.auth.AuthorizationToken
 import dev.bnorm.elevated.model.auth.JwtToken
-import dev.bnorm.elevated.model.devices.Device
-import dev.bnorm.elevated.model.devices.DeviceId
-import dev.bnorm.elevated.model.devices.DeviceLoginRequest
-import dev.bnorm.elevated.model.devices.DevicePrototype
-import dev.bnorm.elevated.model.devices.DeviceStatus
+import dev.bnorm.elevated.model.charts.ChartId
+import dev.bnorm.elevated.model.devices.*
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
+import dev.bnorm.elevated.service.charts.ChartService
 import dev.bnorm.elevated.service.devices.db.DeviceActionRepository
 import dev.bnorm.elevated.service.devices.db.DeviceEntity
 import dev.bnorm.elevated.service.devices.db.DeviceRepository
+import dev.bnorm.elevated.service.devices.db.DeviceUpdate
 import dev.bnorm.elevated.service.sensors.SensorService
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -32,6 +33,7 @@ class DeviceService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtEncoder: JwtEncoder,
     private val sensorService: SensorService,
+    private val chartService: ChartService,
 ) {
     suspend fun authenticateDevice(request: DeviceLoginRequest): AuthenticatedDevice? {
         val device = deviceRepository.findById(request.id) ?: run {
@@ -43,7 +45,7 @@ class DeviceService(
         }?.toDto()?.toAuthenticatedDevice()
     }
 
-    suspend fun createDevice(prototype: DevicePrototype): Device {
+    suspend fun createDevice(prototype: DeviceCreateRequest): Device {
         return deviceRepository.insert(prototype.toEntity()).toDto()
     }
 
@@ -60,29 +62,46 @@ class DeviceService(
         return deviceRepository.findById(deviceId)?.toDto()
     }
 
+    suspend fun patchDeviceById(deviceId: DeviceId, request: DevicePatchRequest): Device? {
+        return deviceRepository.modify(deviceId, request.toUpdate())?.toDto()
+    }
+
     suspend fun updateDevice(deviceId: DeviceId, timestamp: Instant): Device? {
-        return deviceRepository.modify(deviceId, timestamp)?.toDto()
+        return deviceRepository.modify(deviceId, DeviceUpdate(lastActionTime = timestamp))?.toDto()
     }
 
     suspend fun setDeviceStatus(deviceId: DeviceId, status: DeviceStatus): Device? {
-        return deviceRepository.modify(deviceId, status)?.toDto()
+        return deviceRepository.modify(deviceId, DeviceUpdate(status = status))?.toDto()
     }
 
-    private suspend fun DeviceEntity.toDto(): Device {
+    private suspend fun DeviceEntity.toDto(): Device = coroutineScope {
         val deviceId = DeviceId(id)
-        return Device(
+        val sensors = async { sensorService.getSensorByDeviceId(deviceId).toList() }
+        val chart = async { chartId?.let { chartService.getChartById(ChartId(it)) } }
+        return@coroutineScope Device(
             id = deviceId,
             name = name,
             status = status,
-            sensors = sensorService.getSensorByDeviceId(deviceId).toList(),
+            sensors = sensors.await(),
             lastActionTime = lastActionTime?.toKotlinInstant(),
+            chart = chart.await()
         )
     }
 
-    private fun DevicePrototype.toEntity(): DeviceEntity {
+    private fun DeviceCreateRequest.toEntity(): DeviceEntity {
         return DeviceEntity(
             name = name,
             keyHash = passwordEncoder.encode(key)
+        )
+    }
+
+    private fun DevicePatchRequest.toUpdate(): DeviceUpdate {
+        return DeviceUpdate(
+            name = name,
+            keyHash = key?.let { passwordEncoder.encode(it) },
+            status = null,
+            lastActionTime = null,
+            chartId = chartId,
         )
     }
 

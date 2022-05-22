@@ -1,10 +1,9 @@
-package dev.bnorm.elevated.service
+package dev.bnorm.elevated.service.devices
 
 import dev.bnorm.elevated.model.devices.DeviceAction
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceStatus
-import dev.bnorm.elevated.service.devices.DeviceActionService
-import dev.bnorm.elevated.service.devices.DeviceService
+import dev.bnorm.elevated.service.CoroutineWebSocketHandler
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel

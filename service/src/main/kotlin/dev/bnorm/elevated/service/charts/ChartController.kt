@@ -2,12 +2,14 @@ package dev.bnorm.elevated.service.charts
 
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.charts.ChartId
-import dev.bnorm.elevated.model.charts.ChartPrototype
+import dev.bnorm.elevated.model.charts.ChartPatchRequest
+import dev.bnorm.elevated.model.charts.ChartCreateRequest
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,7 +25,7 @@ class ChartController(
 ) {
     @PreAuthorize("hasAuthority('CHARTS_WRITE')")
     @PostMapping
-    suspend fun createChart(@RequestBody prototype: ChartPrototype): Chart {
+    suspend fun createChart(@RequestBody prototype: ChartCreateRequest): Chart {
         return chartService.createChart(prototype)
     }
 
@@ -44,6 +46,13 @@ class ChartController(
     @GetMapping("/{id}")
     suspend fun getChartById(@PathVariable id: String): Chart {
         return chartService.getChartById(ChartId(id))
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @PreAuthorize("hasAuthority('CHARTS_WRITE')")
+    @PatchMapping("/{id}")
+    suspend fun patchChartById(@PathVariable id: String, @RequestBody request: ChartPatchRequest): Chart {
+        return chartService.patchChartById(ChartId(id), request)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

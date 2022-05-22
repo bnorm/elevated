@@ -1,15 +1,13 @@
 package dev.bnorm.elevated.service.devices
 
 import dev.bnorm.elevated.model.auth.AuthenticatedDevice
-import dev.bnorm.elevated.model.devices.Device
-import dev.bnorm.elevated.model.devices.DeviceId
-import dev.bnorm.elevated.model.devices.DeviceLoginRequest
-import dev.bnorm.elevated.model.devices.DevicePrototype
+import dev.bnorm.elevated.model.devices.*
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -25,7 +23,7 @@ class DeviceController(
 ) {
     @PreAuthorize("hasAuthority('DEVICES_WRITE')")
     @PostMapping
-    suspend fun createDevice(@RequestBody prototype: DevicePrototype): Device {
+    suspend fun createDevice(@RequestBody prototype: DeviceCreateRequest): Device {
         return deviceService.createDevice(prototype)
     }
 
@@ -52,6 +50,13 @@ class DeviceController(
     @GetMapping("/{id}")
     suspend fun getDeviceById(@PathVariable id: String): Device {
         return deviceService.getDeviceById(DeviceId(id))
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
+    @PreAuthorize("hasAuthority('DEVICES_WRITE')")
+    @PatchMapping("/{id}")
+    suspend fun patchDeviceById(@PathVariable id: String, @RequestBody request: DevicePatchRequest): Device {
+        return deviceService.patchDeviceById(DeviceId(id), request)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

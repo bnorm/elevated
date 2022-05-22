@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.model.devices
 
+import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.sensors.Sensor
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -10,5 +11,6 @@ class Device(
     val name: String,
     val status: DeviceStatus,
     val sensors: List<Sensor>,
-    val lastActionTime: Instant? = null,
+    val lastActionTime: Instant?,
+    val chart: Chart?,
 )

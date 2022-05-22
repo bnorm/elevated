@@ -4,7 +4,7 @@ import dev.bnorm.elevated.model.auth.Password
 import kotlinx.serialization.Serializable
 
 @Serializable
-class DevicePrototype(
+class DeviceCreateRequest(
     val name: String,
     val key: Password,
 )

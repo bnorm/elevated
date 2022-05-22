@@ -11,6 +11,7 @@ class DeviceEntity(
     val keyHash: String,
     val status: DeviceStatus = DeviceStatus.Offline,
     val lastActionTime: Instant? = null,
+    val chartId: String? = null,
 ) {
     @Id
     lateinit var id: String

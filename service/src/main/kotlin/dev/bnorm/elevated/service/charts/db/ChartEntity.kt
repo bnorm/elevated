@@ -1,4 +1,4 @@
-package dev.bnorm.elevated.service.charts
+package dev.bnorm.elevated.service.charts.db
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

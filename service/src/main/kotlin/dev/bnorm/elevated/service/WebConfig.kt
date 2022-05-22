@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service
 
+import dev.bnorm.elevated.service.devices.DeviceWebSocketHandler
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

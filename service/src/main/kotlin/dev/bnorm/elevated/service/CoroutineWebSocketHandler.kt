@@ -4,22 +4,29 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.produceIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.asFlux
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import kotlinx.coroutines.reactor.flux
 import kotlinx.coroutines.reactor.mono
+import kotlinx.coroutines.selects.select
 import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.socket.CloseStatus
 import org.springframework.web.reactive.socket.HandshakeInfo
 import org.springframework.web.reactive.socket.WebSocketHandler
+import org.springframework.web.reactive.socket.WebSocketMessage
 import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
+import java.time.Duration
 
-abstract class CoroutineWebSocketHandler : WebSocketHandler {
+abstract class CoroutineWebSocketHandler(
+    private val pingInterval: Duration = Duration.ofSeconds(30),
+) : WebSocketHandler {
     companion object {
         private val log = LoggerFactory.getLogger(CoroutineWebSocketHandler::class.java)
     }
@@ -30,10 +37,18 @@ abstract class CoroutineWebSocketHandler : WebSocketHandler {
                 val sendChannel = Channel<String>()
 
                 launch {
-                    val messages = sendChannel.consumeAsFlow()
-                        .map { webSocketSession.textMessage(it) }
-                        .asFlux()
-                    webSocketSession.send(messages).awaitSingleOrNull()
+                    webSocketSession.send(flux {
+                        while (isActive) {
+                            select<Unit> {
+                                sendChannel.onReceive {
+                                    send(webSocketSession.textMessage(it))
+                                }
+                                onTimeout(pingInterval.toMillis()) {
+                                    send(webSocketSession.pingMessage { it.allocateBuffer(0) })
+                                }
+                            }
+                        }
+                    }).awaitSingleOrNull()
                 }
 
                 val receiveChannel = webSocketSession.receive()
