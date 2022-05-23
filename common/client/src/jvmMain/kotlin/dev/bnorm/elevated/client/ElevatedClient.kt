@@ -41,12 +41,21 @@ interface ElevatedClient {
         @Query("endTime") endTime: Instant? = null,
     ): List<SensorReading>
 
+    @GET("/api/v1/sensors/{sensorId}/readings/latest")
+    suspend fun getLatestSensorReadings(
+        @Path("sensorId") sensorId: SensorId,
+        @Query("count") count: Int? = null,
+    ): List<SensorReading>
+
     // Devices
 
     @POST("/api/v1/devices/login")
     suspend fun loginDevice(
         @Body request: DeviceLoginRequest
     ): AuthenticatedDevice
+
+    @GET("/api/v1/devices")
+    suspend fun getDevices(): List<Device>
 
     @GET("/api/v1/devices/{deviceId}")
     suspend fun getDevice(

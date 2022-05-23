@@ -3,8 +3,7 @@ package dev.bnorm.elevated.ui.panes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RotateRight
-import androidx.compose.material.icons.filled.StackedLineChart
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.bnorm.elevated.client.ElevatedClient
@@ -16,6 +15,7 @@ enum class HomeTab(
 ) {
     Charts("Charts", Icons.Filled.StackedLineChart),
     Pumps("Pumps", Icons.Filled.RotateRight),
+    Devices("Devices", Icons.Filled.AdUnits),
 }
 
 @Composable
@@ -33,6 +33,7 @@ fun Home(client: ElevatedClient) {
                     when (selectedTab) {
                         HomeTab.Charts -> ChartPane(chartPaneState)
                         HomeTab.Pumps -> PumpsList(client)
+                        HomeTab.Devices -> DevicePane(client)
                     }
                 }
             }
