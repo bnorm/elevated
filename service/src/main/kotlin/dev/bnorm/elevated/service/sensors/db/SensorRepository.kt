@@ -2,20 +2,17 @@ package dev.bnorm.elevated.service.sensors.db
 
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.service.mongo.ensureIndex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.ReactiveMongoOperations
-import org.springframework.data.mongodb.core.find
-import org.springframework.data.mongodb.core.findAll
-import org.springframework.data.mongodb.core.findOne
+import org.springframework.data.mongodb.core.*
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.data.mongodb.core.query.toPath
-import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
 import javax.annotation.PostConstruct
 
@@ -36,9 +33,8 @@ class SensorRepository(
     }
 
     suspend fun delete(sensorId: SensorId) {
-        val query = Query(
-            SensorEntity::id isEqualTo sensorId.value,
-        )
+        val criteria = SensorEntity::id isEqualTo sensorId.value
+        val query = Query(criteria)
         mongo.remove<SensorEntity>(query).awaitSingle()
     }
 
@@ -47,16 +43,14 @@ class SensorRepository(
     }
 
     fun findByDeviceId(deviceId: DeviceId): Flow<SensorEntity> {
-        val query = Query(
-            SensorEntity::deviceId isEqualTo deviceId.value,
-        )
+        val criteria = SensorEntity::deviceId isEqualTo deviceId.value
+        val query = Query(criteria)
         return mongo.find<SensorEntity>(query).asFlow()
     }
 
     suspend fun findBySensorId(sensorId: SensorId): SensorEntity? {
-        val query = Query(
-            SensorEntity::id isEqualTo sensorId.value,
-        )
+        val criteria = SensorEntity::id isEqualTo sensorId.value
+        val query = Query(criteria)
         return mongo.findOne<SensorEntity>(query).awaitSingleOrNull()
     }
 }

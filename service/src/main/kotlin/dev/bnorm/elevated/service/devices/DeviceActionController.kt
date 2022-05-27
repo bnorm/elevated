@@ -7,15 +7,7 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
@@ -42,6 +34,16 @@ class DeviceActionController(
     ): Flow<DeviceAction> {
         require(limit == null || limit > 0)
         return deviceActionService.getActions(DeviceId(deviceId), submittedAfter, limit)
+    }
+
+    @PreAuthorize("hasAuthority('ACTIONS_READ')")
+    @GetMapping("/latest")
+    fun getLatestDeviceActions(
+        @PathVariable deviceId: String,
+        @RequestParam count: Int?,
+    ): Flow<DeviceAction> {
+        if (count != null && count <= 0) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid count=$count")
+        return deviceActionService.getLatestActions(DeviceId(deviceId), count ?: 0)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_READ')")

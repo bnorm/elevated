@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.service.sensors.db
 
 import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.service.mongo.ensureIndex
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
@@ -11,8 +12,6 @@ import org.springframework.data.mongodb.core.CollectionOptions
 import org.springframework.data.mongodb.core.CollectionOptions.TimeSeriesOptions.timeSeries
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
 import org.springframework.data.mongodb.core.find
-import org.springframework.data.mongodb.core.index.Index
-import org.springframework.data.mongodb.core.index.ReactiveIndexOperations
 import org.springframework.data.mongodb.core.query.*
 import org.springframework.data.mongodb.core.timeseries.Granularity
 import org.springframework.stereotype.Repository
@@ -52,13 +51,12 @@ class SensorReadingRepository(
         startTime: Instant,
         endTime: Instant,
     ): Flow<SensorReadingEntity> {
-        val query = Query(
-            Criteria().andOperator(
-                SensorReadingEntity::sensorId isEqualTo sensorId.value,
-                SensorReadingEntity::timestamp gte startTime,
-                SensorReadingEntity::timestamp lt endTime,
-            )
+        val criteria = Criteria().andOperator(
+            SensorReadingEntity::sensorId isEqualTo sensorId.value,
+            SensorReadingEntity::timestamp gte startTime,
+            SensorReadingEntity::timestamp lt endTime,
         )
+        val query = Query(criteria)
         return mongo.find<SensorReadingEntity>(query).asFlow()
     }
 
@@ -66,18 +64,11 @@ class SensorReadingRepository(
         sensorId: SensorId,
         count: Int,
     ): Flow<SensorReadingEntity> {
-        val query = Query(
-            Criteria().andOperator(
-                SensorReadingEntity::sensorId isEqualTo sensorId.value,
-            )
-        )
+        val criteria = SensorReadingEntity::sensorId isEqualTo sensorId.value
+        val query = Query(criteria)
             .with(Sort.by(SensorReadingEntity::timestamp.toPath()).descending())
             .limit(count)
-
         return mongo.find<SensorReadingEntity>(query).asFlow()
     }
 }
 
-suspend fun ReactiveIndexOperations.ensureIndex(builder: Index.() -> Unit) {
-    ensureIndex(Index().apply(builder)).awaitSingleOrNull()
-}

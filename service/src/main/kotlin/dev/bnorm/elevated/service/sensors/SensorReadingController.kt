@@ -4,8 +4,10 @@ import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import kotlinx.coroutines.flow.Flow
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 import java.time.Duration
 import java.time.Instant
 
@@ -41,6 +43,7 @@ class SensorReadingController(
         @PathVariable sensorId: String,
         @RequestParam count: Int?,
     ): Flow<SensorReading> {
+        if (count != null && count <= 0) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid count=$count")
         return sensorReadingService.getLatestSensorReading(SensorId(sensorId), count ?: 1)
     }
 }

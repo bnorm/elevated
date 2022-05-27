@@ -1,11 +1,6 @@
 package dev.bnorm.elevated.service.devices
 
-import dev.bnorm.elevated.model.devices.DeviceAction
-import dev.bnorm.elevated.model.devices.DeviceActionArguments
-import dev.bnorm.elevated.model.devices.DeviceActionId
-import dev.bnorm.elevated.model.devices.DeviceActionPrototype
-import dev.bnorm.elevated.model.devices.DeviceId
-import dev.bnorm.elevated.model.devices.PumpDispenseArguments
+import dev.bnorm.elevated.model.devices.*
 import dev.bnorm.elevated.service.devices.db.DeviceActionArgumentsEntity
 import dev.bnorm.elevated.service.devices.db.DeviceActionEntity
 import dev.bnorm.elevated.service.devices.db.DeviceActionRepository
@@ -68,6 +63,10 @@ class DeviceActionService(
 
     fun getActions(deviceId: DeviceId, submittedAfter: Instant, limit: Int?): Flow<DeviceAction> {
         return deviceActionRepository.findByDeviceId(deviceId, submittedAfter, limit).map { it.toDto() }
+    }
+
+    fun getLatestActions(deviceId: DeviceId, limit: Int): Flow<DeviceAction> {
+        return deviceActionRepository.findLatestByDeviceId(deviceId, limit).map { it.toDto() }
     }
 
     suspend fun deleteAction(deviceId: DeviceId, deviceActionId: DeviceActionId) {
