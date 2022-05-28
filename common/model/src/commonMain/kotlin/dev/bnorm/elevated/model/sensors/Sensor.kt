@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class Sensor(
     val id: SensorId,
     val name: String,
+    val type: SensorType?,
 )

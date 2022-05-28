@@ -1,18 +1,13 @@
 package dev.bnorm.elevated.service.sensors
 
 import dev.bnorm.elevated.model.sensors.Sensor
+import dev.bnorm.elevated.model.sensors.SensorCreateRequest
 import dev.bnorm.elevated.model.sensors.SensorId
-import dev.bnorm.elevated.model.sensors.SensorPrototype
+import dev.bnorm.elevated.model.sensors.SensorUpdateRequest
 import kotlinx.coroutines.flow.Flow
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
@@ -22,8 +17,14 @@ class SensorController(
 ) {
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")
     @PostMapping
-    suspend fun createSensor(@RequestBody prototype: SensorPrototype): Sensor {
-        return sensorService.createSensor(prototype)
+    suspend fun createSensor(@RequestBody request: SensorCreateRequest): Sensor {
+        return sensorService.createSensor(request)
+    }
+
+    @PreAuthorize("hasAuthority('SENSORS_WRITE')")
+    @PatchMapping("/{sensorId}")
+    suspend fun updateSensor(@PathVariable sensorId: String, @RequestBody request: SensorUpdateRequest) {
+        sensorService.updateSensor(SensorId(sensorId), request)
     }
 
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")
@@ -34,14 +35,14 @@ class SensorController(
 
     @PreAuthorize("hasAuthority('SENSORS_READ')")
     @GetMapping
-    fun getAllSensors(): Flow<Sensor> {
-        return sensorService.getAllSensors()
+    fun getSensors(): Flow<Sensor> {
+        return sensorService.getSensors()
     }
 
     @PreAuthorize("hasAuthority('SENSORS_READ')")
     @GetMapping("/{sensorId}")
     suspend fun getSensorById(@PathVariable sensorId: String): Sensor {
-        return sensorService.getSensorById(SensorId(sensorId))
+        return sensorService.getSensor(SensorId(sensorId))
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

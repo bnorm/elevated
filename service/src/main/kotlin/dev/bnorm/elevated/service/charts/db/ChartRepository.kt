@@ -51,8 +51,8 @@ class ChartRepository(
         return mongo.findOne<ChartEntity>(query).awaitSingleOrNull()
     }
 
-    suspend fun modify(id: ChartId, chartUpdate: ChartUpdate): ChartEntity? {
-        val criteria = ChartEntity::id isEqualTo id.value
+    suspend fun modify(chartId: ChartId, chartUpdate: ChartUpdate): ChartEntity? {
+        val criteria = ChartEntity::id isEqualTo chartId.value
         val query = Query(criteria)
         val update = Update().apply {
             patch(ChartEntity::name, chartUpdate.name)

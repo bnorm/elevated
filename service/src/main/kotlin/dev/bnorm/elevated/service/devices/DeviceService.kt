@@ -76,7 +76,7 @@ class DeviceService(
 
     private suspend fun DeviceEntity.toDto(): Device = coroutineScope {
         val deviceId = DeviceId(id)
-        val sensors = async { sensorService.getSensorByDeviceId(deviceId).toList() }
+        val sensors = async { sensorService.getSensorsByDeviceId(deviceId).toList() }
         val chart = async { chartId?.let { chartService.getChartById(ChartId(it)) } }
         return@coroutineScope Device(
             id = deviceId,

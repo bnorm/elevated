@@ -4,7 +4,8 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SensorPrototype(
+data class SensorCreateRequest(
     val name: String,
+    val type: SensorType,
     val deviceId: DeviceId,
 )
