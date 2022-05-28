@@ -28,8 +28,8 @@ class CorrelationFilter : CoroutineWebFilter() {
         val jwt = currentJwtToken()
         if (jwt != null) {
             context["jwt.sub"] = jwt.subject
-            jwt.role?.let { context["jwt.role"] = it }
-            jwt.email?.let { context["jwt.email"] = it }
+            jwt.role?.let { context["jwt.role"] = it.name }
+            jwt.email?.let { context["jwt.email"] = it.value }
         }
 
         withContext(MDCContext(context)) {

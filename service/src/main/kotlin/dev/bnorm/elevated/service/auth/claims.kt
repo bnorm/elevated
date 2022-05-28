@@ -2,24 +2,21 @@ package dev.bnorm.elevated.service.auth
 
 import dev.bnorm.elevated.model.auth.Role
 import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.model.users.User
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm
-import org.springframework.security.oauth2.jwt.JwsHeader
-import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.security.oauth2.jwt.JwtClaimsSet
-import org.springframework.security.oauth2.jwt.JwtEncoder
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters
+import org.springframework.security.oauth2.jwt.*
 import java.time.Duration
 import java.time.Instant
 
 const val ROLE_CLAIM = "role"
 const val EMAIL_CLAIM = "email"
 
-val Jwt.role: String?
-    get() = getClaimAsString(ROLE_CLAIM)
+val Jwt.role: Role?
+    get() = getClaimAsString(ROLE_CLAIM)?.let { Role.byName[it] }
 
-val Jwt.email: String?
-    get() = getClaimAsString(EMAIL_CLAIM)
+val Jwt.email: Email?
+    get() = getClaimAsString(EMAIL_CLAIM)?.let { Email(it) }
 
 fun User.toClaims(): JwtClaimsSet {
     val now = Instant.now()

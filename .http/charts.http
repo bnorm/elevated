@@ -56,6 +56,22 @@ Accept: application/json
 
 > {% client.global.set("chartId", response.body.id); %}
 
+### Patch chart
+
+PATCH {{hostname}}/api/v1/charts/{{chartId}}
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "Active Chart",
+  "targetEcLow": 400,
+  "targetEcHigh": 600,
+  "microMl": 2,
+  "groMl": 3,
+  "bloomMl": 0.5
+}
+
 ### Delete chart
 
 DELETE {{hostname}}/api/v1/charts/{{chartId}}

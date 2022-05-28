@@ -4,16 +4,13 @@ import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.AuthorizationToken
 import dev.bnorm.elevated.model.auth.JwtToken
 import dev.bnorm.elevated.model.auth.Role
-import dev.bnorm.elevated.model.users.Email
-import dev.bnorm.elevated.model.users.User
-import dev.bnorm.elevated.model.users.UserId
-import dev.bnorm.elevated.model.users.UserLoginRequest
-import dev.bnorm.elevated.model.users.UserRegisterRequest
+import dev.bnorm.elevated.model.users.*
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
 import dev.bnorm.elevated.service.users.db.UserEntity
 import dev.bnorm.elevated.service.users.db.UserRepository
+import dev.bnorm.elevated.service.users.db.UserUpdate
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -29,6 +26,10 @@ class UserService(
 ) {
     fun getAllUsers(): Flow<User> {
         return userRepository.getAllUsers().map { it.toDto() }
+    }
+
+    suspend fun patchUserById(userId: UserId, request: UserPatchRequest): User? {
+        return userRepository.modify(userId, request.toUpdate())?.toDto()
     }
 
     suspend fun authenticateUser(request: UserLoginRequest): AuthenticatedUser? {
@@ -64,6 +65,15 @@ class UserService(
         name = name,
         role = Role.USER,
     )
+
+    private fun UserPatchRequest.toUpdate(): UserUpdate {
+        return UserUpdate(
+            email = email?.value?.lowercase(),
+            passwordHash = password?.let { passwordEncoder.encode(it) },
+            name = name,
+        )
+    }
+
 
     private fun User.toAuthenticatedUser(): AuthenticatedUser {
         val claims = toClaims()

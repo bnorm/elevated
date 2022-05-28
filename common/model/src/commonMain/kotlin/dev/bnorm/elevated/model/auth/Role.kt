@@ -28,6 +28,10 @@ enum class Role(
 
     ;
 
+    companion object {
+        val byName = values().associateBy { it.name }
+    }
+
     val authorities: Set<Authority> = setOf(*startingAuthorities).flatten().toSet()
 
     private fun Iterable<Authority>.flatten(): Sequence<Authority> {
