@@ -1,10 +1,13 @@
 package dev.bnorm.elevated.ui.panes
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AdUnits
+import androidx.compose.material.icons.filled.RotateRight
+import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.bnorm.elevated.client.ElevatedClient
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +31,14 @@ fun Home(client: ElevatedClient) {
 
     Scaffold(
         content = {
-            Surface(color = MaterialTheme.colors.background) {
-                Column {
-                    when (selectedTab) {
-                        HomeTab.Charts -> ChartPane(chartPaneState)
-                        HomeTab.Pumps -> PumpsList(client)
-                        HomeTab.Devices -> DevicePane(client)
-                    }
+            Surface(
+                color = MaterialTheme.colors.surface,
+                modifier = Modifier.padding(it)
+            ) {
+                when (selectedTab) {
+                    HomeTab.Charts -> ChartPane(chartPaneState)
+                    HomeTab.Pumps -> PumpsList(client)
+                    HomeTab.Devices -> DevicePane(client)
                 }
             }
         },

@@ -11,6 +11,7 @@ pluginManagement {
         kotlin("plugin.serialization") version "1.6.10"
         kotlin("plugin.spring") version "1.6.10"
         kotlin("android") version "1.6.10"
+        kotlin("kapt") version "1.6.10"
 
         id("org.springframework.boot") version "2.6.6"
 
@@ -19,6 +20,8 @@ pluginManagement {
         id("com.android.library") version "7.0.4"
 
         id("org.jetbrains.compose") version "1.1.0"
+
+        id("com.squareup.anvil") version "2.4.0"
     }
 }
 

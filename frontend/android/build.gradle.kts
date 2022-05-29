@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.compose")
     kotlin("android")
+    kotlin("kapt")
+    id("com.squareup.anvil")
 }
 
 android {
@@ -56,6 +58,12 @@ android {
 
 dependencies {
     implementation(project(":common:client"))
+
+
+    implementation("com.google.dagger:dagger:2.42")
+    implementation("com.google.dagger:dagger-android:2.42")
+    implementation("com.google.dagger:dagger-android-support:2.42")
+    kapt("com.google.dagger:dagger-compiler:2.42")
 
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.4.1")

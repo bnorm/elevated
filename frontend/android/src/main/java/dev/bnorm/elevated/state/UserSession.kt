@@ -2,6 +2,7 @@ package dev.bnorm.elevated.state
 
 import android.util.Log
 import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.client.TokenStore
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
@@ -9,10 +10,11 @@ import dev.bnorm.elevated.model.users.UserLoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class UserSession(
+class UserSession @Inject constructor(
     private val client: ElevatedClient,
-    private val store: SparedPreferenceTokenStore,
+    private val store: TokenStore,
 ) {
     private val mutableState = MutableStateFlow<UserState>(UserState.Authenticating)
     val state = mutableState.asStateFlow()

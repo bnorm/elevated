@@ -3,7 +3,7 @@ package dev.bnorm.elevated.state
 import android.content.SharedPreferences
 import dev.bnorm.elevated.client.TokenStore
 
-class SparedPreferenceTokenStore(
+class SharedPreferenceTokenStore(
     private val preferences: SharedPreferences
 ) : TokenStore {
     override var authorization: String?
