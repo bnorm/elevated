@@ -37,7 +37,7 @@ class ChartService(
 
     private suspend fun ChartEntity.toDto(): Chart {
         return Chart(
-            id = ChartId(id),
+            id = id,
             name = name,
             targetEcLow = targetEcLow,
             targetEcHigh = targetEcHigh,

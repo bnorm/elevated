@@ -37,7 +37,7 @@ class SensorReadingService(
 
     private fun SensorReadingEntity.toDto(): SensorReading {
         return SensorReading(
-            sensorId = SensorId(sensorId),
+            sensorId = sensorId,
             timestamp = timestamp.toKotlinInstant(),
             value = value,
         )
@@ -45,7 +45,7 @@ class SensorReadingService(
 
     private fun SensorReadingPrototype.toEntity(sensorId: SensorId): SensorReadingEntity {
         return SensorReadingEntity(
-            sensorId = sensorId.value,
+            sensorId = sensorId,
             timestamp = timestamp.toJavaInstant(),
             value = value,
         )

@@ -42,7 +42,7 @@ class SensorService(
 
     private fun SensorEntity.toDto(): Sensor {
         return Sensor(
-            id = SensorId(id),
+            id = id,
             name = name,
             type = type,
         )
@@ -52,7 +52,7 @@ class SensorService(
         return SensorEntity(
             name = name,
             type = type,
-            deviceId = deviceId.value,
+            deviceId = deviceId,
         )
     }
 

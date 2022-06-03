@@ -46,6 +46,8 @@ GET {{hostname}}/api/v1/devices/{{deviceId}}
 Authorization: {{authorization}}
 Accept: application/json
 
+> {% client.global.set("deviceId", response.body.id); %}
+
 ### Patch device
 
 PATCH {{hostname}}/api/v1/devices/{{deviceId}}

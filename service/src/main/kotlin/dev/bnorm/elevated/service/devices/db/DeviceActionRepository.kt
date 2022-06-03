@@ -38,7 +38,7 @@ class DeviceActionRepository(
     ): DeviceActionEntity? {
         val criteria = Criteria().andOperator(
             DeviceActionEntity::id isEqualTo deviceActionId.value,
-            DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            DeviceActionEntity::deviceId isEqualTo deviceId,
         )
         val query = Query(criteria)
         return mongo.findOne<DeviceActionEntity>(query).awaitSingleOrNull()
@@ -51,7 +51,7 @@ class DeviceActionRepository(
     ): DeviceActionEntity? {
         val criteria = Criteria().andOperator(
             DeviceActionEntity::id isEqualTo deviceActionId.value,
-            DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            DeviceActionEntity::deviceId isEqualTo deviceId,
             DeviceActionEntity::completed exists false,
         )
         val query = Query(criteria)
@@ -69,7 +69,7 @@ class DeviceActionRepository(
         limit: Int?,
     ): Flow<DeviceActionEntity> {
         val criteria = Criteria().andOperator(
-            DeviceActionEntity::deviceId isEqualTo id.value,
+            DeviceActionEntity::deviceId isEqualTo id,
             DeviceActionEntity::submitted gt submittedAfter,
         )
         val query = Query(criteria)
@@ -95,14 +95,14 @@ class DeviceActionRepository(
     ) {
         val criteria = Criteria().andOperator(
             DeviceActionEntity::id isEqualTo deviceActionId.value,
-            DeviceActionEntity::deviceId isEqualTo deviceId.value,
+            DeviceActionEntity::deviceId isEqualTo deviceId,
         )
         val query = Query(criteria)
         mongo.remove<DeviceActionEntity>(query).awaitSingleOrNull()
     }
 
     suspend fun deleteByDeviceId(deviceId: DeviceId) {
-        val criteria = DeviceActionEntity::deviceId isEqualTo deviceId.value
+        val criteria = DeviceActionEntity::deviceId isEqualTo deviceId
         val query = Query(criteria)
         mongo.remove<DeviceActionEntity>(query).awaitSingleOrNull()
     }

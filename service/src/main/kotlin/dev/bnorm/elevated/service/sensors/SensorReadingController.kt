@@ -19,31 +19,31 @@ class SensorReadingController(
     @PreAuthorize("hasAuthority('READINGS_WRITE')")
     @PostMapping("/record")
     suspend fun recordSensorReading(
-        @PathVariable sensorId: String,
+        @PathVariable sensorId: SensorId,
         @RequestBody prototype: SensorReadingPrototype
     ): SensorReading {
-        return sensorReadingService.createSensorReading(SensorId(sensorId), prototype)
+        return sensorReadingService.createSensorReading(sensorId, prototype)
     }
 
     @PreAuthorize("hasAuthority('READINGS_READ')")
     @GetMapping
     fun getSensorReadings(
-        @PathVariable sensorId: String,
+        @PathVariable sensorId: SensorId,
         @RequestParam startTime: Instant?,
         @RequestParam endTime: Instant?,
     ): Flow<SensorReading> {
         val endTimeResolved = endTime ?: Instant.now()
         val startTimeResolved = startTime ?: (endTimeResolved - Duration.ofHours(2))
-        return sensorReadingService.getSensorReadings(SensorId(sensorId), startTimeResolved, endTimeResolved)
+        return sensorReadingService.getSensorReadings(sensorId, startTimeResolved, endTimeResolved)
     }
 
     @PreAuthorize("hasAuthority('READINGS_READ')")
     @GetMapping("/latest")
     fun getLatestSensorReadings(
-        @PathVariable sensorId: String,
+        @PathVariable sensorId: SensorId,
         @RequestParam count: Int?,
     ): Flow<SensorReading> {
         if (count != null && count <= 0) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid count=$count")
-        return sensorReadingService.getLatestSensorReading(SensorId(sensorId), count ?: 1)
+        return sensorReadingService.getLatestSensorReading(sensorId, count ?: 1)
     }
 }

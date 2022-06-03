@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service.devices.db
 
+import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -14,5 +15,5 @@ class DeviceEntity(
     val chartId: String? = null,
 ) {
     @Id
-    lateinit var id: String
+    lateinit var id: DeviceId
 }

@@ -43,7 +43,7 @@ class UserRepository(
     }
 
     suspend fun modify(id: UserId, userUpdate: UserUpdate): UserEntity? {
-        val criteria = UserEntity::id isEqualTo id.value
+        val criteria = UserEntity::id isEqualTo id
         val query = Query(criteria)
         val update = Update().apply {
             patch(UserEntity::email, userUpdate.email)
@@ -56,7 +56,7 @@ class UserRepository(
     }
 
     suspend fun findById(id: UserId): UserEntity? {
-        val criteria = UserEntity::id isEqualTo id.value
+        val criteria = UserEntity::id isEqualTo id
         val query = Query(criteria)
         return mongo.findOne<UserEntity>(query).awaitSingleOrNull()
     }

@@ -22,7 +22,7 @@ class DeviceRepository(
 
     suspend fun delete(deviceId: DeviceId) {
         val query = Query(
-            DeviceEntity::id isEqualTo deviceId.value,
+            DeviceEntity::id isEqualTo deviceId,
         )
         mongo.remove<DeviceEntity>(query).awaitSingle()
     }
@@ -31,16 +31,16 @@ class DeviceRepository(
         return mongo.findAll<DeviceEntity>().asFlow()
     }
 
-    suspend fun findById(id: DeviceId): DeviceEntity? {
+    suspend fun findById(deviceId: DeviceId): DeviceEntity? {
         val query = Query(
-            DeviceEntity::id isEqualTo id.value,
+            DeviceEntity::id isEqualTo deviceId,
         )
         return mongo.findOne<DeviceEntity>(query).awaitSingleOrNull()
     }
 
-    suspend fun modify(id: DeviceId, deviceUpdate: DeviceUpdate): DeviceEntity? {
+    suspend fun modify(deviceId: DeviceId, deviceUpdate: DeviceUpdate): DeviceEntity? {
         val query = Query(
-            DeviceEntity::id isEqualTo id.value,
+            DeviceEntity::id isEqualTo deviceId,
         )
         val update = Update().apply {
             patch(DeviceEntity::name, deviceUpdate.name)

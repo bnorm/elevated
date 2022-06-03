@@ -36,10 +36,10 @@ class UserController(
     @PreAuthorize("@authorizationService.isUser(#userId, principal)")
     @PatchMapping("/{userId}")
     suspend fun patchUser(
-        @PathVariable userId: String,
+        @PathVariable userId: UserId,
         @RequestBody request: UserPatchRequest,
     ): User {
-        return userService.patchUserById(UserId(userId), request)
+        return userService.patchUserById(userId, request)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 

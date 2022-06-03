@@ -19,58 +19,58 @@ class DeviceActionController(
     @PreAuthorize("hasAuthority('ACTIONS_WRITE')")
     @PostMapping
     suspend fun submitDeviceAction(
-        @PathVariable deviceId: String,
+        @PathVariable deviceId: DeviceId,
         @RequestBody prototype: DeviceActionPrototype,
     ): DeviceAction {
-        return deviceActionService.submitDeviceAction(DeviceId(deviceId), prototype)
+        return deviceActionService.submitDeviceAction(deviceId, prototype)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_READ')")
     @GetMapping
     fun getDeviceActions(
-        @PathVariable deviceId: String,
+        @PathVariable deviceId: DeviceId,
         @RequestParam(required = true) submittedAfter: Instant,
         @RequestParam limit: Int?,
     ): Flow<DeviceAction> {
         require(limit == null || limit > 0)
-        return deviceActionService.getActions(DeviceId(deviceId), submittedAfter, limit)
+        return deviceActionService.getActions(deviceId, submittedAfter, limit)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_READ')")
     @GetMapping("/latest")
     fun getLatestDeviceActions(
-        @PathVariable deviceId: String,
+        @PathVariable deviceId: DeviceId,
         @RequestParam count: Int?,
     ): Flow<DeviceAction> {
         if (count != null && count <= 0) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid count=$count")
-        return deviceActionService.getLatestActions(DeviceId(deviceId), count ?: 0)
+        return deviceActionService.getLatestActions(deviceId, count ?: 0)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_READ')")
     @GetMapping("{actionId}")
     suspend fun getDeviceAction(
-        @PathVariable deviceId: String,
-        @PathVariable actionId: String,
+        @PathVariable deviceId: DeviceId,
+        @PathVariable actionId: DeviceActionId,
     ): DeviceAction? {
-        return deviceActionService.getAction(DeviceId(deviceId), DeviceActionId(actionId))
+        return deviceActionService.getAction(deviceId, actionId)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_WRITE')")
     @PutMapping("{actionId}/complete")
     suspend fun completeDeviceAction(
-        @PathVariable deviceId: String,
-        @PathVariable actionId: String,
+        @PathVariable deviceId: DeviceId,
+        @PathVariable actionId: DeviceActionId,
     ): DeviceAction? {
-        return deviceActionService.completeAction(DeviceId(deviceId), DeviceActionId(actionId))
+        return deviceActionService.completeAction(deviceId, actionId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PreAuthorize("hasAuthority('ACTIONS_ADMIN')")
     @DeleteMapping("{actionId}")
     suspend fun deleteDeviceAction(
-        @PathVariable deviceId: String,
-        @PathVariable actionId: String,
+        @PathVariable deviceId: DeviceId,
+        @PathVariable actionId: DeviceActionId,
     ) {
-        deviceActionService.deleteAction(DeviceId(deviceId), DeviceActionId(actionId))
+        deviceActionService.deleteAction(deviceId, actionId)
     }
 }

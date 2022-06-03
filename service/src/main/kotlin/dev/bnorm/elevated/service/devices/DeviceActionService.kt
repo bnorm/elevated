@@ -75,8 +75,8 @@ class DeviceActionService(
 
     private fun DeviceActionEntity.toDto(): DeviceAction {
         return DeviceAction(
-            id = DeviceActionId(id),
-            deviceId = DeviceId(deviceId),
+            id = id,
+            deviceId = deviceId,
             submitted = submitted.toKotlinInstant(),
             completed = completed?.toKotlinInstant(),
             args = args.toDto()
@@ -94,7 +94,7 @@ class DeviceActionService(
 
     private fun DeviceActionPrototype.toEntity(deviceId: DeviceId): DeviceActionEntity {
         return DeviceActionEntity(
-            deviceId = deviceId.value,
+            deviceId = deviceId,
             submitted = Instant.now(),
             completed = null,
             args = args.toEntity(),

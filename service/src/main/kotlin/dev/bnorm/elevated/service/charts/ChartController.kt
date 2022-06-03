@@ -32,8 +32,8 @@ class ChartController(
     @PreAuthorize("hasAuthority('CHARTS_WRITE')")
     @DeleteMapping("/{chartId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    suspend fun deleteChart(@PathVariable chartId: String) {
-        chartService.deleteChart(ChartId(chartId))
+    suspend fun deleteChart(@PathVariable chartId: ChartId) {
+        chartService.deleteChart(chartId)
     }
 
     @PreAuthorize("hasAuthority('CHARTS_READ')")
@@ -43,16 +43,16 @@ class ChartController(
     }
 
     @PreAuthorize("hasAuthority('CHARTS_READ')")
-    @GetMapping("/{id}")
-    suspend fun getChartById(@PathVariable id: String): Chart {
-        return chartService.getChartById(ChartId(id))
+    @GetMapping("/{chartId}")
+    suspend fun getChartById(@PathVariable chartId: ChartId): Chart {
+        return chartService.getChartById(chartId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PreAuthorize("hasAuthority('CHARTS_WRITE')")
-    @PatchMapping("/{id}")
-    suspend fun patchChartById(@PathVariable id: String, @RequestBody request: ChartPatchRequest): Chart {
-        return chartService.patchChartById(ChartId(id), request)
+    @PatchMapping("/{chartId}")
+    suspend fun patchChartById(@PathVariable chartId: ChartId, @RequestBody request: ChartPatchRequest): Chart {
+        return chartService.patchChartById(chartId, request)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

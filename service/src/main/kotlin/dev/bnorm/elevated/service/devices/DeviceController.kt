@@ -30,8 +30,8 @@ class DeviceController(
     @PreAuthorize("hasAuthority('DEVICES_WRITE')")
     @DeleteMapping("/{deviceId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    suspend fun deleteDevice(@PathVariable deviceId: String) {
-        deviceService.deleteDevice(DeviceId(deviceId))
+    suspend fun deleteDevice(@PathVariable deviceId: DeviceId) {
+        deviceService.deleteDevice(deviceId)
     }
 
     @PostMapping("/login")

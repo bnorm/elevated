@@ -23,14 +23,14 @@ class SensorController(
 
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")
     @PatchMapping("/{sensorId}")
-    suspend fun updateSensor(@PathVariable sensorId: String, @RequestBody request: SensorUpdateRequest) {
-        sensorService.updateSensor(SensorId(sensorId), request)
+    suspend fun updateSensor(@PathVariable sensorId: SensorId, @RequestBody request: SensorUpdateRequest) {
+        sensorService.updateSensor(sensorId, request)
     }
 
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")
     @DeleteMapping("/{sensorId}")
-    suspend fun deleteSensor(@PathVariable sensorId: String) {
-        sensorService.deleteSensor(SensorId(sensorId))
+    suspend fun deleteSensor(@PathVariable sensorId: SensorId) {
+        sensorService.deleteSensor(sensorId)
     }
 
     @PreAuthorize("hasAuthority('SENSORS_READ')")
@@ -41,8 +41,8 @@ class SensorController(
 
     @PreAuthorize("hasAuthority('SENSORS_READ')")
     @GetMapping("/{sensorId}")
-    suspend fun getSensorById(@PathVariable sensorId: String): Sensor {
-        return sensorService.getSensor(SensorId(sensorId))
+    suspend fun getSensorById(@PathVariable sensorId: SensorId): Sensor {
+        return sensorService.getSensor(sensorId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 }

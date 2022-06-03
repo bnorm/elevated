@@ -52,7 +52,7 @@ class UserService(
 
     private fun UserEntity.toDto(): User {
         return User(
-            id = UserId(id),
+            id = id,
             email = Email(email),
             name = name,
             role = role,
