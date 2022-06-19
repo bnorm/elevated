@@ -7,8 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document(ChartEntity.COLLECTION_NAME)
 class ChartEntity(
     val name: String,
-    val targetEcLow: Long,
-    val targetEcHigh: Long,
+    val targetPhLow: Double,
+    val targetPhHigh: Double,
+    val targetEcLow: Double,
+    val targetEcHigh: Double,
     val microMl: Double,
     val groMl: Double,
     val bloomMl: Double,

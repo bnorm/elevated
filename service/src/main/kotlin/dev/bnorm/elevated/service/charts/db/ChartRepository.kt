@@ -56,6 +56,8 @@ class ChartRepository(
         val query = Query(criteria)
         val update = Update().apply {
             patch(ChartEntity::name, chartUpdate.name)
+            patch(ChartEntity::targetPhLow, chartUpdate.targetPhLow)
+            patch(ChartEntity::targetPhHigh, chartUpdate.targetPhHigh)
             patch(ChartEntity::targetEcLow, chartUpdate.targetEcLow)
             patch(ChartEntity::targetEcHigh, chartUpdate.targetEcHigh)
             patch(ChartEntity::microMl, chartUpdate.microMl)

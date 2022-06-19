@@ -18,19 +18,24 @@ GET {{hostname}}/api/v1/sensors
 Authorization: {{authorization}}
 Accept: application/json
 
-### Create sensor
+## Create sensor
+#
+#POST {{hostname}}/api/v1/sensors
+#Authorization: {{authorization}}
+#Accept: application/json
+#Content-Type: application/json
+#
+#{
+#  "name": "Sample Sensor",
+#  "deviceId": "{{deviceId}}"
+#}
+#
+#> {% client.global.set("sensorId", response.body.id); %}
 
-POST {{hostname}}/api/v1/sensors
-Authorization: {{authorization}}
-Accept: application/json
-Content-Type: application/json
-
-{
-  "name": "Sample Sensor",
-  "deviceId": "{{deviceId}}"
-}
-
-> {% client.global.set("sensorId", response.body.id); %}
+## Delete sensor
+#
+#DELETE {{hostname}}/api/v1/sensors/625f44d5acd9b67d24914595
+#Authorization: {{authorization}}
 
 ### Get sensor
 
@@ -43,6 +48,12 @@ Accept: application/json
 ### Get sensor readings
 
 GET {{hostname}}/api/v1/sensors/{{sensorId}}/readings?startTime=2022-04-19T00:00:00.000Z
+Authorization: {{authorization}}
+Accept: application/json
+
+### Get latest sensor readings
+
+GET {{hostname}}/api/v1/sensors/{{sensorId}}/readings/latest?count=1
 Authorization: {{authorization}}
 Accept: application/json
 

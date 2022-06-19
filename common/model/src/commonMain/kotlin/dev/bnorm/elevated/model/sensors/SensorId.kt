@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = SensorId.Serializer::class)
-class SensorId(
+data class SensorId(
     val value: String,
 ) {
     override fun toString(): String = value

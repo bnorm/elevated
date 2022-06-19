@@ -8,7 +8,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = DeviceActionId.Serializer::class)
-class DeviceActionId(
+data class DeviceActionId(
     val value: String,
 ) {
     override fun toString(): String = value

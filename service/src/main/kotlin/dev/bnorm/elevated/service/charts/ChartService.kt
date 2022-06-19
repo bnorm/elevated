@@ -39,6 +39,8 @@ class ChartService(
         return Chart(
             id = id,
             name = name,
+            targetPhLow = targetPhLow,
+            targetPhHigh = targetPhHigh,
             targetEcLow = targetEcLow,
             targetEcHigh = targetEcHigh,
             microMl = microMl,
@@ -50,6 +52,8 @@ class ChartService(
     private fun ChartCreateRequest.toEntity(): ChartEntity {
         return ChartEntity(
             name = name,
+            targetPhLow = targetPhLow,
+            targetPhHigh = targetPhHigh,
             targetEcLow = targetEcLow,
             targetEcHigh = targetEcHigh,
             microMl = microMl,
@@ -61,6 +65,8 @@ class ChartService(
     private fun ChartPatchRequest.toUpdate(): ChartUpdate {
         return ChartUpdate(
             name = name,
+            targetPhLow = targetPhLow,
+            targetPhHigh = targetPhHigh,
             targetEcLow = targetEcLow,
             targetEcHigh = targetEcHigh,
             microMl = microMl,

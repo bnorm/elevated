@@ -53,7 +53,7 @@ class DeviceDosingSchedule(
         device.sensors.map {
             async {
                 val readings = sensorReadingService.getLatestSensorReading(it.id, count = 1)
-                    .filter { (now - it.timestamp).absoluteValue < 5.minutes }
+                    .filter { (now - it.timestamp).absoluteValue < 5.minutes } // Reading must be within the last 5 minutes
                     .singleOrNull()
                 it.id to readings
             }
@@ -68,10 +68,10 @@ class DeviceDosingSchedule(
             if (ph != null) {
                 launch {
                     log.debug("pH reading={}", ph)
-                    if (ph.value > 5.9) {
+                    if (ph.value > chart.targetPhHigh) {
                         dispense(device, pump = 1, amount = 1.0)
-                    } else if (ph.value < 5.3) {
-                        // TODO emit notification for high PH
+                    } else if (ph.value < chart.targetPhLow) {
+                        // TODO emit notification for low pH
                     }
                 }
             }
