@@ -117,6 +117,7 @@ fun DeviceSummaryCard(summary: DeviceSummary) {
             if (chart != null) {
                 Divider(modifier = Modifier.padding(2.dp))
                 Text(text = "Chart : ${chart.name}")
+                Text(text = "   Target pH : ${chart.targetPhLow} to ${chart.targetPhHigh}")
                 Text(text = "   Target EC : ${chart.targetEcLow} to ${chart.targetEcHigh}")
                 Text(text = "   Micro : ${chart.microMl} mL")
                 Text(text = "   Gro : ${chart.groMl} mL")
@@ -152,7 +153,6 @@ private suspend fun ElevatedClient.getDeviceSummary(): List<DeviceSummary> = cor
         .map { async { it.id to getDeviceActions(it.id, submittedAfter = Clock.System.now() - 48.hours) } }
         .awaitAll()
         .toMap()
-
 
     devices.map { device ->
         DeviceSummary(

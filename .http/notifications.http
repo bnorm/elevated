@@ -1,0 +1,48 @@
+
+### User login
+
+POST {{hostname}}/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.global.set("authorization", response.body.token.type + " " + response.body.token.value);
+  client.global.set("userId", response.body.user.id);
+%}
+
+### Get all notifications
+
+GET {{hostname}}/api/v1/users/{{userId}}/notifications
+Authorization: {{authorization}}
+Accept: application/json
+
+### Submit notification
+
+POST {{hostname}}/api/v1/users/{{userId}}/notifications
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "code": "UNKNOWN",
+  "message": "Hello, World"
+}
+
+> {% client.global.set("notificationId", response.body.id); %}
+
+### Acknowledge notification
+
+PUT {{hostname}}/api/v1/users/{{userId}}/notifications/{{notificationId}}/acknowledge
+Authorization: {{authorization}}
+Accept: application/json
+
+### Delete notification
+
+DELETE {{hostname}}/api/v1/users/{{userId}}/notifications/{{notificationId}}
+Authorization: {{authorization}}
+Accept: application/json

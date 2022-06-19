@@ -1,11 +1,11 @@
-FROM adoptopenjdk:11-jre-hotspot as builder
+FROM eclipse-temurin:17-jre as builder
 WORKDIR application
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
 # the second stage of our build will copy the extracted layers
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:17-jre
 
 EXPOSE 8080/tcp
 ENV SERVER_PORT 8080

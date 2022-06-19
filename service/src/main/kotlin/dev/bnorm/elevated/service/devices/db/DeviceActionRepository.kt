@@ -37,7 +37,7 @@ class DeviceActionRepository(
         deviceActionId: DeviceActionId,
     ): DeviceActionEntity? {
         val criteria = Criteria().andOperator(
-            DeviceActionEntity::id isEqualTo deviceActionId.value,
+            DeviceActionEntity::_id isEqualTo deviceActionId,
             DeviceActionEntity::deviceId isEqualTo deviceId,
         )
         val query = Query(criteria)
@@ -50,7 +50,7 @@ class DeviceActionRepository(
         timestamp: Instant,
     ): DeviceActionEntity? {
         val criteria = Criteria().andOperator(
-            DeviceActionEntity::id isEqualTo deviceActionId.value,
+            DeviceActionEntity::_id isEqualTo deviceActionId,
             DeviceActionEntity::deviceId isEqualTo deviceId,
             DeviceActionEntity::completed exists false,
         )
@@ -94,7 +94,7 @@ class DeviceActionRepository(
         deviceActionId: DeviceActionId,
     ) {
         val criteria = Criteria().andOperator(
-            DeviceActionEntity::id isEqualTo deviceActionId.value,
+            DeviceActionEntity::_id isEqualTo deviceActionId,
             DeviceActionEntity::deviceId isEqualTo deviceId,
         )
         val query = Query(criteria)

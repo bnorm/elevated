@@ -18,27 +18,27 @@ GET {{hostname}}/api/v1/devices
 Authorization: {{authorization}}
 Accept: application/json
 
-## Create device
+### Create device
 
-#POST {{hostname}}/api/v1/devices
-#Authorization: {{authorization}}
-#Accept: application/json
-#Content-Type: application/json
-#
-#{
-#  "name": "Sample Device",
-#  "key": "{{deviceKey}}"
-#}
-#
-#> {% client.global.set("deviceId", response.body.id); %}
+POST {{hostname}}/api/v1/devices
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
 
-## Delete device
+{
+  "name": "Sample Device",
+  "key": "{{deviceKey}}"
+}
 
-#DELETE {{hostname}}/api/v1/devices/{{deviceId}}
-#Authorization: {{authorization}}
-#Accept: application/json
-#
-#> {% client.global.clear("deviceId"); %}
+> {% client.global.set("deviceId", response.body.id); %}
+
+### Delete device
+
+DELETE {{hostname}}/api/v1/devices/62af5a9ca0d257224559bb78
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.clear("deviceId"); %}
 
 ### Get device
 

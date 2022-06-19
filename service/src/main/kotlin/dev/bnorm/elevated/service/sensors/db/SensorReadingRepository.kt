@@ -52,7 +52,10 @@ class SensorReadingRepository(
         endTime: Instant,
     ): Flow<SensorReadingEntity> {
         val criteria = Criteria().andOperator(
-            SensorReadingEntity::sensorId isEqualTo sensorId.value,
+            Criteria().orOperator(
+                SensorReadingEntity::sensorId isEqualTo sensorId,
+                SensorReadingEntity::sensorId isEqualTo sensorId.value,
+            ),
             SensorReadingEntity::timestamp gte startTime,
             SensorReadingEntity::timestamp lt endTime,
         )
@@ -64,7 +67,10 @@ class SensorReadingRepository(
         sensorId: SensorId,
         count: Int,
     ): Flow<SensorReadingEntity> {
-        val criteria = SensorReadingEntity::sensorId isEqualTo sensorId.value
+        val criteria = Criteria().orOperator(
+            SensorReadingEntity::sensorId isEqualTo sensorId,
+            SensorReadingEntity::sensorId isEqualTo sensorId.value,
+        )
         val query = Query(criteria)
             .with(Sort.by(SensorReadingEntity::timestamp.toPath()).descending())
             .limit(count)

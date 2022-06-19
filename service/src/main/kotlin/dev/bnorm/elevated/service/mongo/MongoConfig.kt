@@ -16,6 +16,8 @@ class MongoConfig {
                 DeviceActionIdWritingConverter(),
                 DeviceIdReadingConverter(),
                 DeviceIdWritingConverter(),
+                NotificationIdReadingConverter(),
+                NotificationIdWritingConverter(),
                 SensorIdReadingConverter(),
                 SensorIdWritingConverter(),
                 UserIdReadingConverter(),

@@ -36,7 +36,7 @@ class ChartRepository(
     }
 
     suspend fun delete(chartId: ChartId) {
-        val criteria = ChartEntity::id isEqualTo chartId.value
+        val criteria = ChartEntity::_id isEqualTo chartId
         val query = Query(criteria)
         mongo.remove<ChartEntity>(query).awaitSingle()
     }
@@ -45,14 +45,14 @@ class ChartRepository(
         return mongo.findAll<ChartEntity>().asFlow()
     }
 
-    suspend fun findById(id: ChartId): ChartEntity? {
-        val criteria = ChartEntity::id isEqualTo id.value
+    suspend fun findById(chartId: ChartId): ChartEntity? {
+        val criteria = ChartEntity::_id isEqualTo chartId
         val query = Query(criteria)
         return mongo.findOne<ChartEntity>(query).awaitSingleOrNull()
     }
 
     suspend fun modify(chartId: ChartId, chartUpdate: ChartUpdate): ChartEntity? {
-        val criteria = ChartEntity::id isEqualTo chartId.value
+        val criteria = ChartEntity::_id isEqualTo chartId
         val query = Query(criteria)
         val update = Update().apply {
             patch(ChartEntity::name, chartUpdate.name)

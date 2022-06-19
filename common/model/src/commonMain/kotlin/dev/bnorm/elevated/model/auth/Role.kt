@@ -7,6 +7,7 @@ enum class Role(
         Authority.ACTIONS_ADMIN,
         Authority.CHARTS_ADMIN,
         Authority.DEVICES_ADMIN,
+        Authority.NOTIFICATIONS_ADMIN,
         Authority.READINGS_ADMIN,
         Authority.SENSORS_ADMIN,
         Authority.USERS_ADMIN,
@@ -16,8 +17,9 @@ enum class Role(
         Authority.ACTIONS_READ,
         Authority.CHARTS_READ,
         Authority.DEVICES_READ,
-        Authority.SENSORS_READ,
+        Authority.NOTIFICATIONS_READ,
         Authority.READINGS_READ,
+        Authority.SENSORS_READ,
     ),
 
     DEVICE(

@@ -42,8 +42,8 @@ class UserRepository(
         // TODO wrap duplicate key exceptions
     }
 
-    suspend fun modify(id: UserId, userUpdate: UserUpdate): UserEntity? {
-        val criteria = UserEntity::id isEqualTo id
+    suspend fun modify(userId: UserId, userUpdate: UserUpdate): UserEntity? {
+        val criteria = UserEntity::_id isEqualTo userId
         val query = Query(criteria)
         val update = Update().apply {
             patch(UserEntity::email, userUpdate.email)
@@ -55,8 +55,8 @@ class UserRepository(
         return mongo.findAndModify<UserEntity>(query, update, options).awaitSingleOrNull()
     }
 
-    suspend fun findById(id: UserId): UserEntity? {
-        val criteria = UserEntity::id isEqualTo id
+    suspend fun findById(userId: UserId): UserEntity? {
+        val criteria = UserEntity::_id isEqualTo userId
         val query = Query(criteria)
         return mongo.findOne<UserEntity>(query).awaitSingleOrNull()
     }

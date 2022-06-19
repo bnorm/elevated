@@ -65,6 +65,8 @@ Content-Type: application/json
 
 {
   "name": "Active Chart",
+  "targetPhLow": 5.7,
+  "targetPhHigh": 6.3,
   "targetEcLow": 400,
   "targetEcHigh": 600,
   "microMl": 2,

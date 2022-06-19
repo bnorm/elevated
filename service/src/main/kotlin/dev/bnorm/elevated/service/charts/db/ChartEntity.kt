@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.service.charts.db
 
 import dev.bnorm.elevated.model.charts.ChartId
+import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -16,7 +17,8 @@ class ChartEntity(
     val bloomMl: Double,
 ) {
     @Id
-    lateinit var id: ChartId
+    lateinit var _id: ObjectId
+    val id: ChartId get() = ChartId(_id.toHexString())
 
     companion object {
         const val COLLECTION_NAME = "charts"

@@ -15,6 +15,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import org.springframework.stereotype.Service
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 @Service
 class DeviceActionService(
@@ -42,7 +43,7 @@ class DeviceActionService(
     }
 
     suspend fun completeAction(deviceId: DeviceId, deviceActionId: DeviceActionId): DeviceAction? {
-        val timestamp = Instant.now()
+        val timestamp = Instant.now().truncatedTo(ChronoUnit.MILLIS)
         val device = deviceService.getDeviceById(deviceId)
         if (device != null) {
             val action = deviceActionRepository.complete(deviceId, deviceActionId, timestamp)
@@ -95,7 +96,7 @@ class DeviceActionService(
     private fun DeviceActionPrototype.toEntity(deviceId: DeviceId): DeviceActionEntity {
         return DeviceActionEntity(
             deviceId = deviceId,
-            submitted = Instant.now(),
+            submitted = Instant.now().truncatedTo(ChronoUnit.MILLIS),
             completed = null,
             args = args.toEntity(),
         )

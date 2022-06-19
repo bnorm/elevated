@@ -2,6 +2,7 @@ package dev.bnorm.elevated.service.users.db
 
 import dev.bnorm.elevated.model.auth.Role
 import dev.bnorm.elevated.model.users.UserId
+import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
@@ -13,7 +14,8 @@ class UserEntity(
     val role: Role,
 ) {
     @Id
-    lateinit var id: UserId
+    lateinit var _id: ObjectId
+    val id: UserId get() = UserId(_id.toHexString())
 
     companion object {
         const val COLLECTION_NAME = "users"

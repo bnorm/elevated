@@ -35,7 +35,7 @@ class SensorRepository(
     }
 
     suspend fun update(sensorId: SensorId, sensorUpdate: SensorUpdate): SensorEntity? {
-        val criteria = SensorEntity::id isEqualTo sensorId.value
+        val criteria = SensorEntity::_id isEqualTo sensorId
         val query = Query(criteria)
         val update = Update().apply {
             patch(SensorEntity::name, sensorUpdate.name)
@@ -47,7 +47,7 @@ class SensorRepository(
     }
 
     suspend fun delete(sensorId: SensorId) {
-        val criteria = SensorEntity::id isEqualTo sensorId.value
+        val criteria = SensorEntity::_id isEqualTo sensorId
         val query = Query(criteria)
         mongo.remove<SensorEntity>(query).awaitSingle()
     }
@@ -57,13 +57,13 @@ class SensorRepository(
     }
 
     fun getByDeviceId(deviceId: DeviceId): Flow<SensorEntity> {
-        val criteria = SensorEntity::deviceId isEqualTo deviceId.value
+        val criteria = SensorEntity::deviceId isEqualTo deviceId
         val query = Query(criteria)
         return mongo.find<SensorEntity>(query).asFlow()
     }
 
     suspend fun getById(sensorId: SensorId): SensorEntity? {
-        val criteria = SensorEntity::id isEqualTo sensorId.value
+        val criteria = SensorEntity::_id isEqualTo sensorId
         val query = Query(criteria)
         return mongo.findOne<SensorEntity>(query).awaitSingleOrNull()
     }
