@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import dev.bnorm.elevated.client.ElevatedClient
-import dev.bnorm.elevated.state.UserSession
-import dev.bnorm.elevated.state.UserState
+import dev.bnorm.elevated.state.auth.UserSession
+import dev.bnorm.elevated.state.auth.UserState
 import dev.bnorm.elevated.ui.panes.Home
 import dev.bnorm.elevated.ui.panes.Login
 import dev.bnorm.elevated.ui.theme.ElevatedTheme

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import dev.bnorm.elevated.model.sensors.SensorReading
+import dev.bnorm.elevated.state.graph.SensorGraph
 import kotlinx.datetime.Instant
 import org.jetbrains.compose.web.attributes.height
 import org.jetbrains.compose.web.attributes.width
@@ -15,56 +16,21 @@ import kotlin.math.PI
 
 @Composable
 fun SensorChart(
-    readings: List<SensorReading>,
+    graph: SensorGraph,
     width: Int = 500,
     height: Int = 500,
     selectedTimestamp: Instant? = null,
     onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
-    data class ChartSizing(
-        val minX: Double,
-        val maxX: Double,
-        val minY: Double,
-        val maxY: Double,
-    ) {
-        val spanX = maxX - minX
-        val spanY = maxY - minY
-    }
+    fun SensorReading.toX(): Double = with(graph) { toX(width.toDouble()) }
+    fun SensorReading.toY(): Double = with(graph) { toY(height.toDouble()) }
 
-    val chartSizing = remember(key1 = readings) {
-        var minTimestamp = Long.MAX_VALUE
-        var maxTimestamp = Long.MIN_VALUE
-        var minReading = Double.MAX_VALUE
-        var maxReading = Double.MIN_VALUE
-        for (reading in readings) {
-            minTimestamp = minOf(minTimestamp, reading.timestamp.epochSeconds)
-            maxTimestamp = maxOf(maxTimestamp, reading.timestamp.epochSeconds)
-            minReading = minOf(minReading, reading.value)
-            maxReading = maxOf(maxReading, reading.value)
-        }
-        val padding = 0.2 * maxOf(maxReading - minReading, 1.0)
-        ChartSizing(
-            minX = minTimestamp.toDouble(),
-            maxX = maxTimestamp.toDouble(),
-            minY = (minReading - padding),
-            maxY = (maxReading + padding),
-        )
-    }
-
-    fun SensorReading.toX(): Double {
-        return width.toDouble() * (timestamp.epochSeconds.toDouble() - chartSizing.minX) / chartSizing.spanX
-    }
-
-    fun SensorReading.toY(): Double {
-        return height.toDouble() * (chartSizing.maxY - value) / chartSizing.spanY
-    }
-
-    fun CanvasRenderingContext2D.drawPath(readings: List<SensorReading>) {
+    fun CanvasRenderingContext2D.drawPath(graph: SensorGraph) {
         beginPath()
 
         var previous: SensorReading? = null
         var previousX: Double? = null
-        for (reading in readings.sortedBy { it.timestamp }) {
+        for (reading in graph.readings.sortedBy { it.timestamp }) {
             val x = reading.toX()
             if (previous == null) {
                 moveTo(x, reading.toY())
@@ -78,8 +44,8 @@ fun SensorChart(
         stroke()
     }
 
-    val selectedReading = remember(key1 = selectedTimestamp) {
-        if (selectedTimestamp != null) toNearestReading(readings, selectedTimestamp) else null
+    val selectedReading = remember(graph, selectedTimestamp) {
+        if (selectedTimestamp != null) graph.toNearestReading(selectedTimestamp) else null
     }
 
     Canvas(
@@ -88,12 +54,12 @@ fun SensorChart(
             height(height)
 
             onMouseMove {
-                val selectedValue = chartSizing.minX + (it.offsetX / width) * chartSizing.spanX
+                val selectedValue = graph.minX + (it.offsetX / width) * graph.spanX
                 val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
                 onSelectedTimestamp(timestamp)
             }
             onMouseDown {
-                val selectedValue = chartSizing.minX + (it.offsetX / width) * chartSizing.spanX
+                val selectedValue = graph.minX + (it.offsetX / width) * graph.spanX
                 val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
                 onSelectedTimestamp(timestamp)
             }
@@ -107,7 +73,7 @@ fun SensorChart(
             onTouchMove {
                 val touch = it.touches[0]!!
                 val offsetX = (touch.pageX - (touch.target as HTMLElement).offsetLeft).toDouble()
-                val selectedValue = chartSizing.minX + (offsetX / width) * chartSizing.spanX
+                val selectedValue = graph.minX + (offsetX / width) * graph.spanX
                 val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
                 onSelectedTimestamp(timestamp)
             }
@@ -116,25 +82,25 @@ fun SensorChart(
             }
         }
     ) {
-        DisposableEffect(readings, selectedReading) {
+        DisposableEffect(graph, selectedReading) {
             val ctx = scopeElement.getContext("2d") as? CanvasRenderingContext2D
             val reading = selectedReading
 
             if (ctx != null) {
                 ctx.clearRect(0.0, 0.0, width.toDouble(), height.toDouble())
-                ctx.drawPath(readings)
+                ctx.drawPath(graph)
 
                 ctx.withStyle(
                     font = "14px sanserif"
                 ) {
-                    fillText("${chartSizing.maxY}", 0.0, 14.0)
-                    fillText("${chartSizing.minY}", 0.0, height.toDouble())
+                    fillText("${graph.maxY}", 0.0, 14.0)
+                    fillText("${graph.minY}", 0.0, height.toDouble())
                 }
 
                 ctx.withStyle(
                     font = "14px sanserif"
                 ) {
-                    fillText("${(reading ?: readings.lastOrNull())?.value ?: -1.0}", 0.0, 28.0)
+                    fillText("${(reading ?: graph.readings.lastOrNull())?.value ?: -1.0}", 0.0, 28.0)
                 }
 
                 if (reading != null) {

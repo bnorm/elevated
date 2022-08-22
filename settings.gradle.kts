@@ -15,11 +15,11 @@ pluginManagement {
 
         id("org.springframework.boot") version "2.6.6"
 
-        id("com.android.base") version "7.0.4"
-        id("com.android.application") version "7.0.4"
-        id("com.android.library") version "7.0.4"
+        id("com.android.base") version "7.2.0"
+        id("com.android.application") version "7.2.0"
+        id("com.android.library") version "7.2.0"
 
-        id("org.jetbrains.compose") version "1.1.0"
+        id("org.jetbrains.compose") version "1.1.1"
 
         id("com.squareup.anvil") version "2.4.0"
     }
@@ -30,6 +30,7 @@ rootProject.name = "elevated"
 include("common:client")
 include("common:model")
 include("frontend:android")
+include("frontend:state")
 include("frontend:webapp")
 include("iot:raspberry")
 include("platform")

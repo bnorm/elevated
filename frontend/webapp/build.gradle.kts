@@ -44,9 +44,10 @@ kotlin {
         binaries.executable()
     }
     sourceSets {
-        val jsMain by getting {
+        named("jsMain") {
             dependencies {
                 implementation(project(":common:client"))
+                implementation(project(":frontend:state"))
 
                 val mdcVersion = "13.0.0"
                 implementation(npm("@material/base", mdcVersion))

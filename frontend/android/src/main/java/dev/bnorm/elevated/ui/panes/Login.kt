@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
-import dev.bnorm.elevated.state.UserSession
+import dev.bnorm.elevated.state.auth.UserSession
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 

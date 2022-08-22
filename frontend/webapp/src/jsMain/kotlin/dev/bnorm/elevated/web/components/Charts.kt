@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import dev.bnorm.elevated.model.charts.Chart
-import dev.bnorm.elevated.web.api.ChartService
+import dev.bnorm.elevated.web.api.client
 import kotlinx.coroutines.launch
 import material.button.MDCButton
 import org.jetbrains.compose.web.dom.Text
@@ -18,7 +18,7 @@ fun Charts() {
     val charts = remember { mutableStateListOf<Chart>() }
 
     suspend fun getCharts() = runCatching {
-        val newCharts = ChartService.getCharts()
+        val newCharts = client.getCharts()
         charts.clear()
         charts.addAll(newCharts)
     }

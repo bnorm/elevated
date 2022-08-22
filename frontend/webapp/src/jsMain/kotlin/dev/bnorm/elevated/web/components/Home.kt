@@ -7,10 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
-import dev.bnorm.elevated.model.sensors.SensorReading
-import dev.bnorm.elevated.web.auth.UserSession
-import dev.bnorm.elevated.web.components.state.DevicePaneState
-import dev.bnorm.elevated.web.components.state.SensorReadingState
+import dev.bnorm.elevated.state.NetworkResult
+import dev.bnorm.elevated.state.graph.SensorGraphState
+import dev.bnorm.elevated.web.api.client
+import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.router.HashRouter
 import dev.bnorm.elevated.web.router.Router
 import kotlinx.datetime.Instant
@@ -34,7 +34,7 @@ fun Routes(user: AuthenticatedUser) {
 
 @Composable
 fun Home(user: AuthenticatedUser) {
-    val devicePaneState = remember { DevicePaneState() }
+    val devicePaneState = remember { SensorGraphState(client, ) }
 
     Div {
         Text("Hello, ${user.user.name}")
@@ -43,7 +43,7 @@ fun Home(user: AuthenticatedUser) {
         MDCButton(
             text = "Logout",
             attrs = {
-                onClick { UserSession.logout() }
+                onClick { userSession.logout() }
             }
         )
     }
@@ -66,11 +66,11 @@ fun Home(user: AuthenticatedUser) {
     Div {
         var selectedTimestamp by remember { mutableStateOf<Instant?>(null) }
 
-        val phReadingState by devicePaneState.phReadings.collectAsState(SensorReadingState.Loading)
+        val phReadingState by devicePaneState.phReadings.collectAsState(NetworkResult.Loading)
         when (val state = phReadingState) {
-            is SensorReadingState.Loaded -> {
+            is NetworkResult.Loaded -> {
                 SensorChart(
-                    readings = state.readings,
+                    graph = state.value,
                     selectedTimestamp = selectedTimestamp,
                     onSelectedTimestamp = { selectedTimestamp = it },
                 )
@@ -78,11 +78,11 @@ fun Home(user: AuthenticatedUser) {
             else -> Unit
         }
 
-        val ecReadingState by devicePaneState.ecReadings.collectAsState(SensorReadingState.Loading)
+        val ecReadingState by devicePaneState.ecReadings.collectAsState(NetworkResult.Loading)
         when (val state = ecReadingState) {
-            is SensorReadingState.Loaded -> {
+            is NetworkResult.Loaded -> {
                 SensorChart(
-                    readings = state.readings,
+                    graph = state.value,
                     selectedTimestamp = selectedTimestamp,
                     onSelectedTimestamp = { selectedTimestamp = it },
                 )
@@ -90,28 +90,4 @@ fun Home(user: AuthenticatedUser) {
             else -> Unit
         }
     }
-}
-
-fun toNearestReading(readings: List<SensorReading>, timestamp: Instant): SensorReading {
-    val index = readings.binarySearchBy(timestamp) { it.timestamp }
-    val insertIndex = -(index + 1)
-    val prev = insertIndex - 1
-    val next = insertIndex
-
-    val reading = when {
-        index >= 0 -> readings[index]
-        prev < 0 -> readings[next]
-        next >= readings.size -> readings[prev]
-        else -> {
-            val prevReading = readings[prev]
-            val nextReading = readings[next]
-            if (timestamp - prevReading.timestamp < nextReading.timestamp - timestamp) {
-                prevReading
-            } else {
-                nextReading
-            }
-        }
-    }
-
-    return reading
 }

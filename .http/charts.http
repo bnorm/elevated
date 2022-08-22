@@ -6,7 +6,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "brian@bnorm.com",
+  "email": "{{email}}",
   "password": "{{password}}"
 }
 
@@ -17,36 +17,6 @@ Content-Type: application/json
 GET {{hostname}}/api/v1/charts
 Authorization: {{authorization}}
 Accept: application/json
-
-### Create chart
-# "Grow Week 1", 500, 600, 2.0, 2.0, 2.0
-# "Grow Week 2", 1000, 1200, 4.2, 3.8, 3.0
-# "Grow Week 3", 1300, 1600, 5.6, 5.2, 3.8
-# "Grow Week 4", 1600, 2000, 6.8, 6.4, 4.8
-# "Bloom Week 1", 1600, 1900, 6.1, 5.3, 6.8
-# "Bloom Week 2", 1600, 1900, 6.1, 5.3, 6.8
-# "Bloom Week 3", 1600, 1900, 5.3, 5.3, 7.6
-# "Bloom Week 4", 1600, 1900, 5.3, 5.3, 7.6
-# "Bloom Week 5", 1600, 1900, 5.3, 5.3, 7.6
-# "Bloom Week 6", 1000, 1300, 3.8, 3.8, 4.5
-# "Bloom Week 7", 1000, 1300, 3.8, 3.8, 4.6
-# "Bloom Week 8", 700, 900, 2.3, 2.3, 3.6
-
-POST {{hostname}}/api/v1/charts
-Authorization: {{authorization}}
-Accept: application/json
-Content-Type: application/json
-
-{
-  "name": "Grow Week 1",
-  "targetEcLow": 500,
-  "targetEcHigh": 600,
-  "microMl": 2.0,
-  "groMl": 2.0,
-  "bloomMl": 2.0
-}
-
-> {% client.global.set("chartId", response.body.id); %}
 
 ### Get chart
 
@@ -70,14 +40,44 @@ Content-Type: application/json
   "targetEcLow": 400,
   "targetEcHigh": 600,
   "microMl": 2,
-  "groMl": 3,
-  "bloomMl": 0.5
+  "groMl": 2,
+  "bloomMl": 2
 }
 
-### Delete chart
+#### Create chart
+## "Grow Week 1", 500, 600, 2.0, 2.0, 2.0
+## "Grow Week 2", 1000, 1200, 4.2, 3.8, 3.0
+## "Grow Week 3", 1300, 1600, 5.6, 5.2, 3.8
+## "Grow Week 4", 1600, 2000, 6.8, 6.4, 4.8
+## "Bloom Week 1", 1600, 1900, 6.1, 5.3, 6.8
+## "Bloom Week 2", 1600, 1900, 6.1, 5.3, 6.8
+## "Bloom Week 3", 1600, 1900, 5.3, 5.3, 7.6
+## "Bloom Week 4", 1600, 1900, 5.3, 5.3, 7.6
+## "Bloom Week 5", 1600, 1900, 5.3, 5.3, 7.6
+## "Bloom Week 6", 1000, 1300, 3.8, 3.8, 4.5
+## "Bloom Week 7", 1000, 1300, 3.8, 3.8, 4.6
+## "Bloom Week 8", 700, 900, 2.3, 2.3, 3.6
+#
+#POST {{hostname}}/api/v1/charts
+#Authorization: {{authorization}}
+#Accept: application/json
+#Content-Type: application/json
+#
+#{
+#  "name": "Grow Week 1",
+#  "targetEcLow": 500,
+#  "targetEcHigh": 600,
+#  "microMl": 2.0,
+#  "groMl": 2.0,
+#  "bloomMl": 2.0
+#}
+#
+#> {% client.global.set("chartId", response.body.id); %}
 
-DELETE {{hostname}}/api/v1/charts/{{chartId}}
-Authorization: {{authorization}}
-Accept: application/json
-
-> {% client.global.clear("chartId"); %}
+#### Delete chart
+#
+#DELETE {{hostname}}/api/v1/charts/{{chartId}}
+#Authorization: {{authorization}}
+#Accept: application/json
+#
+#> {% client.global.clear("chartId"); %}

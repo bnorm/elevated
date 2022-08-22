@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.state.graph.SensorGraphState
 import kotlinx.coroutines.Dispatchers
 
 enum class HomeTab(
@@ -27,7 +28,7 @@ fun Home(client: ElevatedClient) {
 
     var selectedTab by remember { mutableStateOf(HomeTab.Charts) }
 
-    val chartPaneState = remember(scope) { ChartPaneState(client, scope) }
+    val chartPaneState = remember(scope) { SensorGraphState(client) }
 
     Scaffold(
         content = {

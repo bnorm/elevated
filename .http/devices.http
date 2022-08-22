@@ -6,7 +6,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "brian@bnorm.com",
+  "email": "{{email}}",
   "password": "{{password}}"
 }
 
@@ -17,28 +17,6 @@ Content-Type: application/json
 GET {{hostname}}/api/v1/devices
 Authorization: {{authorization}}
 Accept: application/json
-
-### Create device
-
-POST {{hostname}}/api/v1/devices
-Authorization: {{authorization}}
-Accept: application/json
-Content-Type: application/json
-
-{
-  "name": "Sample Device",
-  "key": "{{deviceKey}}"
-}
-
-> {% client.global.set("deviceId", response.body.id); %}
-
-### Delete device
-
-DELETE {{hostname}}/api/v1/devices/62af5a9ca0d257224559bb78
-Authorization: {{authorization}}
-Accept: application/json
-
-> {% client.global.clear("deviceId"); %}
 
 ### Get device
 
@@ -110,3 +88,25 @@ Content-Type: application/json
 }
 
 > {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
+#### Create device
+#
+#POST {{hostname}}/api/v1/devices
+#Authorization: {{authorization}}
+#Accept: application/json
+#Content-Type: application/json
+#
+#{
+#  "name": "Sample Device",
+#  "key": "{{deviceKey}}"
+#}
+#
+#> {% client.global.set("deviceId", response.body.id); %}
+
+#### Delete device
+#
+#DELETE {{hostname}}/api/v1/devices/{{deviceId}}
+#Authorization: {{authorization}}
+#Accept: application/json
+#
+#> {% client.global.clear("deviceId"); %}

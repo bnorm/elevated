@@ -52,13 +52,13 @@ android {
     }
 
     lint {
-        isAbortOnError = false
+        abortOnError = false
     }
 }
 
 dependencies {
     implementation(project(":common:client"))
-
+    implementation(project(":frontend:state"))
 
     implementation("com.google.dagger:dagger:2.42")
     implementation("com.google.dagger:dagger-android:2.42")
@@ -76,6 +76,8 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
     implementation("androidx.activity:activity-compose:1.4.0")
+
+    implementation("androidx.work:work-runtime-ktx:2.7.1")
 
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")

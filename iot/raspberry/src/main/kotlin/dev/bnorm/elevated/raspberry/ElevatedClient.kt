@@ -1,12 +1,19 @@
 package dev.bnorm.elevated.raspberry
 
+import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.client.TokenStore
-import dev.bnorm.elevated.client.createElevatedClient
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.*
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
+import io.ktor.client.*
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.features.websocket.*
+import io.ktor.http.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
@@ -46,10 +53,33 @@ class ElevatedClient {
         .pingInterval(Duration.ofSeconds(30))
         .build()
 
-    private val client = createElevatedClient(tokenStore)
+    private val httpClient = HttpClient(OkHttp.create {
+        preconfigured = okHttpClient
+    }) {
+        install(WebSockets)
+
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(json)
+        }
+
+        install(DefaultRequest) {
+            tokenStore.authorization?.let { headers[HttpHeaders.Authorization] = it }
+        }
+
+        install(HttpCallValidator) {
+            handleResponseException { exception ->
+                val clientException = exception as? ClientRequestException ?: return@handleResponseException
+                if (clientException.response.status == HttpStatusCode.Unauthorized) {
+                    tokenStore.authorization = null
+                }
+            }
+        }
+    }
+
+    private val elevatedClient = ElevatedClient(httpClient, Url("https://elevated.bnorm.dev"))
 
     suspend fun authenticate(): Device {
-        val authenticatedDevice = client.loginDevice(
+        val authenticatedDevice = elevatedClient.loginDevice(
             DeviceLoginRequest(
                 id = DEVICE_ID,
                 key = DEVICE_KEY,
@@ -60,15 +90,15 @@ class ElevatedClient {
     }
 
     suspend fun getDevice(): Device {
-        return client.getDevice(DEVICE_ID)
+        return elevatedClient.getDevice(DEVICE_ID)
     }
 
     suspend fun getDeviceActions(submittedAfter: Instant): List<DeviceAction> {
-        return client.getDeviceActions(DEVICE_ID, submittedAfter)
+        return elevatedClient.getDeviceActions(DEVICE_ID, submittedAfter)
     }
 
     suspend fun completeDeviceAction(deviceActionId: DeviceActionId): DeviceAction {
-        return client.completeDeviceAction(DEVICE_ID, deviceActionId)
+        return elevatedClient.completeDeviceAction(DEVICE_ID, deviceActionId)
     }
 
     suspend fun getActionQueue(): Flow<DeviceAction> {
@@ -122,7 +152,7 @@ class ElevatedClient {
         value: Double,
         timestamp: Instant = Clock.System.now(),
     ): SensorReading {
-        return client.recordSensorReading(
+        return elevatedClient.recordSensorReading(
             sensorId,
             SensorReadingPrototype(
                 value = value,

@@ -1,18 +1,17 @@
-package dev.bnorm.elevated.state
+package dev.bnorm.elevated.state.auth
 
-import android.util.Log
 import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.client.TokenStore
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.model.users.UserLoginRequest
+import io.ktor.client.features.*
+import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import retrofit2.HttpException
-import javax.inject.Inject
 
-class UserSession @Inject constructor(
+class UserSession(
     private val client: ElevatedClient,
     private val store: TokenStore,
 ) {
@@ -28,9 +27,8 @@ class UserSession @Inject constructor(
         try {
             return client.getCurrentUser()
                 .also { setAuthorization(it) }
-        } catch (t: HttpException) {
-            if (t.code() == 401) logout()
-            else Log.w("UserSession", "Error refreshing user token", t)
+        } catch (t: ClientRequestException) {
+            if (t.response.status == HttpStatusCode.Unauthorized) logout()
             throw t
         }
     }

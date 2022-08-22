@@ -8,7 +8,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
-import dev.bnorm.elevated.web.auth.UserSession
+import dev.bnorm.elevated.web.api.userSession
 import kotlinx.coroutines.launch
 import material.button.MDCButton
 import material.textfield.MDCTextField
@@ -43,7 +43,7 @@ fun Login() {
     fun login() {
         scope.launch {
             runCatching {
-                UserSession.login(Email(email), Password(password))
+                userSession.login(Email(email), Password(password))
             }.onFailure {
                 error = "Unable to login: ${it.message}"
             }

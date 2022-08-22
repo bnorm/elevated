@@ -1,4 +1,4 @@
-package dev.bnorm.elevated.state
+package dev.bnorm.elevated.state.auth
 
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 

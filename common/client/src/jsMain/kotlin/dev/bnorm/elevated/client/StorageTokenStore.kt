@@ -1,6 +1,5 @@
-package dev.bnorm.elevated.web.auth
+package dev.bnorm.elevated.client
 
-import dev.bnorm.elevated.client.TokenStore
 import org.w3c.dom.Storage
 
 class StorageTokenStore(

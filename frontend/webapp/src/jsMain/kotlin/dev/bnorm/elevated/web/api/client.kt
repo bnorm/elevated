@@ -1,36 +1,21 @@
 package dev.bnorm.elevated.web.api
 
-import dev.bnorm.elevated.model.auth.AuthorizationToken
-import dev.bnorm.elevated.model.auth.JwtTokenUsage
-import dev.bnorm.elevated.web.auth.UserSession
-import dev.bnorm.elevated.web.getValue
-import dev.bnorm.elevated.web.setValue
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.js.Js
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.features.DefaultRequest
-import io.ktor.client.features.HttpCallValidator
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.KotlinxSerializer
-import io.ktor.client.features.websocket.WebSockets
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.URLBuilder
-import io.ktor.http.Url
+import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.client.StorageTokenStore
+import dev.bnorm.elevated.state.auth.UserSession
+import io.ktor.client.*
+import io.ktor.client.engine.js.*
+import io.ktor.client.features.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.features.websocket.*
+import io.ktor.http.*
+import kotlinx.browser.localStorage
 import kotlinx.browser.window
 
-var authorization: String? by window.localStorage
+val tokenStore = StorageTokenStore(localStorage)
 
-@OptIn(JwtTokenUsage::class)
-fun setAuthorization(token: AuthorizationToken) {
-    authorization = "${token.type} ${token.value.value}"
-}
-
-fun clearAuthorization() {
-    authorization = null
-}
-
-val client = HttpClient(Js) {
+val httpClient = HttpClient(Js) {
     install(WebSockets)
 
     install(JsonFeature) {
@@ -38,22 +23,20 @@ val client = HttpClient(Js) {
     }
 
     install(DefaultRequest) {
-        authorization?.let { headers[HttpHeaders.Authorization] = it }
+        tokenStore.authorization?.let { headers[HttpHeaders.Authorization] = it }
     }
 
     install(HttpCallValidator) {
         handleResponseException { exception ->
             val clientException = exception as? ClientRequestException ?: return@handleResponseException
             if (clientException.response.status == HttpStatusCode.Unauthorized) {
-                UserSession.logout()
+                tokenStore.authorization = null
             }
         }
     }
 }
 
-val apiUrl = URLBuilder(window.location.toString()).apply {
-    path("api", "v1")
-
+val hostUrl = URLBuilder(window.location.toString()).apply {
     // Sanitize other URL properties
     user = null
     password = null
@@ -62,7 +45,6 @@ val apiUrl = URLBuilder(window.location.toString()).apply {
     trailingQuery = false
 }.build()
 
-fun Url.appendPath(vararg path: String) = when (encodedPath) {
-    "/" -> copy(encodedPath = path.joinToString("/", prefix = "/"))
-    else -> copy(encodedPath = "$encodedPath${path.joinToString("/", prefix = "/")}")
-}
+val client = ElevatedClient(httpClient, hostUrl)
+
+val userSession = UserSession(client, tokenStore)
