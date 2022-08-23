@@ -31,7 +31,7 @@ fun SensorReadingGraph(
     onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
     var size by remember { mutableStateOf(Size(1f, 1f)) }
-    val path by derivedStateOf { graph.calculateRawPath(size) }
+    val path by derivedStateOf { graph.calculatePath(size) }
 
     fun SensorReading.toX(): Float = with(graph) { toX(size.width.toDouble()).toFloat() }
     fun SensorReading.toY(): Float = with(graph) { toY(size.height.toDouble()).toFloat() }
@@ -105,20 +105,16 @@ fun SensorReadingGraph(
     }
 }
 
-fun SensorGraph.calculateRawPath(size: Size): Path {
+fun SensorGraph.calculatePath(size: Size): Path {
     val path = Path()
-    var previous: SensorReading? = null
-    var previousX: Float? = null
-    for (reading in readings.sortedBy { it.timestamp }) {
+    for ((index, reading) in readings.sortedBy { it.timestamp }.withIndex()) {
         val x = reading.toX(size.width.toDouble()).toFloat()
         val y = reading.toY(size.height.toDouble()).toFloat()
-        if (previous == null) {
+        if (index == 0) {
             path.moveTo(x, y)
-        } else if (previousX != x) {
+        } else {
             path.lineTo(x, y)
         }
-        previousX = x
-        previous = reading
     }
     return path
 }
