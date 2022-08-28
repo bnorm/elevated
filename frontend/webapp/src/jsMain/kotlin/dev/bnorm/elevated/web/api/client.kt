@@ -5,11 +5,11 @@ import dev.bnorm.elevated.client.StorageTokenStore
 import dev.bnorm.elevated.state.auth.UserSession
 import io.ktor.client.*
 import io.ktor.client.engine.js.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.browser.localStorage
 import kotlinx.browser.window
 
@@ -18,8 +18,8 @@ val tokenStore = StorageTokenStore(localStorage)
 val httpClient = HttpClient(Js) {
     install(WebSockets)
 
-    install(JsonFeature) {
-        serializer = KotlinxSerializer()
+    install(ContentNegotiation) {
+        json()
     }
 
     install(DefaultRequest) {
@@ -27,8 +27,8 @@ val httpClient = HttpClient(Js) {
     }
 
     install(HttpCallValidator) {
-        handleResponseException { exception ->
-            val clientException = exception as? ClientRequestException ?: return@handleResponseException
+        handleResponseExceptionWithRequest { exception, request ->
+            val clientException = exception as? ClientRequestException ?: return@handleResponseExceptionWithRequest
             if (clientException.response.status == HttpStatusCode.Unauthorized) {
                 tokenStore.authorization = null
             }

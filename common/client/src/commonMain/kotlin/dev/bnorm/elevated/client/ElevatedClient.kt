@@ -10,6 +10,7 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import dev.bnorm.elevated.model.users.UserLoginRequest
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.datetime.Instant
@@ -23,26 +24,23 @@ class ElevatedClient(
         path("api", "v1")
     }.build()
 
-    private fun Url.appendPath(vararg path: String) = when (encodedPath) {
-        "/" -> copy(encodedPath = path.joinToString("/", prefix = "/"))
-        else -> copy(encodedPath = "$encodedPath${path.joinToString("/", prefix = "/")}")
-    }
+    private fun Url.appendPath(vararg path: String) = URLBuilder(this).appendPathSegments(path.toList()).build()
 
     suspend fun login(request: UserLoginRequest): AuthenticatedUser {
         return httpClient.post(apiUrl.appendPath("users/login")) {
             contentType(ContentType.Application.Json)
-            body = request
-        }
+            setBody(request)
+        }.body()
     }
 
     suspend fun getCurrentUser(): AuthenticatedUser {
-        return httpClient.get(apiUrl.appendPath("users/current"))
+        return httpClient.get(apiUrl.appendPath("users/current")).body()
     }
 
     // Sensors
 
     suspend fun getSensors(): List<Sensor> {
-        return httpClient.get(apiUrl.appendPath("sensors"))
+        return httpClient.get(apiUrl.appendPath("sensors")).body()
     }
 
     // Readings
@@ -53,8 +51,8 @@ class ElevatedClient(
     ): SensorReading {
         return httpClient.post(apiUrl.appendPath("sensors/${sensorId.value}/readings/record")) {
             contentType(ContentType.Application.Json)
-            body = sensorReadingPrototype
-        }
+            setBody(sensorReadingPrototype)
+        }.body()
     }
 
     suspend fun getSensorReadings(
@@ -65,7 +63,7 @@ class ElevatedClient(
         return httpClient.get(apiUrl.appendPath("sensors/${sensorId.value}/readings")) {
             if (startTime != null) parameter("startTime", startTime.toString())
             if (endTime != null) parameter("endTime", endTime.toString())
-        }
+        }.body()
     }
 
     suspend fun getLatestSensorReadings(
@@ -74,7 +72,7 @@ class ElevatedClient(
     ): List<SensorReading> {
         return httpClient.get(apiUrl.appendPath("sensors/${sensorId.value}/readings/latest")) {
             if (count != null) parameter("count", count.toString())
-        }
+        }.body()
     }
 
     // Devices
@@ -82,16 +80,16 @@ class ElevatedClient(
     suspend fun loginDevice(request: DeviceLoginRequest): AuthenticatedDevice {
         return httpClient.post(apiUrl.appendPath("devices/login")) {
             contentType(ContentType.Application.Json)
-            body = request
-        }
+            setBody(request)
+        }.body()
     }
 
     suspend fun getDevices(): List<Device> {
-        return httpClient.get(apiUrl.appendPath("devices"))
+        return httpClient.get(apiUrl.appendPath("devices")).body()
     }
 
     suspend fun getDevice(deviceId: DeviceId): Device {
-        return httpClient.get(apiUrl.appendPath("devices/${deviceId.value}"))
+        return httpClient.get(apiUrl.appendPath("devices/${deviceId.value}")).body()
     }
 
     // Actions
@@ -99,22 +97,22 @@ class ElevatedClient(
     suspend fun getDeviceActions(deviceId: DeviceId, submittedAfter: Instant): List<DeviceAction> {
         return httpClient.get(apiUrl.appendPath("devices/${deviceId.value}/actions")) {
             parameter("submittedAfter", submittedAfter.toString())
-        }
+        }.body()
     }
 
     suspend fun submitDeviceAction(deviceId: DeviceId, request: DeviceActionPrototype): DeviceAction {
         return httpClient.post(apiUrl.appendPath("devices/${deviceId.value}/actions")) {
             contentType(ContentType.Application.Json)
-            body = request
-        }
+            setBody(request)
+        }.body()
     }
 
     suspend fun completeDeviceAction(deviceId: DeviceId, actionId: DeviceActionId): DeviceAction {
-        return httpClient.put(apiUrl.appendPath("devices/${deviceId.value}/actions/${actionId.value}/complete"))
+        return httpClient.put(apiUrl.appendPath("devices/${deviceId.value}/actions/${actionId.value}/complete")).body()
     }
 
     // Charts
 
     suspend fun getCharts(): List<Chart> =
-        httpClient.get(apiUrl.appendPath("charts"))
+        httpClient.get(apiUrl.appendPath("charts")).body()
 }

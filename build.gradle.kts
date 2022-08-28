@@ -24,6 +24,7 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 
     tasks.withType<Test> {
@@ -54,12 +55,5 @@ allprojects {
 rootProject.plugins.withType<YarnPlugin> {
     rootProject.configure<YarnRootExtension> {
         lockFileDirectory = project.rootDir.resolve("gradle/kotlin-js-store")
-    }
-}
-
-// TODO work around until Kotlin 1.6.20
-rootProject.plugins.withType<NodeJsRootPlugin> {
-    rootProject.configure<NodeJsRootExtension> {
-        nodeVersion = "16.14.2"
     }
 }

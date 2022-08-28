@@ -6,7 +6,7 @@ import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.model.users.UserLoginRequest
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

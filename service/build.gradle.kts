@@ -11,7 +11,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")

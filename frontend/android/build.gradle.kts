@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
     buildToolsVersion = "30.0.3"
 
     defaultConfig {
         applicationId = "dev.bnorm.elevated"
         minSdk = 26
-        targetSdk = 31
+        targetSdk = 32
         versionCode = 1
         versionName = "1.0"
 
@@ -40,7 +40,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0"
+        kotlinCompilerExtensionVersion = "1.3.0"
     }
     namespace = "dev.bnorm.elevated"
 
@@ -65,17 +65,17 @@ dependencies {
     implementation("com.google.dagger:dagger-android-support:2.42")
     kapt("com.google.dagger:dagger-compiler:2.42")
 
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.6.0")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.5.0")
+    implementation("com.google.android.material:material:1.6.1")
 
-    implementation("androidx.compose.ui:ui:1.1.1")
-    implementation("androidx.compose.ui:ui-tooling:1.1.1")
-    implementation("androidx.compose.material:material:1.1.1")
-    implementation("androidx.compose.material:material-icons-extended:1.1.1")
+    implementation("androidx.compose.ui:ui:1.2.1")
+    implementation("androidx.compose.ui:ui-tooling:1.2.1")
+    implementation("androidx.compose.material:material:1.2.1")
+    implementation("androidx.compose.material:material-icons-extended:1.2.1")
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
-    implementation("androidx.activity:activity-compose:1.4.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
+    implementation("androidx.activity:activity-compose:1.5.1")
 
     implementation("androidx.work:work-runtime-ktx:2.7.1")
 
@@ -86,5 +86,5 @@ dependencies {
 
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.2.1")
 }

@@ -9,11 +9,11 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
@@ -58,8 +58,8 @@ class ElevatedClient {
     }) {
         install(WebSockets)
 
-        install(JsonFeature) {
-            serializer = KotlinxSerializer(json)
+        install(ContentNegotiation) {
+            json()
         }
 
         install(DefaultRequest) {
@@ -67,8 +67,8 @@ class ElevatedClient {
         }
 
         install(HttpCallValidator) {
-            handleResponseException { exception ->
-                val clientException = exception as? ClientRequestException ?: return@handleResponseException
+            handleResponseExceptionWithRequest { exception, request ->
+                val clientException = exception as? ClientRequestException ?: return@handleResponseExceptionWithRequest
                 if (clientException.response.status == HttpStatusCode.Unauthorized) {
                     tokenStore.authorization = null
                 }

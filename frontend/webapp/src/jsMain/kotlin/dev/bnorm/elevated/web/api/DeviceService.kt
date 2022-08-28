@@ -1,19 +1,16 @@
-@file:OptIn(ExperimentalTime::class)
-
 package dev.bnorm.elevated.web.api
 
 import dev.bnorm.elevated.model.devices.DeviceAction
 import dev.bnorm.elevated.model.devices.DeviceId
-import io.ktor.client.features.json.serializer.KotlinxSerializer.Companion.DefaultJson
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.http.*
-import io.ktor.http.cio.websocket.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.websocket.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 object DeviceService {
     fun connect(deviceId: DeviceId): Flow<DeviceAction> {

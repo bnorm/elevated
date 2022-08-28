@@ -9,13 +9,14 @@ kotlin {
     }
 
     sourceSets {
-        val ktorVersion = "1.6.8"
+        val ktorVersion = "2.1.0"
 
         named("commonMain") {
             dependencies {
                 api(project(":common:model"))
 
-                api("io.ktor:ktor-client-serialization:$ktorVersion")
+                api("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+                api("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
                 api("io.ktor:ktor-client-websockets:$ktorVersion")
             }
         }
