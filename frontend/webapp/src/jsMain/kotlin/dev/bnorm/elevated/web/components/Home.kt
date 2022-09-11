@@ -13,8 +13,9 @@ import dev.bnorm.elevated.web.api.client
 import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.router.HashRouter
 import dev.bnorm.elevated.web.router.Router
+import dev.petuska.kmdc.button.MDCButton
+import dev.petuska.kmdc.button.MDCButtonType
 import kotlinx.datetime.Instant
-import material.button.MDCButton
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 
@@ -42,6 +43,7 @@ fun Home(user: AuthenticatedUser) {
     Div {
         MDCButton(
             text = "Logout",
+            type = MDCButtonType.Raised,
             attrs = {
                 onClick { userSession.logout() }
             }
@@ -51,6 +53,7 @@ fun Home(user: AuthenticatedUser) {
         val router = Router.current
         MDCButton(
             text = "Charts",
+            type = MDCButtonType.Raised,
             attrs = {
                 onClick { router.navigate(ROUTE_CHARTS) }
             }

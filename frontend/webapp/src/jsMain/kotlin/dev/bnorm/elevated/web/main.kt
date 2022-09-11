@@ -12,7 +12,8 @@ import org.jetbrains.compose.web.renderComposable
 fun main() {
     renderComposable(rootElementId = "root") {
         val state by userSession.state.collectAsState()
-        LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
+        LaunchedEffect(Unit) { runCatching { userSession.refresh() }
+            .onFailure { it.printStackTrace() }}
 
         when (val actual = state) {
             is UserState.Authenticating -> Unit

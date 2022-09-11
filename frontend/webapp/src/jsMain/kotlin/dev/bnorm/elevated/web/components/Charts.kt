@@ -1,14 +1,11 @@
 package dev.bnorm.elevated.web.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.web.api.client
+import dev.petuska.kmdc.button.MDCButton
+import dev.petuska.kmdc.button.MDCButtonType
 import kotlinx.coroutines.launch
-import material.button.MDCButton
 import org.jetbrains.compose.web.dom.Text
 
 @Composable
@@ -30,6 +27,7 @@ fun Charts() {
 
         MDCButton(
             text = "Refresh",
+            type = MDCButtonType.Raised,
             attrs = {
                 onClick { scope.launch { getCharts() } }
             }

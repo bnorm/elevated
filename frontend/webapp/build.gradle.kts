@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-
 plugins {
     kotlin("multiplatform")
     id("org.jetbrains.compose")
@@ -7,11 +5,13 @@ plugins {
 
 kotlin {
     js(IR) {
+        binaries.executable()
+        useCommonJs()
         browser {
             commonWebpackConfig {
+                sourceMaps = true
                 cssSupport.enabled = true
-            }
-            runTask {
+
                 // TODO: use dsl after KT-32016 will be fixed
                 val env: String? by project
                 val proxy: MutableMap<String, Any> = when (env) {
@@ -34,37 +34,34 @@ kotlin {
                         "/api/**" to "http://localhost:8080",
                     )
                 }
-                devServer = KotlinWebpackConfig.DevServer(
+                devServer = devServer?.copy(
                     port = 8081,
                     proxy = proxy,
                     static = mutableListOf("$buildDir/processedResources/js/main")
                 )
             }
         }
-        binaries.executable()
     }
     sourceSets {
         named("jsMain") {
             dependencies {
+                implementation(compose.web.core)
+                implementation(compose.runtime)
+
                 implementation(project(":common:client"))
                 implementation(project(":frontend:state"))
 
-                val mdcVersion = "13.0.0"
-                implementation(npm("@material/base", mdcVersion))
-                implementation(npm("@material/ripple", mdcVersion))
-                implementation(npm("@material/button", mdcVersion))
-                implementation(npm("@material/icon-button", mdcVersion))
-                implementation(npm("@material/textfield", mdcVersion))
-                implementation(npm("@material/layout-grid", mdcVersion))
-                implementation(npm("@material/dialog", mdcVersion))
-                implementation(npm("@material/tab-indicator", mdcVersion))
-                implementation(npm("@material/tab", mdcVersion))
-                implementation(npm("@material/tab-scroller", mdcVersion))
-                implementation(npm("@material/tab-bar", mdcVersion))
-                implementation(npm("@material/top-app-bar", mdcVersion))
+                implementation("dev.petuska:kmdc-button:0.0.5")
+                implementation("dev.petuska:kmdc-dialog:0.0.5")
+                implementation("dev.petuska:kmdc-layout-grid:0.0.5")
+                implementation("dev.petuska:kmdc-tab-bar:0.0.5")
+                implementation("dev.petuska:kmdc-textfield:0.0.5")
 
-                implementation(compose.web.core)
-                implementation(compose.runtime)
+                // SCSS dependencies
+                implementation(devNpm("style-loader", "^3.3.1"))
+                implementation(devNpm("css-loader", "^6.7.1"))
+                implementation(devNpm("sass-loader", "^13.0.0"))
+                implementation(devNpm("sass", "^1.52.1"))
             }
         }
     }

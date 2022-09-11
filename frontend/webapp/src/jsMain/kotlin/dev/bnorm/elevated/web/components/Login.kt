@@ -1,32 +1,16 @@
 package dev.bnorm.elevated.web.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.web.api.userSession
+import dev.petuska.kmdc.button.MDCButton
+import dev.petuska.kmdc.textfield.MDCTextField
+import dev.petuska.kmdc.textfield.MDCTextFieldType
 import kotlinx.coroutines.launch
-import material.button.MDCButton
-import material.textfield.MDCTextField
-import material.textfield.MDCTextFieldCommonOpts
-import org.jetbrains.compose.web.attributes.ButtonType
-import org.jetbrains.compose.web.attributes.InputType
-import org.jetbrains.compose.web.attributes.disabled
-import org.jetbrains.compose.web.attributes.noValidate
-import org.jetbrains.compose.web.attributes.onSubmit
-import org.jetbrains.compose.web.attributes.required
+import org.jetbrains.compose.web.attributes.*
 import org.jetbrains.compose.web.attributes.type
-import org.jetbrains.compose.web.css.DisplayStyle
-import org.jetbrains.compose.web.css.JustifyContent
-import org.jetbrains.compose.web.css.display
-import org.jetbrains.compose.web.css.justifyContent
-import org.jetbrains.compose.web.css.paddingBottom
-import org.jetbrains.compose.web.css.px
-import org.jetbrains.compose.web.css.width
+import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Form
 import org.jetbrains.compose.web.dom.Text
@@ -84,10 +68,8 @@ fun Login() {
             ) {
                 MDCTextField(
                     value = email,
-                    opts = {
-                        type = MDCTextFieldCommonOpts.Type.Outlined
-                        label = "Email"
-                    },
+                    type = MDCTextFieldType.Outlined,
+                    label = "Email",
                     attrs = {
                         style { width(300.px) }
                         type(InputType.Email)
@@ -107,10 +89,8 @@ fun Login() {
             ) {
                 MDCTextField(
                     value = password,
-                    opts = {
-                        type = MDCTextFieldCommonOpts.Type.Outlined
-                        label = "Password"
-                    },
+                    type = MDCTextFieldType.Outlined,
+                    label = "Password",
                     attrs = {
                         style { width(300.px) }
                         type(InputType.Password)

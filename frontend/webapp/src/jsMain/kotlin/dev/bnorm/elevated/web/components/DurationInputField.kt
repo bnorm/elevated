@@ -1,12 +1,8 @@
 package dev.bnorm.elevated.web.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import material.textfield.MDCTextField
-import material.textfield.MDCTextFieldCommonOpts
+import androidx.compose.runtime.*
+import dev.petuska.kmdc.textfield.MDCTextField
+import dev.petuska.kmdc.textfield.MDCTextFieldType
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.required
 import org.jetbrains.compose.web.attributes.type
@@ -24,10 +20,8 @@ fun DurationInputField(
     var text by remember { mutableStateOf(value.inWholeHours.toString()) }
     MDCTextField(
         value = text,
-        opts = {
-            this.type = MDCTextFieldCommonOpts.Type.Outlined
-            this.label = label
-        },
+        type = MDCTextFieldType.Outlined,
+        label = label,
         attrs = {
             style { width(300.px) }
             type(InputType.Number)
