@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class PumpViewModel(
     val pump: Int,
+    val name: String,
 ) {
     var on by mutableStateOf(false)
     var amount by mutableStateOf("")
@@ -25,10 +26,10 @@ class PumpViewModel(
 fun PumpsList(client: ElevatedClient) {
     val pumps = remember {
         mutableStateListOf(
-            PumpViewModel(1),
-            PumpViewModel(2),
-            PumpViewModel(3),
-            PumpViewModel(4),
+            PumpViewModel(1, "pH"),
+            PumpViewModel(2, "Micro"),
+            PumpViewModel(3, "Gro"),
+            PumpViewModel(4, "Bloom"),
         )
     }
     val scope = rememberCoroutineScope { Dispatchers.Default }
@@ -73,7 +74,7 @@ fun PumpAmountList(
                 value = state.amount,
                 onValueChange = { state.amount = it },
                 isError = state.amount.isNotEmpty() && state.amount.toIntOrNull() == null,
-                label = { Text("Pump ${state.pump} (Milliliters)") },
+                label = { Text("${state.name} pump (Milliliters)") },
                 keyboardOptions = KeyboardOptions(
                     autoCorrect = false,
                     keyboardType = KeyboardType.Number,

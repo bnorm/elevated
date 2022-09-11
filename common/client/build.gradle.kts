@@ -28,9 +28,6 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api("io.ktor:ktor-client-okhttp:$ktorVersion")
-
-                api("com.squareup.retrofit2:retrofit:2.9.0")
-                api("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
             }
         }
     }

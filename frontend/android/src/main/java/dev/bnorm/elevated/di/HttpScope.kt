@@ -38,26 +38,7 @@ class HttpModule {
     fun httpClient(okHttpClient: OkHttpClient, tokenStore: TokenStore): HttpClient {
         return HttpClient(OkHttp.create {
             preconfigured = okHttpClient
-        }) {
-            install(WebSockets)
-
-            install(ContentNegotiation) {
-                json()
-            }
-
-            install(DefaultRequest) {
-                tokenStore.authorization?.let { headers[HttpHeaders.Authorization] = it }
-            }
-
-            install(HttpCallValidator) {
-                handleResponseExceptionWithRequest { exception, request ->
-                    val clientException = exception as? ClientRequestException ?: return@handleResponseExceptionWithRequest
-                    if (clientException.response.status == HttpStatusCode.Unauthorized) {
-                        tokenStore.authorization = null
-                    }
-                }
-            }
-        }
+        })
     }
 
     @Singleton

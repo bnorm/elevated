@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.client.HttpElevatedClient
 import dev.bnorm.elevated.client.TokenStore
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.*
@@ -8,29 +9,20 @@ import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import io.ktor.client.*
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.websocket.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
-import okhttp3.*
-import okio.ByteString
+import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
 import java.time.Duration
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration.Companion.seconds
 
 // TODO replace with something from :common:client
@@ -55,28 +47,9 @@ class ElevatedClient {
 
     private val httpClient = HttpClient(OkHttp.create {
         preconfigured = okHttpClient
-    }) {
-        install(WebSockets)
+    })
 
-        install(ContentNegotiation) {
-            json()
-        }
-
-        install(DefaultRequest) {
-            tokenStore.authorization?.let { headers[HttpHeaders.Authorization] = it }
-        }
-
-        install(HttpCallValidator) {
-            handleResponseExceptionWithRequest { exception, request ->
-                val clientException = exception as? ClientRequestException ?: return@handleResponseExceptionWithRequest
-                if (clientException.response.status == HttpStatusCode.Unauthorized) {
-                    tokenStore.authorization = null
-                }
-            }
-        }
-    }
-
-    private val elevatedClient = ElevatedClient(httpClient, Url("https://elevated.bnorm.dev"))
+    private val elevatedClient = HttpElevatedClient(Url("https://elevated.bnorm.dev"), httpClient, tokenStore, json)
 
     suspend fun authenticate(): Device {
         val authenticatedDevice = elevatedClient.loginDevice(
@@ -93,49 +66,20 @@ class ElevatedClient {
         return elevatedClient.getDevice(DEVICE_ID)
     }
 
-    suspend fun getDeviceActions(submittedAfter: Instant): List<DeviceAction> {
-        return elevatedClient.getDeviceActions(DEVICE_ID, submittedAfter)
-    }
-
     suspend fun completeDeviceAction(deviceActionId: DeviceActionId): DeviceAction {
         return elevatedClient.completeDeviceAction(DEVICE_ID, deviceActionId)
     }
 
     suspend fun getActionQueue(): Flow<DeviceAction> {
-        return channelFlow {
-            while (isActive) {
+        return flow {
+            while (true) {
                 try {
                     val device = getDevice()
                     log.info("Connecting to server for device={}", device)
-
-                    val flow = this.channel
-                    val request = Request.Builder()
-                        .url("https://elevated.bnorm.dev/api/v1/devices/${DEVICE_ID.value}/connect")
-                        .build()
-
-                    val incoming = Channel<String>(capacity = Channel.UNLIMITED)
-                    val webSocket = okHttpClient.newWebSocket(request, incoming)
-
-                    val authorization = tokenStore.authorization
-                    if (authorization != null) {
-                        webSocket.send(authorization.substringAfter(' '))
-                    }
-
-                    val pending = getDeviceActions(device.lastActionTime ?: Instant.DISTANT_PAST)
-                    val actionIds = pending.map { it.id }.toSet()
-                    log.info("Existing actions={}", pending)
-
-                    incoming.consumeAsFlow()
-                        .onEach { log.info("Received : frame.text={}", it) }
-                        .map { json.decodeFromString(DeviceAction.serializer(), it) }
-                        .filter { it.id !in actionIds }
-                        .onStart { emitAll(pending.asFlow()) }
-                        .filter { it.completed == null }
-                        .collect {
-                            log.info("Received : action={}", it)
-                            flow.send(it)
-                        }
-
+                    emitAll(
+                        elevatedClient.getActionQueue(device.id)
+                            .onEach { log.info("Received : action={}", it) }
+                    )
                     log.info("Disconnected from server")
                 } catch (t: Throwable) {
                     if (t is CancellationException) throw t
@@ -159,41 +103,5 @@ class ElevatedClient {
                 timestamp = timestamp
             )
         )
-    }
-
-    private suspend fun OkHttpClient.newWebSocket(request: Request, incoming: SendChannel<String>): WebSocket {
-        return suspendCancellableCoroutine {
-            val webSocket = newWebSocket(
-                request,
-                object : WebSocketListener() {
-                    override fun onOpen(webSocket: WebSocket, response: Response) {
-                        if (it.isActive) it.resume(webSocket)
-                    }
-
-                    override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                        incoming.close(t)
-                        if (it.isActive) it.resumeWithException(t)
-                    }
-
-                    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-                        incoming.close()
-                    }
-
-                    override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
-                        incoming.close()
-                    }
-
-                    override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                        incoming.trySendBlocking(bytes.hex())
-                    }
-
-                    override fun onMessage(webSocket: WebSocket, text: String) {
-                        incoming.trySendBlocking(text)
-                    }
-                },
-            )
-
-            it.invokeOnCancellation { webSocket.cancel() }
-        }
     }
 }
