@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,10 +25,12 @@ class MainComponent @Inject constructor(
         LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
 
         ElevatedTheme {
-            when (userState) {
-                is UserState.Authenticating -> Unit
-                is UserState.Unauthenticated -> Login(userSession)
-                is UserState.Authenticated -> Home(client)
+            Surface {
+                when (userState) {
+                    is UserState.Authenticating -> Unit
+                    is UserState.Unauthenticated -> Login(userSession)
+                    is UserState.Authenticated -> Home(client)
+                }
             }
         }
     }

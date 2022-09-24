@@ -8,15 +8,19 @@ import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 
 class SensorGraphState(
     private val client: ElevatedClient,
+    private val scope: CoroutineScope,
 ) {
     private var clock: Instant by mutableStateOf(Clock.System.now())
 
@@ -37,6 +41,7 @@ class SensorGraphState(
                 NetworkResult.Loaded(SensorGraph.create(averagedReadings))
             }.getOrElse { NetworkResult.Error(it) }
         }
+        .stateIn(scope, started = SharingStarted.Lazily, initialValue = NetworkResult.Loading)
 }
 
 private fun List<SensorReading>.simpleMovingAverage(size: Int = 9): List<SensorReading> {

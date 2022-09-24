@@ -39,9 +39,9 @@ Content-Type: application/json
   "targetPhHigh": 6.4,
   "targetEcLow": 400,
   "targetEcHigh": 600,
-  "microMl": 1,
+  "microMl": 2,
   "groMl": 2,
-  "bloomMl": 4
+  "bloomMl": 2
 }
 
 #### Create chart

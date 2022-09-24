@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.compose")
@@ -73,14 +75,12 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.2.1")
     implementation("androidx.compose.material:material:1.2.1")
     implementation("androidx.compose.material:material-icons-extended:1.2.1")
+    implementation("androidx.navigation:navigation-compose:2.5.2")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.activity:activity-compose:1.5.1")
 
     implementation("androidx.work:work-runtime-ktx:2.7.1")
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
 
     testImplementation("junit:junit:4.13.2")
 
