@@ -22,6 +22,7 @@ pluginManagement {
         id("org.jetbrains.compose") version "1.2.0-alpha01-dev770"
 
         id("com.squareup.anvil") version "2.4.2"
+        id("app.cash.molecule") version "0.4.0"
     }
 }
 

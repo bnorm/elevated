@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.state.NetworkResult
-import dev.bnorm.elevated.state.graph.SensorGraphState
+import dev.bnorm.elevated.state.graph.SensorGraphPresenter
 import dev.bnorm.elevated.web.api.client
 import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.router.HashRouter
@@ -35,7 +35,7 @@ fun Routes(user: AuthenticatedUser) {
 
 @Composable
 fun Home(user: AuthenticatedUser) {
-    val devicePaneState = remember { SensorGraphState(client, ) }
+    val devicePaneState = remember { SensorGraphPresenter(client) }
 
     Div {
         Text("Hello, ${user.user.name}")

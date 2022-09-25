@@ -8,7 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import dagger.android.AndroidInjection
-import dev.bnorm.elevated.ui.MainComponent
+import dev.bnorm.elevated.ui.MainScreen
 import dev.bnorm.elevated.work.NotificationSyncWorker
 import dev.bnorm.elevated.work.UserSessionRefreshWorker
 import dev.bnorm.elevated.work.constraints
@@ -17,12 +17,12 @@ import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var component: MainComponent
+    lateinit var component: MainScreen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContent { component.render() }
+        setContent { component.Render() }
 
         val workManager = WorkManager.getInstance(this)
 

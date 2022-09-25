@@ -1,26 +1,24 @@
 package dev.bnorm.elevated.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.state.auth.UserSession
 import dev.bnorm.elevated.state.auth.UserState
-import dev.bnorm.elevated.ui.panes.Home
-import dev.bnorm.elevated.ui.panes.Login
+import dev.bnorm.elevated.ui.screen.HomeScreen
+import dev.bnorm.elevated.ui.screen.LoginScreen
 import dev.bnorm.elevated.ui.theme.ElevatedTheme
 import javax.inject.Inject
 
-class MainComponent @Inject constructor(
-    private val client: ElevatedClient,
+class MainScreen @Inject constructor(
     private val userSession: UserSession,
+    private val homeScreen: HomeScreen,
+    private val loginScreen: LoginScreen,
 ) {
-    @SuppressLint("ComposableNaming")
     @Composable
-    fun render() {
+    fun Render() {
         val userState by userSession.state.collectAsState()
         LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
 
@@ -28,8 +26,8 @@ class MainComponent @Inject constructor(
             Surface {
                 when (userState) {
                     is UserState.Authenticating -> Unit
-                    is UserState.Unauthenticated -> Login(userSession)
-                    is UserState.Authenticated -> Home(client)
+                    is UserState.Unauthenticated -> loginScreen.Render()
+                    is UserState.Authenticated -> homeScreen.Render()
                 }
             }
         }

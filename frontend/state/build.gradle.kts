@@ -1,14 +1,16 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
     id("org.jetbrains.compose")
+    id("app.cash.molecule")
 }
 
 kotlin {
     android()
-    jvm()
     js(IR) {
-        browser()
+        nodejs()
     }
 
     sourceSets {
@@ -16,6 +18,8 @@ kotlin {
             dependencies {
                 api(project(":common:client"))
                 api(compose.runtime)
+
+                api("app.cash.molecule:molecule-runtime:0.4.0")
             }
         }
         named("androidMain") {
@@ -23,6 +27,8 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material)
                 implementation(compose.ui)
+
+                implementation("javax.inject:javax.inject:1")
             }
         }
         named("jsMain") {
