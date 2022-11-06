@@ -4,13 +4,19 @@ import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.client.HttpElevatedClient
 import dev.bnorm.elevated.client.TokenStore
 import dev.bnorm.elevated.model.auth.Password
-import dev.bnorm.elevated.model.devices.*
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceAction
+import dev.bnorm.elevated.model.devices.DeviceActionId
+import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceLoginRequest
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.http.Url
+import java.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -22,8 +28,6 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import org.slf4j.LoggerFactory
-import java.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 // TODO replace with something from :common:client
 class ElevatedClient {
@@ -77,7 +81,7 @@ class ElevatedClient {
                     val device = getDevice()
                     log.info("Connecting to server for device={}", device)
                     emitAll(
-                        elevatedClient.getActionQueue(device.id)
+                        elevatedClient.connectDeviceActions(device.id)
                             .onEach { log.info("Received : action={}", it) }
                     )
                     log.info("Disconnected from server")
