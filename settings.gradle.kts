@@ -14,6 +14,7 @@ pluginManagement {
         kotlin("kapt") version "1.7.10"
 
         id("org.springframework.boot") version "3.0.0"
+        id("org.graalvm.buildtools.native") version "0.9.18"
 
         id("com.android.base") version "7.2.2"
         id("com.android.application") version "7.2.2"

@@ -1,5 +1,6 @@
 plugins {
     id("org.springframework.boot")
+    id("org.graalvm.buildtools.native")
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.serialization")
