@@ -3,20 +3,25 @@ package dev.bnorm.elevated.service.sensors.db
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.service.mongo.ensureIndex
-import dev.bnorm.elevated.service.mongo.patch
+import dev.bnorm.elevated.service.mongo.Update
+import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.*
+import org.springframework.data.mapping.toDotPath
+import org.springframework.data.mongodb.core.FindAndModifyOptions
+import org.springframework.data.mongodb.core.ReactiveMongoOperations
+import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.findAll
+import org.springframework.data.mongodb.core.findAndModify
+import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.data.mongodb.core.query.toPath
+import org.springframework.data.mongodb.core.remove
 import org.springframework.stereotype.Repository
-import javax.annotation.PostConstruct
 
 @Repository
 class SensorRepository(
@@ -26,7 +31,7 @@ class SensorRepository(
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(SensorEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(SensorEntity::deviceId.toPath(), Sort.Direction.ASC)
+            on(SensorEntity::deviceId.toDotPath(), Sort.Direction.ASC)
         }
     }
 
@@ -37,7 +42,7 @@ class SensorRepository(
     suspend fun update(sensorId: SensorId, sensorUpdate: SensorUpdate): SensorEntity? {
         val criteria = SensorEntity::_id isEqualTo sensorId
         val query = Query(criteria)
-        val update = Update().apply {
+        val update = Update {
             patch(SensorEntity::name, sensorUpdate.name)
             patch(SensorEntity::type, sensorUpdate.type)
             patch(SensorEntity::deviceId, sensorUpdate.deviceId)

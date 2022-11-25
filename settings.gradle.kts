@@ -13,7 +13,7 @@ pluginManagement {
         kotlin("android") version "1.7.10"
         kotlin("kapt") version "1.7.10"
 
-        id("org.springframework.boot") version "2.7.2"
+        id("org.springframework.boot") version "3.0.0"
 
         id("com.android.base") version "7.2.2"
         id("com.android.application") version "7.2.2"

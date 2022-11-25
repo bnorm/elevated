@@ -1,9 +1,15 @@
 package dev.bnorm.elevated.service
 
-import kotlinx.coroutines.*
+import java.io.Closeable
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import java.io.Closeable
 
 @Component
 class ApplicationCoroutineScope : CoroutineScope by createAppScope(), Closeable {
@@ -12,14 +18,15 @@ class ApplicationCoroutineScope : CoroutineScope by createAppScope(), Closeable 
 
         private fun createAppScope() = CoroutineScope(
             SupervisorJob() +
-                    Dispatchers.Default +
-                    CoroutineExceptionHandler { _, t ->
-                        log.warn("marker=AppScope.Error message=\"Uncaught exception\"", t)
-                    }
+                Dispatchers.Default +
+                CoroutineExceptionHandler { _, t ->
+                    log.warn("marker=AppScope.Error message=\"Uncaught exception\"", t)
+                }
         )
     }
 
-    override fun close(): Unit = runBlocking {
-        coroutineContext[Job]!!.cancelAndJoin()
+    override fun close() {
+        val job = this.coroutineContext[Job]!!
+        runBlocking { job.cancelAndJoin() }
     }
 }

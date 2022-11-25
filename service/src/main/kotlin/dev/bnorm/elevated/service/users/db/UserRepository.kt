@@ -3,20 +3,23 @@ package dev.bnorm.elevated.service.users.db
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.model.users.UserId
 import dev.bnorm.elevated.service.mongo.ensureIndex
-import dev.bnorm.elevated.service.mongo.patch
+import dev.bnorm.elevated.service.mongo.Update
+import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.*
+import org.springframework.data.mapping.toDotPath
+import org.springframework.data.mongodb.core.FindAndModifyOptions
+import org.springframework.data.mongodb.core.ReactiveMongoOperations
+import org.springframework.data.mongodb.core.findAll
+import org.springframework.data.mongodb.core.findAndModify
+import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Query
-import org.springframework.data.mongodb.core.query.Update
 import org.springframework.data.mongodb.core.query.isEqualTo
-import org.springframework.data.mongodb.core.query.toPath
 import org.springframework.stereotype.Repository
-import javax.annotation.PostConstruct
 
 @Repository
 class UserRepository(
@@ -27,7 +30,7 @@ class UserRepository(
         val indexOps = mongo.indexOps(UserEntity.COLLECTION_NAME)
 
         indexOps.ensureIndex {
-            on(UserEntity::email.toPath(), Sort.Direction.ASC)
+            on(UserEntity::email.toDotPath(), Sort.Direction.ASC)
             unique()
             background()
         }
@@ -45,7 +48,7 @@ class UserRepository(
     suspend fun modify(userId: UserId, userUpdate: UserUpdate): UserEntity? {
         val criteria = UserEntity::_id isEqualTo userId
         val query = Query(criteria)
-        val update = Update().apply {
+        val update = Update {
             patch(UserEntity::email, userUpdate.email)
             patch(UserEntity::passwordHash, userUpdate.passwordHash)
             patch(UserEntity::name, userUpdate.name)

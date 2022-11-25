@@ -3,18 +3,28 @@ package dev.bnorm.elevated.service.notifications.db
 import dev.bnorm.elevated.model.notifications.NotificationId
 import dev.bnorm.elevated.model.users.UserId
 import dev.bnorm.elevated.service.mongo.ensureIndex
-import dev.bnorm.elevated.service.mongo.patch
+import dev.bnorm.elevated.service.mongo.Update
+import jakarta.annotation.PostConstruct
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
-import org.springframework.data.mongodb.core.*
-import org.springframework.data.mongodb.core.query.*
+import org.springframework.data.mapping.toDotPath
+import org.springframework.data.mongodb.core.FindAndModifyOptions
+import org.springframework.data.mongodb.core.ReactiveMongoOperations
+import org.springframework.data.mongodb.core.find
+import org.springframework.data.mongodb.core.findAllAndRemove
+import org.springframework.data.mongodb.core.findAndModify
+import org.springframework.data.mongodb.core.findAndRemove
+import org.springframework.data.mongodb.core.findOne
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.exists
+import org.springframework.data.mongodb.core.query.isEqualTo
 import org.springframework.stereotype.Repository
-import java.time.Instant
-import javax.annotation.PostConstruct
 
 @Repository
 class NotificationRepository(
@@ -24,7 +34,7 @@ class NotificationRepository(
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(NotificationEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(NotificationEntity::userId.toPath(), Sort.Direction.ASC)
+            on(NotificationEntity::userId.toDotPath(), Sort.Direction.ASC)
         }
     }
 
@@ -54,7 +64,7 @@ class NotificationRepository(
             NotificationEntity::acknowledged exists acknowledged,
         )
         val query = Query(criteria).apply {
-            with(Sort.by(NotificationEntity::submitted.toPath()))
+            with(Sort.by(NotificationEntity::submitted.toDotPath()))
             if (limit != null) limit(limit)
         }
         return mongo.find<NotificationEntity>(query).asFlow()
@@ -71,8 +81,8 @@ class NotificationRepository(
             NotificationEntity::acknowledged exists false,
         )
         val query = Query(criteria)
-        val update = Update().apply {
-            set(NotificationEntity::acknowledged.toPath(), timestamp)
+        val update = Update {
+            set(NotificationEntity::acknowledged, timestamp)
         }
         val options = FindAndModifyOptions.options()
             .returnNew(true)
@@ -90,7 +100,7 @@ class NotificationRepository(
             NotificationEntity::acknowledged exists false,
         )
         val query = Query(criteria)
-        val update = Update().apply {
+        val update = Update {
             patch(NotificationEntity::message, notificationUpdate.message)
         }
         val options = FindAndModifyOptions.options()

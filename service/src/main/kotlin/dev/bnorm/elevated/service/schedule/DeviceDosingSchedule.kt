@@ -10,6 +10,9 @@ import dev.bnorm.elevated.service.ApplicationCoroutineScope
 import dev.bnorm.elevated.service.devices.DeviceActionService
 import dev.bnorm.elevated.service.devices.DeviceService
 import dev.bnorm.elevated.service.sensors.SensorReadingService
+import jakarta.annotation.PostConstruct
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -20,9 +23,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import javax.annotation.PostConstruct
-import kotlin.time.Duration.Companion.hours
-import kotlin.time.Duration.Companion.minutes
 
 @Component
 class DeviceDosingSchedule(

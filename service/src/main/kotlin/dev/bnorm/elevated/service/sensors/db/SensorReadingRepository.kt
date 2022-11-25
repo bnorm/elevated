@@ -2,21 +2,26 @@ package dev.bnorm.elevated.service.sensors.db
 
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.service.mongo.ensureIndex
+import jakarta.annotation.PostConstruct
+import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.runBlocking
 import org.springframework.data.domain.Sort
+import org.springframework.data.mapping.toDotPath
 import org.springframework.data.mongodb.core.CollectionOptions
 import org.springframework.data.mongodb.core.CollectionOptions.TimeSeriesOptions.timeSeries
 import org.springframework.data.mongodb.core.ReactiveMongoOperations
 import org.springframework.data.mongodb.core.find
-import org.springframework.data.mongodb.core.query.*
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
+import org.springframework.data.mongodb.core.query.gte
+import org.springframework.data.mongodb.core.query.isEqualTo
+import org.springframework.data.mongodb.core.query.lt
 import org.springframework.data.mongodb.core.timeseries.Granularity
 import org.springframework.stereotype.Repository
-import java.time.Instant
-import javax.annotation.PostConstruct
 
 @Repository
 class SensorReadingRepository(
@@ -28,8 +33,8 @@ class SensorReadingRepository(
             mongo.createCollection(
                 SensorReadingEntity.COLLECTION_NAME, CollectionOptions.empty()
                     .timeSeries(
-                        timeSeries(SensorReadingEntity::timestamp.toPath())
-                            .metaField(SensorReadingEntity::sensorId.toPath())
+                        timeSeries(SensorReadingEntity::timestamp.toDotPath())
+                            .metaField(SensorReadingEntity::sensorId.toDotPath())
                             .granularity(Granularity.MINUTES)
                     )
             ).awaitSingleOrNull()
@@ -37,8 +42,8 @@ class SensorReadingRepository(
 
         val indexOps = mongo.indexOps(SensorReadingEntity.COLLECTION_NAME)
         indexOps.ensureIndex {
-            on(SensorReadingEntity::sensorId.toPath(), Sort.Direction.ASC)
-            on(SensorReadingEntity::timestamp.toPath(), Sort.Direction.ASC)
+            on(SensorReadingEntity::sensorId.toDotPath(), Sort.Direction.ASC)
+            on(SensorReadingEntity::timestamp.toDotPath(), Sort.Direction.ASC)
         }
     }
 
@@ -72,7 +77,7 @@ class SensorReadingRepository(
             SensorReadingEntity::sensorId isEqualTo sensorId.value,
         )
         val query = Query(criteria)
-            .with(Sort.by(SensorReadingEntity::timestamp.toPath()).descending())
+            .with(Sort.by(SensorReadingEntity::timestamp.toDotPath()).descending())
             .limit(count)
         return mongo.find<SensorReadingEntity>(query).asFlow()
     }
