@@ -6,12 +6,12 @@ pluginManagement {
     }
 
     plugins {
-        kotlin("jvm") version "1.7.10"
-        kotlin("multiplatform") version "1.7.10"
-        kotlin("plugin.serialization") version "1.7.10"
-        kotlin("plugin.spring") version "1.7.10"
-        kotlin("android") version "1.7.10"
-        kotlin("kapt") version "1.7.10"
+        kotlin("jvm") version "1.7.20"
+        kotlin("multiplatform") version "1.7.20"
+        kotlin("plugin.serialization") version "1.7.20"
+        kotlin("plugin.spring") version "1.7.20"
+        kotlin("android") version "1.7.20"
+        kotlin("kapt") version "1.7.20"
 
         id("org.springframework.boot") version "3.0.0"
         id("org.graalvm.buildtools.native") version "0.9.18"
@@ -20,10 +20,10 @@ pluginManagement {
         id("com.android.application") version "7.2.2"
         id("com.android.library") version "7.2.2"
 
-        id("org.jetbrains.compose") version "1.2.0-alpha01-dev770"
+        id("org.jetbrains.compose") version "1.2.1"
 
         id("com.squareup.anvil") version "2.4.2"
-        id("app.cash.molecule") version "0.4.0"
+        id("app.cash.molecule") version "0.6.1"
     }
 }
 

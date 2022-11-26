@@ -6,11 +6,11 @@ plugins {
 kotlin {
     js(IR) {
         binaries.executable()
-        useCommonJs()
         browser {
             commonWebpackConfig {
                 sourceMaps = true
-                cssSupport.enabled = true
+                cssSupport { enabled = true }
+                scssSupport { enabled = true }
 
                 // TODO: use dsl after KT-32016 will be fixed
                 val env: String? by project
@@ -56,12 +56,6 @@ kotlin {
                 implementation("dev.petuska:kmdc-layout-grid:0.0.5")
                 implementation("dev.petuska:kmdc-tab-bar:0.0.5")
                 implementation("dev.petuska:kmdc-textfield:0.0.5")
-
-                // SCSS dependencies
-                implementation(devNpm("style-loader", "^3.3.1"))
-                implementation(devNpm("css-loader", "^6.7.1"))
-                implementation(devNpm("sass-loader", "^13.0.0"))
-                implementation(devNpm("sass", "^1.52.1"))
             }
         }
     }

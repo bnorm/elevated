@@ -61,7 +61,7 @@ fun Home(user: AuthenticatedUser) {
     }
     Div {
         DurationInputField(
-            value = devicePaneState.duration,
+            value = devicePaneState.duration.inWholeHours,
             onValueChange = { devicePaneState.duration = it },
             label = "Duration",
         )
