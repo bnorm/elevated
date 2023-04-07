@@ -56,8 +56,8 @@ abstract class CoroutineWebSocketHandler(
                                     is Frame.Binary -> webSocketSession.binaryMessage { factory ->
                                         factory.wrap(frame.data)
                                     }
-                                    Frame.Ping -> webSocketSession.pingMessage { it.allocateBuffer() }
-                                    Frame.Pong -> webSocketSession.pongMessage { it.allocateBuffer() }
+                                    Frame.Ping -> webSocketSession.pingMessage { it.allocateBuffer(0) }
+                                    Frame.Pong -> webSocketSession.pongMessage { it.allocateBuffer(0) }
                                 }
                             }.asFlux()
                     ).awaitSingleOrNull()

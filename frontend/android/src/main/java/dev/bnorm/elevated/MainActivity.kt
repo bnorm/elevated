@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 
         workManager.enqueueUniquePeriodicWork(
             "NotificationSync",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             PeriodicWorkRequestBuilder<NotificationSyncWorker>(
                 repeatInterval = Duration.ofMinutes(15),
                 flexTimeInterval = Duration.ofMinutes(5),
@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
         workManager.enqueueUniquePeriodicWork(
             "UserSessionRefresh",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             PeriodicWorkRequestBuilder<UserSessionRefreshWorker>(
                 repeatInterval = Duration.ofHours(1),
                 flexTimeInterval = Duration.ofHours(1),

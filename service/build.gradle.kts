@@ -54,6 +54,11 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+tasks.withType<JavaCompile> {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}
+
 tasks.processResources.configure {
     from(tasks.getByPath(":frontend:webapp:jsBrowserDistribution")) {
         into("static")

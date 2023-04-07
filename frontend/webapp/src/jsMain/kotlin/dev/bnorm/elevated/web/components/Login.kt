@@ -73,7 +73,7 @@ fun Login() {
                     attrs = {
                         style { width(300.px) }
                         type(InputType.Email)
-                        required(true)
+                        required()
                         onInput { email = it.value }
                     },
                 )
@@ -94,7 +94,7 @@ fun Login() {
                     attrs = {
                         style { width(300.px) }
                         type(InputType.Password)
-                        required(true)
+                        required()
                         onInput { password = it.value }
                     },
                 )

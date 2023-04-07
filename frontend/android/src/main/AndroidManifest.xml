@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="dev.bnorm.elevated">
+          xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".ElevatedApplication"
+        android:name="dev.bnorm.elevated.ElevatedApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Elevated"
@@ -14,7 +13,7 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".MainActivity"
+            android:name="dev.bnorm.elevated.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.NoActionBar">
             <intent-filter>

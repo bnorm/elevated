@@ -30,7 +30,7 @@ allprojects {
     }
 
     val compilerArgs = listOf(
-        "-Xopt-in=kotlin.RequiresOptIn",
+        "-opt-in=kotlin.RequiresOptIn",
     )
     tasks.withType<KotlinCompile> {
         kotlinOptions {
@@ -47,6 +47,11 @@ allprojects {
         kotlinOptions {
             freeCompilerArgs = freeCompilerArgs + compilerArgs
         }
+    }
+
+    tasks.withType<JavaCompile> {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 }
 

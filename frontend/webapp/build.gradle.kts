@@ -9,8 +9,8 @@ kotlin {
         browser {
             commonWebpackConfig {
                 sourceMaps = true
-                cssSupport { enabled = true }
-                scssSupport { enabled = true }
+                cssSupport { enabled.set(true) }
+                scssSupport { enabled.set(true) }
 
                 val env: String? by project
                 val proxy: MutableMap<String, Any> = when (env) {
@@ -52,11 +52,11 @@ kotlin {
                 implementation(project(":common:client"))
                 implementation(project(":frontend:state"))
 
-                implementation("dev.petuska:kmdc-button:0.0.5")
-                implementation("dev.petuska:kmdc-dialog:0.0.5")
-                implementation("dev.petuska:kmdc-layout-grid:0.0.5")
-                implementation("dev.petuska:kmdc-tab-bar:0.0.5")
-                implementation("dev.petuska:kmdc-textfield:0.0.5")
+                implementation("dev.petuska:kmdc-button:0.1.0")
+                implementation("dev.petuska:kmdc-dialog:0.1.0")
+                implementation("dev.petuska:kmdc-layout-grid:0.1.0")
+                implementation("dev.petuska:kmdc-tab-bar:0.1.0")
+                implementation("dev.petuska:kmdc-textfield:0.1.0")
             }
         }
     }

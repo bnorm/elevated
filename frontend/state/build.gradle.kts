@@ -32,9 +32,9 @@ kotlin {
 android {
     compileSdk = 33
 
+    namespace = "dev.bnorm.elevated.state"
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
     }
 
     compileOptions {
