@@ -3,7 +3,7 @@
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
-    id("app.cash.molecule")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
@@ -16,6 +16,7 @@ kotlin {
         named("commonMain") {
             dependencies {
                 api(project(":common:client"))
+                implementation(compose.runtime)
             }
         }
         named("androidMain") {

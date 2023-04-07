@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("org.springframework.boot")
 //    id("org.graalvm.buildtools.native")
@@ -39,6 +41,12 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:kafka")
     testImplementation("org.testcontainers:mongodb")
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 
 tasks.processResources.configure {

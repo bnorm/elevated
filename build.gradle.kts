@@ -34,7 +34,7 @@ allprojects {
     )
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-            jvmTarget = "17"
+            jvmTarget = "11"
             freeCompilerArgs = freeCompilerArgs + compilerArgs
         }
     }
