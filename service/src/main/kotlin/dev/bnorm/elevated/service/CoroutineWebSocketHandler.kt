@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service
 
+import java.time.Duration
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -17,9 +18,12 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.web.reactive.socket.*
+import org.springframework.web.reactive.socket.CloseStatus
+import org.springframework.web.reactive.socket.HandshakeInfo
+import org.springframework.web.reactive.socket.WebSocketHandler
+import org.springframework.web.reactive.socket.WebSocketMessage
+import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
-import java.time.Duration
 
 sealed class Frame {
     class Text(val data: String) : Frame()
@@ -53,9 +57,7 @@ abstract class CoroutineWebSocketHandler(
                             .map { frame ->
                                 when (frame) {
                                     is Frame.Text -> webSocketSession.textMessage(frame.data)
-                                    is Frame.Binary -> webSocketSession.binaryMessage { factory ->
-                                        factory.wrap(frame.data)
-                                    }
+                                    is Frame.Binary -> webSocketSession.binaryMessage { it.wrap(frame.data) }
                                     Frame.Ping -> webSocketSession.pingMessage { it.allocateBuffer(0) }
                                     Frame.Pong -> webSocketSession.pongMessage { it.allocateBuffer(0) }
                                 }

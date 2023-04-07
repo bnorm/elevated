@@ -1,7 +1,6 @@
 # TODO
 
 - [ ] Migrate existing data
-- [ ] Add pH level to chart properties
 
 # What do pH and EC readings mean?
 
