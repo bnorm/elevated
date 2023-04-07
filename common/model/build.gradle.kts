@@ -12,11 +12,8 @@ kotlin {
     sourceSets {
         named("commonMain") {
             dependencies {
-                implementation(project.dependencies.platform(project(":platform")))
-
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+                api(libs.kotlinx.datetime)
+                api(libs.kotlinx.serialization.json)
             }
         }
     }

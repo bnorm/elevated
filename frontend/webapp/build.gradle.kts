@@ -12,7 +12,6 @@ kotlin {
                 cssSupport { enabled = true }
                 scssSupport { enabled = true }
 
-                // TODO: use dsl after KT-32016 will be fixed
                 val env: String? by project
                 val proxy: MutableMap<String, Any> = when (env) {
                     "prod" -> mutableMapOf(
@@ -34,6 +33,8 @@ kotlin {
                         "/api/**" to "http://localhost:8080",
                     )
                 }
+
+                // TODO: use dsl after KT-32016 will be fixed
                 devServer = devServer?.copy(
                     port = 8081,
                     proxy = proxy,

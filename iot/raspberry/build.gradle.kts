@@ -4,21 +4,16 @@ plugins {
 }
 
 dependencies {
-    implementation(platform(project(":platform")))
-
     implementation(project(":common:client"))
 
-    implementation("org.slf4j:slf4j-simple:1.7.36")
+    implementation(libs.slf4j.simple)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8")
+    implementation(libs.kotlinx.coroutines.jdk8)
 
-    implementation("com.pi4j:pi4j-core:2.2.1")
-    implementation("com.pi4j:pi4j-plugin-raspberrypi:2.2.1")
-    implementation("com.pi4j:pi4j-plugin-pigpio:2.2.1")
-    implementation("com.pi4j:pi4j-plugin-linuxfs:2.2.1")
+    implementation(libs.bundles.pi4j.raspberrypi)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.jupiter.engine)
 }
 
 application {

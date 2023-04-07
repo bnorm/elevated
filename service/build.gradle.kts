@@ -9,12 +9,16 @@ plugins {
 }
 
 dependencies {
-    api(platform(project(":platform")))
-    api(project(":common:model"))
+    implementation(platform(libs.spring.boot.bom))
+    implementation(platform(libs.kotlinx.coroutines.bom))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j")
+    implementation(project(":common:model"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation(libs.kotlinx.coroutines.slf4j)
+    implementation(libs.kotlinx.coroutines.reactor)
+//    implementation("io.projectreactor:reactor-tools")
+
+    implementation(libs.kotlinx.serialization.json)
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -23,11 +27,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-//    implementation("io.projectreactor:reactor-tools")
 
     implementation("org.springframework.kafka:spring-kafka")
     implementation("org.apache.kafka:kafka-streams")
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(platform(libs.testcontainers.bom))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

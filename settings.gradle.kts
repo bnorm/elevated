@@ -6,6 +6,7 @@ pluginManagement {
     }
 
     plugins {
+        // TODO Kotlin 1.8.20 -> https://github.com/JetBrains/compose-multiplatform/tree/master/examples/falling-balls
         kotlin("jvm") version "1.7.20"
         kotlin("multiplatform") version "1.7.20"
         kotlin("plugin.serialization") version "1.7.20"
@@ -35,7 +36,6 @@ include("frontend:android")
 include("frontend:state")
 include("frontend:webapp")
 include("iot:raspberry")
-include("platform")
 include("service")
 
-enableFeaturePreview("VERSION_CATALOGS")
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

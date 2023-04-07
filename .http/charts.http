@@ -36,12 +36,12 @@ Content-Type: application/json
 {
   "name": "Active Chart",
   "targetPhLow": 5.7,
-  "targetPhHigh": 6.2,
-  "targetEcLow": 400,
-  "targetEcHigh": 600,
-  "microMl": 2,
-  "groMl": 2,
-  "bloomMl": 2
+  "targetPhHigh": 6.3,
+  "targetEcLow": 550,
+  "targetEcHigh": 750,
+  "microMl": 4.9,
+  "groMl": 4.6,
+  "bloomMl": 3.4
 }
 
 #### Create chart
