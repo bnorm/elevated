@@ -46,18 +46,19 @@ kotlin {
     sourceSets {
         named("jsMain") {
             dependencies {
-                implementation(compose.web.core)
                 implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
 
                 implementation(project(":common:client"))
                 implementation(project(":frontend:state"))
-
-                implementation("dev.petuska:kmdc-button:0.1.0")
-                implementation("dev.petuska:kmdc-dialog:0.1.0")
-                implementation("dev.petuska:kmdc-layout-grid:0.1.0")
-                implementation("dev.petuska:kmdc-tab-bar:0.1.0")
-                implementation("dev.petuska:kmdc-textfield:0.1.0")
             }
         }
     }
+}
+
+compose.experimental {
+    web.application {}
 }

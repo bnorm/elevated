@@ -1,12 +1,16 @@
 package dev.bnorm.elevated.web.components
 
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.web.api.client
-import dev.petuska.kmdc.button.MDCButton
-import dev.petuska.kmdc.button.MDCButtonType
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun Charts() {
@@ -25,13 +29,14 @@ fun Charts() {
     Column {
         Text("Available Charts")
 
-        MDCButton(
-            text = "Refresh",
-            type = MDCButtonType.Raised,
-            attrs = {
-                onClick { scope.launch { getCharts() } }
-            }
-        )
+        Button(
+            onClick = {
+                scope.launch { getCharts() }
+            },
+//            type = MDCButtonType.Raised,
+        ) {
+            Text("Refresh")
+        }
 
         for (chart in charts) {
             Text(chart.name)

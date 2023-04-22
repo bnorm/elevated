@@ -1,27 +1,36 @@
 package dev.bnorm.elevated.web.components
 
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.web.api.userSession
-import dev.petuska.kmdc.button.MDCButton
-import dev.petuska.kmdc.textfield.MDCTextField
-import dev.petuska.kmdc.textfield.MDCTextFieldType
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.web.attributes.*
-import org.jetbrains.compose.web.attributes.type
-import org.jetbrains.compose.web.css.*
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Form
-import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun Login() {
     var error by remember { mutableStateOf<String?>(null) }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
-    fun validateForm() = email.isNotEmpty() && password.isNotEmpty()
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     fun login() {
@@ -36,88 +45,50 @@ fun Login() {
         }
     }
 
-    Form(attrs = {
-        noValidate()
-        onSubmit {
-            it.preventDefault()
-            login()
+    Column {
+        val errorMessage = error
+        if (errorMessage != null) {
+            Text(errorMessage)
         }
-    }) {
-        Column(
-            attrs = {
-                style {
-                    width(400.px)
-                    property("margin", "20px auto")
-                }
-            }
-        ) {
-            val errorMessage = error
-            if (errorMessage != null) {
-                // TODO style red or something
-                Text(errorMessage)
-            }
 
-            Div(
-                attrs = {
-                    style {
-                        display(DisplayStyle.Flex)
-                        justifyContent(JustifyContent.Center)
-                        paddingBottom(16.px)
-                    }
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
+            isError = email.isEmpty(),
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Email,
+            ),
+        )
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            isError = password.isEmpty(),
+            keyboardOptions = KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Password,
+            ),
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible) Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+
+                val description = if (passwordVisible) "Hide password" else "Show password"
+
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(imageVector = image, description)
                 }
-            ) {
-                MDCTextField(
-                    value = email,
-                    type = MDCTextFieldType.Outlined,
-                    label = "Email",
-                    attrs = {
-                        style { width(300.px) }
-                        type(InputType.Email)
-                        required()
-                        onInput { email = it.value }
-                    },
-                )
             }
-            Div(
-                attrs = {
-                    style {
-                        display(DisplayStyle.Flex)
-                        justifyContent(JustifyContent.Center)
-                        paddingBottom(16.px)
-                    }
-                }
-            ) {
-                MDCTextField(
-                    value = password,
-                    type = MDCTextFieldType.Outlined,
-                    label = "Password",
-                    attrs = {
-                        style { width(300.px) }
-                        type(InputType.Password)
-                        required()
-                        onInput { password = it.value }
-                    },
-                )
-            }
-            Div(
-                attrs = {
-                    style {
-                        display(DisplayStyle.Flex)
-                        justifyContent(JustifyContent.FlexEnd)
-                        width(300.px)
-                        property("margin", "auto")
-                    }
-                }
-            ) {
-                MDCButton(
-                    text = "Login",
-                    attrs = {
-                        classes("login")
-                        type(ButtonType.Submit)
-                        if (!validateForm()) disabled()
-                    },
-                )
-            }
+        )
+
+        Button(
+            enabled = email.isNotEmpty() && password.isNotEmpty(),
+            onClick = { login() },
+        ) {
+            Text(text = "Login")
         }
     }
 }

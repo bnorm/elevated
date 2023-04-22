@@ -1,154 +1,140 @@
 package dev.bnorm.elevated.web.components
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.FontWeight
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.graph.SensorGraph
+import kotlin.math.roundToLong
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.datetime.Instant
-import org.jetbrains.compose.web.attributes.height
-import org.jetbrains.compose.web.attributes.width
-import org.jetbrains.compose.web.dom.Canvas
-import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.get
-import kotlin.math.PI
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun SensorChart(
     graph: SensorGraph,
-    width: Int = 500,
-    height: Int = 500,
+    modifier: Modifier = Modifier,
     selectedTimestamp: Instant? = null,
     onSelectedTimestamp: (Instant?) -> Unit = {},
 ) {
-    fun SensorReading.toX(): Double = with(graph) { toX(width.toDouble()) }
-    fun SensorReading.toY(): Double = with(graph) { toY(height.toDouble()) }
+    var size by remember { mutableStateOf(Size(1f, 1f)) }
+    val path by derivedStateOf { graph.calculatePath(size) }
 
-    fun CanvasRenderingContext2D.drawPath(graph: SensorGraph) {
-        beginPath()
+    fun SensorReading.toX(): Float = with(graph) { toX(size.width.toDouble()).toFloat() }
+    fun SensorReading.toY(): Float = with(graph) { toY(size.height.toDouble()).toFloat() }
 
-        var previous: SensorReading? = null
-        var previousX: Double? = null
-        for (reading in graph.readings.sortedBy { it.timestamp }) {
-            val x = reading.toX()
-            if (previous == null) {
-                moveTo(x, reading.toY())
-            } else if (previousX != x) {
-                lineTo(x, reading.toY())
-            }
-            previousX = x
-            previous = reading
-        }
-
-        stroke()
-    }
+    // TODO SampledReadings
 
     val selectedReading = remember(graph, selectedTimestamp) {
         if (selectedTimestamp != null) graph.toNearestReading(selectedTimestamp) else null
     }
 
-    Canvas(
-        attrs = {
-            width(width)
-            height(height)
-
-            onMouseMove {
-                val selectedValue = graph.minX + (it.offsetX / width) * graph.spanX
-                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
-                onSelectedTimestamp(timestamp)
-            }
-            onMouseDown {
-                val selectedValue = graph.minX + (it.offsetX / width) * graph.spanX
-                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
-                onSelectedTimestamp(timestamp)
-            }
-            onMouseUp {
-                onSelectedTimestamp(null)
-            }
-            onMouseLeave {
-                onSelectedTimestamp(null)
-            }
-
-            onTouchMove {
-                val touch = it.touches[0]!!
-                val offsetX = (touch.pageX - (touch.target as HTMLElement).offsetLeft).toDouble()
-                val selectedValue = graph.minX + (offsetX / width) * graph.spanX
-                val timestamp = Instant.fromEpochSeconds(selectedValue.toLong())
-                onSelectedTimestamp(timestamp)
-            }
-            onTouchEnd {
-                onSelectedTimestamp(null)
-            }
+    Column(modifier = modifier) {
+        val reading = selectedReading ?: graph.readings.lastOrNull()
+        if (reading != null) {
+            Text("${reading.value.round(0.001)} at ${reading.timestamp.toLocalDateTime(TimeZone.currentSystemDefault())}")
         }
-    ) {
-        DisposableEffect(graph, selectedReading) {
-            val ctx = scopeElement.getContext("2d") as? CanvasRenderingContext2D
-            val reading = selectedReading
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "${graph.maxY.round(0.001)}",
+                fontWeight = FontWeight.Bold,
+                color = Color(40, 193, 218),
+                modifier = Modifier.align(Alignment.TopStart),
+            )
+            Text(
+                text = "${graph.minY.round(0.001)}",
+                fontWeight = FontWeight.Bold,
+                color = Color(40, 193, 218),
+                modifier = Modifier.align(Alignment.BottomStart),
+            )
+            Canvas(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxSize()
+                    .pointerInput(graph) {
+                        val currentContext = currentCoroutineContext()
+                        awaitPointerEventScope {
+                            while (currentContext.isActive) {
+                                val event = awaitPointerEvent()
+                                val timestamp = when (event.type) {
+                                    PointerEventType.Move, PointerEventType.Enter -> {
+                                        val position = event.changes.first().position
+                                        val selectedValue = graph.minX + (position.x / size.width) * graph.spanX
+                                        Instant.fromEpochSeconds(selectedValue.toLong())
+                                    }
 
-            if (ctx != null) {
-                ctx.clearRect(0.0, 0.0, width.toDouble(), height.toDouble())
-                ctx.drawPath(graph)
-
-                ctx.withStyle(
-                    font = "14px sanserif"
-                ) {
-                    fillText("${graph.maxY}", 0.0, 14.0)
-                    fillText("${graph.minY}", 0.0, height.toDouble())
-                }
-
-                ctx.withStyle(
-                    font = "14px sanserif"
-                ) {
-                    fillText("${(reading ?: graph.readings.lastOrNull())?.value ?: -1.0}", 0.0, 28.0)
-                }
-
-                if (reading != null) {
-                    val x = reading.toX()
-                    val y = reading.toY()
-
-                    ctx.withStyle(
-                        strokeStyle = "#28C1DA",
-                        lineDash = arrayOf(20.0, 20.0),
-                    ) {
-                        beginPath()
-                        moveTo(x, 0.0)
-                        lineTo(x, height.toDouble())
-                        stroke()
+                                    else -> null
+                                }
+                                onSelectedTimestamp(timestamp)
+                            }
+                        }
                     }
+            ) {
+                size = this.size
 
-                    ctx.withStyle(
-                        fillStyle = "#28C1DA",
-                    ) {
-                        beginPath()
-                        arc(x, y, 3.0, 0.0, 2.0 * PI)
-                        fill()
-                    }
+                drawPath(
+                    path = path,
+                    style = Stroke(width = 5.0f),
+                    brush = SolidColor(Color(40, 193, 218)),
+                )
+
+                if (selectedReading != null) {
+                    val x = selectedReading.toX()
+                    val y = selectedReading.toY()
+
+                    drawLine(
+                        start = Offset(x, 0f),
+                        end = Offset(x, size.height),
+                        brush = SolidColor(Color(40, 193, 218)),
+                        strokeWidth = 5f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f))
+                    )
+
+                    drawCircle(
+                        center = Offset(x, y),
+                        radius = 10f,
+                        brush = SolidColor(Color(40, 193, 218)),
+                    )
                 }
             }
-
-            onDispose {}
         }
     }
 }
 
-fun CanvasRenderingContext2D.withStyle(
-    font: String? = null,
-    lineDash: Array<Double>? = null,
-    strokeStyle: String? = null,
-    fillStyle: String? = null,
-    block: CanvasRenderingContext2D.() -> Unit,
-) {
-    save()
+private fun Double.round(precision: Double) = (this / precision).roundToLong() * precision
 
-    if (font != null) this.font = font
-    if (lineDash != null) setLineDash(lineDash)
-    if (strokeStyle != null) this.strokeStyle = strokeStyle
-    if (fillStyle != null) this.fillStyle = fillStyle
-
-    try {
-        block()
-    } finally {
-        restore()
+fun SensorGraph.calculatePath(size: Size): Path {
+    val path = Path()
+    for ((index, reading) in readings.sortedBy { it.timestamp }.withIndex()) {
+        val x = reading.toX(size.width.toDouble()).toFloat()
+        val y = reading.toY(size.height.toDouble()).toFloat()
+        if (index == 0) {
+            path.moveTo(x, y)
+        } else {
+            path.lineTo(x, y)
+        }
     }
+    return path
 }
