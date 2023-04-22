@@ -13,9 +13,13 @@ import androidx.compose.material.icons.filled.AdUnits
 import androidx.compose.material.icons.filled.RotateRight
 import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -23,9 +27,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.delay
 
 class HomeScreen @Inject constructor(
-    private val chartsScreen: ChartsScreen,
+    private val sensorsScreen: SensorsScreen,
     private val pumpsScreen: PumpsScreen,
     private val devicesScreen: DevicesScreen,
 ) {
@@ -37,7 +43,21 @@ class HomeScreen @Inject constructor(
     )
 
     private val tabs = listOf(
-        Tab("Charts", Icons.Filled.StackedLineChart) { chartsScreen.Render() },
+        Tab("Sensors", Icons.Filled.StackedLineChart) {
+            sensorsScreen.Render {
+                val lifecycleOwner = LocalLifecycleOwner.current
+                LaunchedEffect(lifecycleOwner) {
+                    lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                        while (true) {
+                            it.refresh()
+                            delay(1.minutes)
+                        }
+                    }
+                }
+
+            }
+        },
+
         Tab("Pumps", Icons.Filled.RotateRight) { pumpsScreen.Render() },
         Tab("Devices", Icons.Filled.AdUnits) { devicesScreen.Render() },
     )

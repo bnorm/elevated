@@ -2,12 +2,16 @@ package dev.bnorm.elevated.ui.component
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 
 @Composable
-fun LongInputField(
-    value: Long,
+fun DurationInputField(
+    value: Long, // Duration, TODO https://issuetracker.google.com/issues/251430194
     onValueChange: (Long) -> Unit,
     label: @Composable (() -> Unit)? = null,
 ) {

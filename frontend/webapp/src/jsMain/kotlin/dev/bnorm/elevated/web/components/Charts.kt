@@ -33,7 +33,6 @@ fun Charts() {
             onClick = {
                 scope.launch { getCharts() }
             },
-//            type = MDCButtonType.Raised,
         ) {
             Text("Refresh")
         }

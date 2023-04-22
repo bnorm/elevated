@@ -17,6 +17,10 @@ kotlin {
             dependencies {
                 api(project(":common:client"))
                 implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
             }
         }
         named("androidMain") {

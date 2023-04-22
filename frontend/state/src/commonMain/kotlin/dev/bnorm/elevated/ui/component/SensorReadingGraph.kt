@@ -1,4 +1,4 @@
-package dev.bnorm.elevated.web.components
+package dev.bnorm.elevated.ui.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -33,7 +33,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun SensorChart(
+fun SensorReadingGraph(
     graph: SensorGraph,
     modifier: Modifier = Modifier,
     selectedTimestamp: Instant? = null,

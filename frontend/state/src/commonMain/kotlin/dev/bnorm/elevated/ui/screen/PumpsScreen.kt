@@ -13,10 +13,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.model.devices.DeviceActionPrototype
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.PumpDispenseArguments
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
