@@ -14,15 +14,18 @@ services:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
 
-#  certbot:
-#    image: certbot/certbot
-#    volumes:
-#      - ./web-root:/var/www/html
-#      - certbot-etc:/etc/letsencrypt
-#      - certbot-var:/var/lib/letsencrypt
-#    depends_on:
-#      - nginx
-#    command: certonly --webroot --webroot-path=/var/www/html --email brian@bnorm.com --agree-tos --no-eff-email --force-renewal -d elevated.bnorm.dev
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./web-root:/var/www/html
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - nginx
+    command: >-
+             certonly --webroot --webroot-path=/var/www/html
+             --email brian@bnorm.com --agree-tos --no-eff-email
+             --reinstall -d elevated.bnorm.dev
 
   service:
     image: ghcr.io/bnorm/elevated-service:latest

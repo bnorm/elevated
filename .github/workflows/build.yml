@@ -118,7 +118,7 @@ jobs:
           script: |
             cd elevated
             docker compose pull service
-            docker compose up -d
+            docker compose up -d service
             docker compose exec -it nginx nginx -s reload
             docker image prune -f
 
