@@ -7,7 +7,7 @@ plugins {
 }
 
 kotlin {
-    android()
+    androidTarget()
     js(IR) {
         browser()
     }
@@ -34,7 +34,7 @@ kotlin {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
 
     namespace = "dev.bnorm.elevated.state"
     defaultConfig {
@@ -44,12 +44,5 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    sourceSets {
-        named("main") {
-            manifest.srcFile("src/androidMain/AndroidManifest.xml")
-            res.srcDirs("src/androidMain/res")
-        }
     }
 }

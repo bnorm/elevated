@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.springframework.boot")
-//    id("org.graalvm.buildtools.native")
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.serialization")
@@ -59,8 +58,10 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "17"
 }
 
-tasks.processResources.configure {
-    from(tasks.getByPath(":frontend:webapp:jsBrowserDistribution")) {
-        into("static")
+if (System.getenv("CI") == "true") {
+    tasks.processResources.configure {
+        from(tasks.getByPath(":frontend:webapp:jsBrowserDistribution")) {
+            into("static")
+        }
     }
 }
