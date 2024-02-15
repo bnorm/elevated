@@ -28,6 +28,7 @@ jobs:
           strip_components: 1
           source: "deploy/"
           target: "~/"
+          timeout: 120s
 
       - name: Deploy latest version of service
         uses: appleboy/ssh-action@master
