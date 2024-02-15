@@ -1,0 +1,44 @@
+name: Project Deployment
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Project Build]
+    types: [completed]
+    branches: [main]
+
+jobs:
+
+  deploy:
+    name: "Deploy"
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Copy deployment configuration files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          strip_components: 1
+          source: "deploy/"
+          target: "~/"
+
+      - name: Deploy latest version of service
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd elevated
+            docker compose pull service
+            docker compose up -d service
+            docker compose exec -it nginx nginx -s reload
+            docker image prune -f
