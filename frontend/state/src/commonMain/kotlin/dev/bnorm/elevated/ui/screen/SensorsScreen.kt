@@ -49,14 +49,18 @@ class SensorsScreen @Inject constructor(
                     NetworkResult.Loading -> Text(text = "Loading sensor $name readings...")
                     is NetworkResult.Error -> Text(text = "Error loading sensor $name readings! ${result.error.message}")
                     is NetworkResult.Loaded -> {
-                        SensorReadingGraph(
-                            graph = result.value,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
-                            selectedTimestamp = selectedTimestamp,
-                            onSelectedTimestamp = { selectedTimestamp = it }
-                        )
+                        if (result.value.readings.isEmpty()) {
+                            Text(text = "No $name readings in time range")
+                        } else {
+                            SensorReadingGraph(
+                                graph = result.value,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
+                                selectedTimestamp = selectedTimestamp,
+                                onSelectedTimestamp = { selectedTimestamp = it }
+                            )
+                        }
                     }
                 }
             }
