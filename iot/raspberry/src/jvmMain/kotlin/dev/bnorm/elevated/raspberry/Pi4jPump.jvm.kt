@@ -3,13 +3,8 @@ package dev.bnorm.elevated.raspberry
 import com.pi4j.context.Context
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState
-import com.pi4j.io.i2c.I2C
 import dev.bnorm.elevated.log.getLogger
-import dev.bnorm.elevated.model.sensors.SensorId
-import java.io.IOException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 
 fun Context.PumpService(): PumpService {
     // Hardcode known pumps
