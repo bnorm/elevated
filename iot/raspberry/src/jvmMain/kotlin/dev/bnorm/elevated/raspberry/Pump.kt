@@ -3,8 +3,8 @@ package dev.bnorm.elevated.raspberry
 import com.pi4j.context.Context
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState
+import dev.bnorm.elevated.log.getLogger
 import kotlinx.coroutines.delay
-import org.slf4j.LoggerFactory
 
 interface Pump {
     val id: Int
@@ -38,7 +38,7 @@ fun Context.Pump(
     return Pi4jPump(output, name, rate, id, Pump.State.OFF)
 }
 
-private val log = LoggerFactory.getLogger(Pump::class.java)
+private val log = getLogger<Pump>()
 
 private class Pi4jPump(
     private val output: DigitalOutput,
@@ -48,28 +48,28 @@ private class Pi4jPump(
     override var state: Pump.State,
 ) : Pump {
     override fun on() {
-        log.trace("Enter method=Pump::on id={}", id)
+        log.trace { "Enter method=Pump::on id=$id" }
         output.low()
         state = Pump.State.ON
-        log.trace("Exit method=Pump::on id={}", id)
+        log.trace { "Exit method=Pump::on id=$id" }
     }
 
     override fun off() {
-        log.trace("Enter method=Pump::off id={}", id)
+        log.trace { "Enter method=Pump::off id=$id" }
         output.high()
         state = Pump.State.OFF
-        log.trace("Exit method=Pump::off id={}", id)
+        log.trace { "Exit method=Pump::off id=$id" }
     }
 
     override suspend fun dispense(milliliters: Double) {
-        log.trace("Enter method=Pump::dispense milliliters={} id={}", milliliters, id)
+        log.trace { "Enter method=Pump::dispense milliliters=$milliliters id=$id" }
         val milliseconds = milliliters / rate * 1000
         try {
             on()
             delay(milliseconds.toLong())
         } finally {
             off() // always attempt to turn off
-            log.trace("Exit method=Pump::dispense milliliters={} id={}", milliliters, id)
+            log.trace { "Exit method=Pump::dispense milliliters=$milliliters id=$id" }
         }
     }
 
@@ -84,26 +84,26 @@ class FakePump(
     override var state: Pump.State = Pump.State.OFF
 
     override fun on() {
-        log.trace("Enter method=Pump::on id={}", id)
+        log.trace { "Enter method=Pump::on id=$id" }
         state = Pump.State.ON
-        log.trace("Exit method=Pump::on id={}", id)
+        log.trace { "Exit method=Pump::on id=$id" }
     }
 
     override fun off() {
-        log.trace("Enter method=Pump::off id={}", id)
+        log.trace { "Enter method=Pump::off id=$id" }
         state = Pump.State.OFF
-        log.trace("Exit method=Pump::off id={}", id)
+        log.trace { "Exit method=Pump::off id=$id" }
     }
 
     override suspend fun dispense(milliliters: Double) {
-        log.trace("Enter method=Pump::dispense milliliters={} id={}", milliliters, id)
+        log.trace { "Enter method=Pump::dispense milliliters=$milliliters id=$id" }
         val milliseconds = milliliters / rate * 1000
         try {
             on()
             delay(milliseconds.toLong())
         } finally {
             off() // always attempt to turn off
-            log.trace("Exit method=Pump::dispense milliliters={} id={}", milliliters, id)
+            log.trace { "Exit method=Pump::dispense milliliters=$milliliters id=$id" }
         }
     }
 

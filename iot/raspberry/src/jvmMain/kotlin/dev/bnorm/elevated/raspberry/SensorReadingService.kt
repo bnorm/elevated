@@ -1,16 +1,16 @@
 package dev.bnorm.elevated.raspberry
 
+import dev.bnorm.elevated.log.getLogger
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.datetime.Clock
-import org.slf4j.LoggerFactory
 
 class SensorReadingService(
     private val sensorService: SensorService,
     private val elevatedClient: ElevatedClient,
 ) {
     companion object {
-        private val log = LoggerFactory.getLogger(SensorReadingService::class.java)
+        private val log = getLogger<SensorReadingService>()
     }
 
     suspend fun record() {
@@ -22,7 +22,7 @@ class SensorReadingService(
                     runCatching {
                         elevatedClient.recordSensorReading(type.id, reading, timestamp)
                     }.onFailure { error ->
-                        log.warn("Unable to upload {} sensor reading to elevated.bnorm.dev", type, error)
+                        log.warn(error) { "Unable to upload $type sensor reading to elevated.bnorm.dev" }
                     }
                 }
             }

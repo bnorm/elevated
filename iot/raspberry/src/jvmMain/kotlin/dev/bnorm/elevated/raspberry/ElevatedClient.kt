@@ -3,6 +3,7 @@ package dev.bnorm.elevated.raspberry
 import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.client.HttpElevatedClient
 import dev.bnorm.elevated.client.TokenStore
+import dev.bnorm.elevated.log.getLogger
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.Device
 import dev.bnorm.elevated.model.devices.DeviceAction
@@ -27,12 +28,11 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import org.slf4j.LoggerFactory
 
 // TODO replace with something from :common:client
 class ElevatedClient {
     companion object {
-        private val log = LoggerFactory.getLogger(ElevatedClient::class.java)
+        private val log = getLogger<ElevatedClient>()
 
         private val env = System.getenv()
         private val DEVICE_KEY = Password(env.getValue("DEVICE_KEY"))
@@ -79,15 +79,15 @@ class ElevatedClient {
             while (true) {
                 try {
                     val device = getDevice()
-                    log.info("Connecting to server for device={}", device)
+                    log.info { "Connecting to server for device=$device" }
                     emitAll(
                         elevatedClient.connectDeviceActions(device.id)
-                            .onEach { log.info("Received : action={}", it) }
+                            .onEach { log.info { "Received : action=$it" } }
                     )
-                    log.info("Disconnected from server")
+                    log.info { "Disconnected from server" }
                 } catch (t: Throwable) {
                     if (t is CancellationException) throw t
-                    log.warn("Error in WebSocket", t)
+                    log.warn(t) { "Error in WebSocket" }
                 }
 
                 delay(15.seconds)

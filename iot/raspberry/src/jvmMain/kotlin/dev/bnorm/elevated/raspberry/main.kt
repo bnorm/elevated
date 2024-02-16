@@ -1,18 +1,18 @@
 package dev.bnorm.elevated.raspberry
 
 import com.pi4j.Pi4J
+import dev.bnorm.elevated.log.getLogger
 import dev.bnorm.elevated.model.devices.PumpDispenseArguments
 import kotlinx.coroutines.*
-import org.slf4j.LoggerFactory
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-private val log = LoggerFactory.getLogger("dev.bnorm.elevated.raspberry")
+private val log = getLogger("dev.bnorm.elevated.raspberry")
 
 suspend fun main() {
     System.setProperty("kotlinx.coroutines.debug", "on") // Enable Kotlin coroutines debugging
     val loggingExceptionHandler = CoroutineExceptionHandler { _, t ->
-        log.warn("Unhandled exception in worker scope", t)
+        log.warn(t) { "Unhandled exception in worker scope" }
     }
     withContext(Dispatchers.Default + loggingExceptionHandler) {
         supervisorScope {
@@ -24,7 +24,7 @@ suspend fun main() {
 
             if (System.getProperty("os.name") == "Mac OS X") {
                 // TODO connect to localhost
-                log.warn("Not running on Raspberry PI!")
+                log.warn { "Not running on Raspberry PI!" }
             } else {
                 elevatedClient = ElevatedClient()
                 elevatedClient.authenticate()

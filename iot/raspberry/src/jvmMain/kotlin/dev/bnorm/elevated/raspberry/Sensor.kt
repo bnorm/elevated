@@ -2,11 +2,11 @@ package dev.bnorm.elevated.raspberry
 
 import com.pi4j.context.Context
 import com.pi4j.io.i2c.I2C
+import dev.bnorm.elevated.log.getLogger
 import dev.bnorm.elevated.model.sensors.SensorId
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.slf4j.LoggerFactory
 import java.io.IOException
 
 interface Sensor {
@@ -31,7 +31,7 @@ fun Context.Sensor(
     return Pi4jSensor(i2c, name, id)
 }
 
-private val log = LoggerFactory.getLogger(Sensor::class.java)
+private val log = getLogger<Sensor>()
 
 private class Pi4jSensor(
     private val i2c: I2C,
@@ -49,8 +49,11 @@ private class Pi4jSensor(
             i2c.read(buffer)
             val size = buffer.indexOf(0)
             val copy = buffer.copyOf(size)
-            log.debug("response for {}: size={} hex={}",
-                id, size, copy.joinToString("") { it.toString(16).padStart(2, '0') })
+            log.debug {
+                "response for $id: size=$size hex=${
+                    copy.joinToString("") { it.toString(16).padStart(2, '0') }
+                }"
+            }
 
             if (copy[0].toInt() != 1) {
                 throw IOException("code=" + copy[0].toString(16))
@@ -69,7 +72,7 @@ class FakeSensor(
 ) : Sensor {
     override suspend fun read(): Double {
         val reading = generator()
-        log.debug("response for {}: value={}", id, reading)
+        log.debug { "response for $id: value=$reading" }
         return reading
     }
 }
