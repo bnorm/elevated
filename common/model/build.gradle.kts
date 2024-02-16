@@ -8,6 +8,7 @@ kotlin {
     js(IR) {
         browser()
     }
+    linuxArm64()
 
     sourceSets {
         named("commonMain") {

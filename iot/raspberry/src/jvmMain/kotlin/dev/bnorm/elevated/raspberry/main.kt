@@ -24,6 +24,7 @@ suspend fun main() {
 
             if (System.getProperty("os.name") == "Mac OS X") {
                 // TODO connect to localhost
+                log.warn("Not running on Raspberry PI!")
             } else {
                 elevatedClient = ElevatedClient()
                 elevatedClient.authenticate()

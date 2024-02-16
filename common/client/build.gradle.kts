@@ -7,6 +7,7 @@ kotlin {
     js(IR) {
         browser()
     }
+    linuxArm64()
 
     sourceSets {
         named("commonMain") {
@@ -27,6 +28,11 @@ kotlin {
         named("jvmMain") {
             dependencies {
                 api(libs.ktor.client.okhttp)
+            }
+        }
+        named("linuxArm64Main") {
+            dependencies {
+                api(libs.ktor.client.cio)
             }
         }
     }
