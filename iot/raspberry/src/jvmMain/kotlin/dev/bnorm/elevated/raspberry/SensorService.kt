@@ -1,6 +1,5 @@
 package dev.bnorm.elevated.raspberry
 
-import com.pi4j.context.Context
 import dev.bnorm.elevated.model.sensors.SensorId
 import kotlin.random.Random
 
@@ -20,13 +19,6 @@ enum class SensorType(
 ) {
     Ph(id = SensorId("6278048e770bd023d5d971ea"), bus = 1, device = 0x63),
     Ec(id = SensorId("6278049d770bd023d5d971eb"), bus = 1, device = 0x64),
-}
-
-fun Context.SensorService(): SensorService {
-    // Hardcode known sensors
-    return SensorService(
-        all = SensorType.values().map { Sensor(it.id, it.bus, it.device) }
-    )
 }
 
 fun FakeSensorService(): SensorService {

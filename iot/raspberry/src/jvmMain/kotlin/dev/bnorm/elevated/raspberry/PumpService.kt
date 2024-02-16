@@ -1,7 +1,5 @@
 package dev.bnorm.elevated.raspberry
 
-import com.pi4j.context.Context
-
 class PumpService(
     val all: List<Pump>
 ) {
@@ -20,13 +18,6 @@ enum class PumpType(
     Micro(2, address = 18, rate = 1.2540),
     Gro(3, address = 27, rate = 1.1989),
     Bloom(4, address = 22, rate = 1.1989),
-}
-
-fun Context.PumpService(): PumpService {
-    // Hardcode known pumps
-    return PumpService(
-        all = PumpType.values().map { Pump(it.id, it.address, it.rate) }
-    )
 }
 
 fun FakePumpService(): PumpService {

@@ -14,9 +14,7 @@ import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.http.Url
-import java.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -27,16 +25,15 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
 
 // TODO replace with something from :common:client
-class ElevatedClient {
+class ElevatedClient(
+    httpClient: HttpClient,
+    private val deviceId: DeviceId,
+    private val deviceKey: Password,
+) {
     companion object {
         private val log = getLogger<ElevatedClient>()
-
-        private val env = System.getenv()
-        private val DEVICE_KEY = Password(env.getValue("DEVICE_KEY"))
-        private val DEVICE_ID = DeviceId("62780348770bd023d5d971e9")
     }
 
     private val tokenStore = TokenStore.Memory()
@@ -45,21 +42,13 @@ class ElevatedClient {
         ignoreUnknownKeys = true
     }
 
-    private val okHttpClient = OkHttpClient.Builder()
-        .pingInterval(Duration.ofSeconds(30))
-        .build()
-
-    private val httpClient = HttpClient(OkHttp.create {
-        preconfigured = okHttpClient
-    })
-
     private val elevatedClient = HttpElevatedClient(Url("https://elevated.bnorm.dev"), httpClient, tokenStore, json)
 
     suspend fun authenticate(): Device {
         val authenticatedDevice = elevatedClient.loginDevice(
             DeviceLoginRequest(
-                id = DEVICE_ID,
-                key = DEVICE_KEY,
+                id = deviceId,
+                key = deviceKey,
             )
         )
         tokenStore.setAuthorization(authenticatedDevice.token)
@@ -67,11 +56,11 @@ class ElevatedClient {
     }
 
     suspend fun getDevice(): Device {
-        return elevatedClient.getDevice(DEVICE_ID)
+        return elevatedClient.getDevice(deviceId)
     }
 
     suspend fun completeDeviceAction(deviceActionId: DeviceActionId): DeviceAction {
-        return elevatedClient.completeDeviceAction(DEVICE_ID, deviceActionId)
+        return elevatedClient.completeDeviceAction(deviceId, deviceActionId)
     }
 
     suspend fun getActionQueue(): Flow<DeviceAction> {
