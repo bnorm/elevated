@@ -1,37 +1,30 @@
 package dev.bnorm.elevated.raspberry
 
-import com.pi4j.context.Context
-import com.pi4j.io.gpio.digital.DigitalOutput
-import com.pi4j.io.gpio.digital.DigitalState
+import dev.bnorm.Gpio
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.gpio.Output
+import dev.bnorm.gpio.PinState
 import kotlinx.coroutines.delay
 
-fun Context.PumpService(): PumpService {
+fun PumpService(): PumpService {
     // Hardcode known pumps
     return PumpService(
         all = PumpType.entries.map { Pump(it.id, it.address, it.rate) }
     )
 }
 
-fun Context.Pump(
+fun Pump(
     id: Int,
     address: Int,
     rate: Double // ml / second
 ): Pump {
     val name = "pump" + id.toString().padStart(2, '0')
-    val config = DigitalOutput.newConfigBuilder(this)
-        .address(address)
-        .id(name)
-        .name(name)
-        .shutdown(DigitalState.HIGH)
-        .initial(DigitalState.HIGH)
-        .provider("pigpio-digital-output")
-    val output = create(config)
-    return Pi4jPump(output, name, rate, id, Pump.State.OFF)
+    val output = Gpio().output(address, defaultState = PinState.HIGH)
+    return GpioPump(output, name, rate, id, Pump.State.OFF)
 }
 
-private class Pi4jPump(
-    private val output: DigitalOutput,
+class GpioPump(
+    private val output: Output,
     private val name: String,
     private val rate: Double, // ml / second
     override val id: Int,
@@ -43,14 +36,14 @@ private class Pi4jPump(
 
     override fun on() {
         log.trace { "Enter method=Pump::on id=$id" }
-        output.low()
+        output.setState(PinState.LOW)
         state = Pump.State.ON
         log.trace { "Exit method=Pump::on id=$id" }
     }
 
     override fun off() {
         log.trace { "Enter method=Pump::off id=$id" }
-        output.high()
+        output.setState(PinState.HIGH)
         state = Pump.State.OFF
         log.trace { "Exit method=Pump::off id=$id" }
     }

@@ -20,6 +20,10 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlin.ExperimentalStdlibApi")
+        }
+
         val commonMain by getting {
             dependencies {
                 implementation(project(":common:client"))
@@ -41,6 +45,7 @@ kotlin {
             }
         }
         val linuxArm64Main by getting {
+            languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             dependencies {
                 implementation(project(":iot:gpio"))
             }

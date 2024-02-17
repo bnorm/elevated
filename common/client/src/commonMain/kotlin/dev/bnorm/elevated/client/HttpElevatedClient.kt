@@ -64,7 +64,9 @@ class HttpElevatedClient(
     private val json: Json = DefaultJson,
 ) : ElevatedClient {
     private val httpClient = baseHttpClient.config {
-        install(WebSockets)
+        install(WebSockets) {
+            pingInterval = 30_000
+        }
 
         install(ContentNegotiation) {
             json(json)
