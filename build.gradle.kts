@@ -1,8 +1,6 @@
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin
 import org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
     // this is necessary to avoid the plugins to be loaded multiple times in each subproject's classloader
@@ -17,7 +15,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.bnorm.elevated"
+    group = "dev.bnorm.elevated"
 
     repositories {
         mavenCentral()
@@ -29,23 +27,9 @@ allprojects {
         useJUnitPlatform()
     }
 
-    val compilerArgs = listOf(
-        "-opt-in=kotlin.RequiresOptIn",
-    )
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "11"
-            freeCompilerArgs = freeCompilerArgs + compilerArgs
-        }
-    }
-    tasks.withType<Kotlin2JsCompile> {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + compilerArgs
-        }
-    }
-    tasks.withType<KotlinCompileCommon> {
-        kotlinOptions {
-            freeCompilerArgs = freeCompilerArgs + compilerArgs
         }
     }
 
