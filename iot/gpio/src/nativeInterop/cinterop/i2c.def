@@ -1,0 +1,4 @@
+headers = i2c/smbus.h linux/i2c-dev.h
+package = dev.bnorm.lib.i2c
+compilerOpts = -Iheaders/include/
+linkerOpts = -li2c

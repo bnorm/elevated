@@ -1,0 +1,4 @@
+headers = gpiod.h
+package = dev.bnorm.lib.gpio
+compilerOpts = -Iheaders/include/
+linkerOpts = -lgpiod
