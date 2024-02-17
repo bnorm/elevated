@@ -40,5 +40,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("dev.bnorm.elevated.raspberry.MainKt")
+    mainClass.set("MainKt")
 }
