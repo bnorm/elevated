@@ -1,3 +1,5 @@
+apply("$rootDir/gradle/native-libs.gradle.kts")
+
 plugins {
     kotlin("multiplatform")
     application
@@ -9,19 +11,21 @@ kotlin {
         withJava()
     }
     linuxArm64 {
-        // TODO enable binary building
-        // binaries {
-        //     executable()
-        // }
+        binaries {
+            executable {
+                linkTask.dependsOn(tasks.named("nativeLibs"))
+                linkerOpts.add("-L$buildDir/native/libs/usr/lib/aarch64-linux-gnu/")
+            }
+        }
     }
 
     sourceSets {
-        named("commonMain") {
+        val commonMain by getting {
             dependencies {
                 implementation(project(":common:client"))
             }
         }
-        named("jvmMain") {
+        val jvmMain by getting {
             dependencies {
                 implementation(libs.slf4j.simple)
 
@@ -30,10 +34,15 @@ kotlin {
                 implementation(libs.bundles.pi4j.raspberrypi)
             }
         }
-        named("jvmTest") {
+        val jvmTest by getting {
             dependencies {
                 implementation(libs.junit.jupiter.api)
                 runtimeOnly(libs.junit.jupiter.engine)
+            }
+        }
+        val linuxArm64Main by getting {
+            dependencies {
+                implementation(project(":iot:gpio"))
             }
         }
     }
