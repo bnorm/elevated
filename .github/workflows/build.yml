@@ -34,7 +34,7 @@ jobs:
       - name: Build Project
         uses: gradle/gradle-build-action@v3
         with:
-          arguments: check bootJar distTar --parallel
+           arguments: check bootJar distTar linkReleaseExecutableLinuxArm64 --parallel
 
       - name: Publish Test Report
         if: success() || failure()
