@@ -3,7 +3,7 @@ package dev.bnorm.elevated.service.sensors
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.DeviceCreateRequest
 import dev.bnorm.elevated.model.sensors.SensorCreateRequest
-import dev.bnorm.elevated.model.sensors.SensorType
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.service.devices.DeviceService
 import dev.bnorm.elevated.service.devices.db.DeviceEntity
 import dev.bnorm.elevated.service.sensors.db.SensorEntity
@@ -44,7 +44,7 @@ class SensorServiceTest @Autowired constructor(
         val expected = sensorService.createSensor(
             request = SensorCreateRequest(
                 name = "Test Sensor",
-                type = SensorType.EC,
+                type = MeasurementType.EC,
                 deviceId = device.id
             )
         )

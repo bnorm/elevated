@@ -2,10 +2,8 @@ package dev.bnorm.elevated.service.pumps
 
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.DeviceCreateRequest
-import dev.bnorm.elevated.model.pumps.Pump
 import dev.bnorm.elevated.model.pumps.PumpContent
 import dev.bnorm.elevated.model.pumps.PumpCreateRequest
-import dev.bnorm.elevated.model.sensors.SensorType
 import dev.bnorm.elevated.service.devices.DeviceService
 import dev.bnorm.elevated.service.devices.db.DeviceEntity
 import dev.bnorm.elevated.service.pumps.db.PumpEntity

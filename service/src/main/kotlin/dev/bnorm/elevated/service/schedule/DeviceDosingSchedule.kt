@@ -101,7 +101,6 @@ class DeviceDosingSchedule(
             deviceId = device.id,
             prototype = DeviceActionPrototype(
                 args = PumpDispenseArguments(
-                    pump = null,
                     pumpId = pumpId,
                     amount = amount,
                 )

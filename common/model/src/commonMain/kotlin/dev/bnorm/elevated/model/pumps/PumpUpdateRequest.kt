@@ -9,5 +9,5 @@ data class PumpUpdateRequest(
     val deviceId: DeviceId? = null,
     /** Measured in milliliters / second. */
     val flowRate: Double? = null,
-    val content: PumpContent,
+    val content: PumpContent? = null,
 )

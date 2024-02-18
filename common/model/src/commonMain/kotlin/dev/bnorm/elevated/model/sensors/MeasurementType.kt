@@ -1,7 +1,6 @@
 package dev.bnorm.elevated.model.sensors
 
-// TODO rename to MeasurementType
-enum class SensorType {
+enum class MeasurementType {
     EC,
     PH,
     ;

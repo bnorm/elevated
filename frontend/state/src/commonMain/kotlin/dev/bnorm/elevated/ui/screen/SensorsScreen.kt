@@ -20,23 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.state.NetworkResult
-import dev.bnorm.elevated.state.graph.SensorGraph
-import dev.bnorm.elevated.state.graph.SensorGraphPresenter
+import dev.bnorm.elevated.state.sensor.SensorGraph
+import dev.bnorm.elevated.state.sensor.SensorsPresenter
 import dev.bnorm.elevated.ui.component.DurationInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
 import kotlin.time.Duration.Companion.hours
 import kotlinx.datetime.Instant
 
 class SensorsScreen @Inject constructor(
-    private val presenter: SensorGraphPresenter,
+    private val presenter: SensorsPresenter,
 ) {
     @Composable
     fun Render(
-        refresher: @Composable (presenter: SensorGraphPresenter) -> Unit = {},
+        refresher: @Composable (presenter: SensorsPresenter) -> Unit = {},
     ) {
         var selectedTimestamp by remember { mutableStateOf<Instant?>(null) }
-        val phReadings by presenter.phReadings.collectAsState(NetworkResult.Loading)
-        val ecReadings by presenter.ecReadings.collectAsState(NetworkResult.Loading)
+        val sensors = presenter.present()
 
         refresher(presenter)
 
@@ -46,7 +45,7 @@ class SensorsScreen @Inject constructor(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp),
             ) {
-                Text(text = "$name Sensor")
+                Text(text = "Sensor: $name")
                 when (result) {
                     NetworkResult.Loading -> Text(text = "Loading sensor $name readings...")
                     is NetworkResult.Error -> Text(text = "Error loading sensor $name readings! ${result.error.message}")
@@ -93,8 +92,10 @@ class SensorsScreen @Inject constructor(
                     }
                 }
 
-                Chart("pH", phReadings)
-                Chart("EC", ecReadings)
+                for (model in sensors.orEmpty()) {
+                    val readings by model.readings.collectAsState(NetworkResult.Loading)
+                    Chart(model.sensor.name, readings)
+                }
             }
         }
     }

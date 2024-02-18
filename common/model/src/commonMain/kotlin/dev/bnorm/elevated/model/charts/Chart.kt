@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.model.charts
 
 import dev.bnorm.elevated.model.pumps.PumpContent
-import dev.bnorm.elevated.model.sensors.SensorType
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,7 +27,7 @@ data class Chart(
 ) {
     @Serializable
     data class Bound(
-        val type: SensorType,
+        val type: MeasurementType,
         val low: Double,
         val high: Double,
     )

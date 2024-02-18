@@ -3,7 +3,7 @@ package dev.bnorm.elevated.service.charts
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.charts.ChartCreateRequest
 import dev.bnorm.elevated.model.pumps.PumpContent
-import dev.bnorm.elevated.model.sensors.SensorType
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.service.charts.db.ChartEntity
 import dev.bnorm.elevated.test.container.DockerContainerConfig
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -35,12 +35,12 @@ class ChartServiceTest @Autowired constructor(
                 name = "Test Chart",
                 bounds = listOf(
                     Chart.Bound(
-                        type = SensorType.PH,
+                        type = MeasurementType.PH,
                         low = 1.0,
                         high = 1.0,
                     ),
                     Chart.Bound(
-                        type = SensorType.EC,
+                        type = MeasurementType.EC,
                         low = 1.0,
                         high = 1.0,
                     ),

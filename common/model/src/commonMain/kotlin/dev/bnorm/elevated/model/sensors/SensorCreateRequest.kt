@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SensorCreateRequest(
     val name: String,
-    val type: SensorType,
+    val type: MeasurementType,
     val deviceId: DeviceId,
 )

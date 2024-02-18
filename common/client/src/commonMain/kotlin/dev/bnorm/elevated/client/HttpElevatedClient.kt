@@ -11,6 +11,7 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceLoginRequest
 import dev.bnorm.elevated.model.notifications.Notification
 import dev.bnorm.elevated.model.notifications.NotificationId
+import dev.bnorm.elevated.model.pumps.Pump
 import dev.bnorm.elevated.model.sensors.Sensor
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
@@ -102,6 +103,12 @@ class HttpElevatedClient(
 
     override suspend fun getCurrentUser(): AuthenticatedUser {
         return httpClient.get(apiPath("users/current")).body()
+    }
+
+    // Pumps
+
+    override suspend fun getPumps(): List<Pump> {
+        return httpClient.get(apiPath("pumps")).body()
     }
 
     // Sensors

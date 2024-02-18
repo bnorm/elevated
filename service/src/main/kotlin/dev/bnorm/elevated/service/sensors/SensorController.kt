@@ -23,8 +23,9 @@ class SensorController(
 
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")
     @PatchMapping("/{sensorId}")
-    suspend fun updateSensor(@PathVariable sensorId: SensorId, @RequestBody request: SensorUpdateRequest) {
-        sensorService.updateSensor(sensorId, request)
+    suspend fun updateSensor(@PathVariable sensorId: SensorId, @RequestBody request: SensorUpdateRequest): Sensor {
+        return sensorService.updateSensor(sensorId, request)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PreAuthorize("hasAuthority('SENSORS_WRITE')")

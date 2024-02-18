@@ -23,8 +23,9 @@ class PumpController(
 
     @PreAuthorize("hasAuthority('PUMPS_WRITE')")
     @PatchMapping("/{pumpId}")
-    suspend fun updatePump(@PathVariable pumpId: PumpId, @RequestBody request: PumpUpdateRequest) {
-        pumpService.updatePump(pumpId, request)
+    suspend fun updatePump(@PathVariable pumpId: PumpId, @RequestBody request: PumpUpdateRequest): Pump {
+        return pumpService.updatePump(pumpId, request)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
     }
 
     @PreAuthorize("hasAuthority('PUMPS_WRITE')")

@@ -1,4 +1,4 @@
-package dev.bnorm.elevated.state.graph
+package dev.bnorm.elevated.state.sensor
 
 import dev.bnorm.elevated.model.sensors.SensorReading
 import kotlinx.datetime.Instant

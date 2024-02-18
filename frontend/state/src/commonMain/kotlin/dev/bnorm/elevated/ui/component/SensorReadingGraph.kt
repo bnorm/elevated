@@ -24,8 +24,9 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import dev.bnorm.elevated.model.sensors.SensorReading
-import dev.bnorm.elevated.state.graph.SensorGraph
+import dev.bnorm.elevated.state.sensor.SensorGraph
 import kotlin.math.roundToLong
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.datetime.Instant
@@ -127,14 +128,16 @@ private fun Double.round(precision: Double) = (this / precision).roundToLong() *
 
 fun SensorGraph.calculatePath(size: Size): Path {
     val path = Path()
-    for ((index, reading) in readings.sortedBy { it.timestamp }.withIndex()) {
+    var prev: SensorReading? = null
+    for (reading in readings.sortedBy { it.timestamp }) {
         val x = reading.toX(size.width.toDouble()).toFloat()
         val y = reading.toY(size.height.toDouble()).toFloat()
-        if (index == 0) {
+        if (prev == null || reading.timestamp - prev.timestamp > 5.minutes) {
             path.moveTo(x, y)
         } else {
             path.lineTo(x, y)
         }
+        prev = reading
     }
     return path
 }

@@ -2,8 +2,7 @@ package dev.bnorm.elevated.service.charts.db
 
 import dev.bnorm.elevated.model.charts.ChartId
 import dev.bnorm.elevated.model.pumps.PumpContent
-import dev.bnorm.elevated.model.sensors.SensorType
-import kotlinx.serialization.Serializable
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -27,7 +26,7 @@ class ChartEntity(
 
     @Document
     data class Bound(
-        val type: SensorType,
+        val type: MeasurementType,
         val low: Double,
         val high: Double,
     )

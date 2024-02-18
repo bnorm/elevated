@@ -11,6 +11,7 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceLoginRequest
 import dev.bnorm.elevated.model.notifications.Notification
 import dev.bnorm.elevated.model.notifications.NotificationId
+import dev.bnorm.elevated.model.pumps.Pump
 import dev.bnorm.elevated.model.sensors.Sensor
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
@@ -24,6 +25,8 @@ interface ElevatedClient {
     suspend fun login(request: UserLoginRequest): AuthenticatedUser
 
     suspend fun getCurrentUser(): AuthenticatedUser
+
+    suspend fun getPumps(): List<Pump>
 
     suspend fun getSensors(): List<Sensor>
 

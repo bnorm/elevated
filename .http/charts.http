@@ -6,8 +6,8 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "{{email}}",
-  "password": "{{password}}"
+    "email": "{{email}}",
+    "password": "{{password}}"
 }
 
 > {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
@@ -34,14 +34,25 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "name": "Active Chart",
-  "targetPhLow": 5.7,
-  "targetPhHigh": 6.3,
-  "targetEcLow": 550,
-  "targetEcHigh": 750,
-  "microMl": 4.9,
-  "groMl": 4.6,
-  "bloomMl": 3.4
+    "name": "Active Chart",
+    "bounds": [
+        {
+            "type": "PH",
+            "low": 5.7,
+            "high": 6.3
+        },
+        {
+            "type": "EC",
+            "low": 550,
+            "high": 750
+        }
+    ],
+    "amounts": {
+        "GENERAL_HYDROPONICS_PH_DOWN": 1.0,
+        "GENERAL_HYDROPONICS_MICRO": 4.9,
+        "GENERAL_HYDROPONICS_GRO": 4.6,
+        "GENERAL_HYDROPONICS_BLOOM": 3.4
+    }
 }
 
 #### Create chart
@@ -64,12 +75,25 @@ Content-Type: application/json
 #Content-Type: application/json
 #
 #{
-#  "name": "Grow Week 1",
-#  "targetEcLow": 500,
-#  "targetEcHigh": 600,
-#  "microMl": 2.0,
-#  "groMl": 2.0,
-#  "bloomMl": 2.0
+#    "name": "Grow Week 1",
+#    "bounds": [
+#        {
+#            "type": "PH",
+#            "low": 5.7,
+#            "high": 6.3
+#        },
+#        {
+#            "type": "EC",
+#            "low": 500,
+#            "high": 600
+#        }
+#    ],
+#    "amounts": {
+#        "GENERAL_HYDROPONICS_PH_DOWN": 1.0,
+#        "GENERAL_HYDROPONICS_MICRO": 2.0,
+#        "GENERAL_HYDROPONICS_GRO": 2.0,
+#        "GENERAL_HYDROPONICS_BLOOM": 2.0
+#    }
 #}
 #
 #> {% client.global.set("chartId", response.body.id); %}

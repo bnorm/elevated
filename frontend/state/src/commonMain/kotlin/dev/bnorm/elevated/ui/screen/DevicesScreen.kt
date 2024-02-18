@@ -115,11 +115,14 @@ class DevicesScreen @Inject constructor(
                 if (chart != null) {
                     Divider(modifier = Modifier.padding(2.dp))
                     Text(text = "Chart : ${chart.name}")
-                    Text(text = "   Target pH : ${chart.targetPhLow} to ${chart.targetPhHigh}")
-                    Text(text = "   Target EC : ${chart.targetEcLow} to ${chart.targetEcHigh}")
-                    Text(text = "   Micro : ${chart.microMl} mL")
-                    Text(text = "   Gro : ${chart.groMl} mL")
-                    Text(text = "   Bloom : ${chart.bloomMl} mL")
+                    Text(text = "Bounds :")
+                    for (bound in chart.bounds.orEmpty()) {
+                        Text(text = "   ${bound.type} : ${bound.low} to ${bound.high}")
+                    }
+                    Text(text = "Amounts :")
+                    for ((content, amount) in chart.amounts.orEmpty()) {
+                        Text(text = "   ${content.displayName} : $amount mL")
+                    }
                 }
 
                 if (expanded) {

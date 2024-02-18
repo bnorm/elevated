@@ -3,7 +3,6 @@ package dev.bnorm.elevated.service.pumps.db
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.pumps.PumpContent
 import dev.bnorm.elevated.model.pumps.PumpId
-import dev.bnorm.elevated.model.sensors.SensorType
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

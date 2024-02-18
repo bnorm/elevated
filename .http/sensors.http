@@ -26,6 +26,20 @@ Accept: application/json
 
 > {% client.global.set("sensorId", response.body.id); %}
 
+### Patch sensor
+
+PATCH {{hostname}}/api/v1/sensors/{{sensorId}}
+Authorization: {{authorization}}
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name": "Sample Sensor",
+    "type": "PH"
+}
+
+> {% client.global.set("sensorId", response.body.id); %}
+
 ### Get sensor readings
 
 GET {{hostname}}/api/v1/sensors/{{sensorId}}/readings?startTime=2022-04-19T00:00:00.000Z
@@ -58,8 +72,9 @@ Content-Type: application/json
 #Content-Type: application/json
 #
 #{
-#  "name": "Sample Sensor",
-#  "deviceId": "{{deviceId}}"
+#    "name": "Sample Sensor",
+#    "deviceId": "{{deviceId}}",
+#    "type": "PH"
 #}
 #
 #> {% client.global.set("sensorId", response.body.id); %}
