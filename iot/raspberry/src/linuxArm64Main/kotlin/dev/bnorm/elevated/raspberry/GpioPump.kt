@@ -2,6 +2,7 @@ package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.Gpio
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.elevated.model.pumps.PumpId
 import dev.bnorm.gpio.Output
 import dev.bnorm.gpio.PinState
 import kotlinx.coroutines.delay
@@ -14,7 +15,7 @@ fun PumpService(): PumpService {
 }
 
 fun Pump(
-    id: Int,
+    id: PumpId,
     address: Int,
     rate: Double // ml / second
 ): Pump {
@@ -27,7 +28,7 @@ class GpioPump(
     private val output: Output,
     private val name: String,
     private val rate: Double, // ml / second
-    override val id: Int,
+    override val id: PumpId,
     override var state: Pump.State,
 ) : Pump {
     companion object {

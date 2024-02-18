@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.model.devices
 
+import dev.bnorm.elevated.model.pumps.PumpId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,6 +10,12 @@ sealed class DeviceActionArguments
 @Serializable
 @SerialName("PUMP_DISPENSE")
 data class PumpDispenseArguments(
-    val pump: Int,
-    val amount: Double, // milliliters
-) : DeviceActionArguments()
+    val pump: Int?,
+    val pumpId: PumpId? = null,
+    /** Measured in milliliters. */
+    val amount: Double,
+) : DeviceActionArguments() {
+    init {
+        require(pump != null || pumpId != null)
+    }
+}

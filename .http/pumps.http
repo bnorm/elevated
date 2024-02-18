@@ -1,0 +1,48 @@
+
+### User login
+
+POST {{hostname}}/api/v1/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+> {% client.global.set("authorization", response.body.token.type + " " + response.body.token.value); %}
+
+### Get all pumps
+
+GET {{hostname}}/api/v1/pumps
+Authorization: {{authorization}}
+Accept: application/json
+
+### Get pump
+
+GET {{hostname}}/api/v1/pumps/{{pumpId}}
+Authorization: {{authorization}}
+Accept: application/json
+
+> {% client.global.set("pumpId", response.body.id); %}
+
+#### Create pump
+#
+#POST {{hostname}}/api/v1/pumps
+#Authorization: {{authorization}}
+#Accept: application/json
+#Content-Type: application/json
+#
+#{
+#  "name": "Sample Pump",
+#  "deviceId": "{{deviceId}}",
+#  "flowRate": 1.0,
+#  "content": "CONTENT"
+#}
+#
+#> {% client.global.set("pumpId", response.body.id); %}
+
+#### Delete pump
+#
+#DELETE {{hostname}}/api/v1/pumps/625f44d5acd9b67d24914595
+#Authorization: {{authorization}}

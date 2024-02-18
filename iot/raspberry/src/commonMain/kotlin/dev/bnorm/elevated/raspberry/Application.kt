@@ -47,7 +47,7 @@ class DefaultApplication(
                     elevatedClient.getActionQueue().collect {
                         when (val args = it.args) {
                             is PumpDispenseArguments -> {
-                                pumpService[args.pump]?.dispense(args.amount)
+                                pumpService[args.pumpId ?: return@collect]?.dispense(args.amount)
                                 elevatedClient.completeDeviceAction(it.id)
                             }
                         }

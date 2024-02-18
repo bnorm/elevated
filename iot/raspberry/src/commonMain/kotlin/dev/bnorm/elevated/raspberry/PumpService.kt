@@ -1,28 +1,30 @@
 package dev.bnorm.elevated.raspberry
 
+import dev.bnorm.elevated.model.pumps.PumpId
+
 class PumpService(
     val all: List<Pump>
 ) {
-    private val map: Map<Int, Pump> = all.associateBy { it.id }
+    private val map: Map<PumpId, Pump> = all.associateBy { it.id }
 
-    operator fun get(id: Int): Pump? = map[id]
+    operator fun get(id: PumpId): Pump? = map[id]
     operator fun get(type: PumpType): Pump = map.getValue(type.id)
 }
 
 enum class PumpType(
-    val id: Int,
+    val id: PumpId,
     val address: Int,
     val rate: Double // ml / second
 ) {
-    PhDown(1, address = 17, rate = 1.2540),
-    Micro(2, address = 18, rate = 1.2540),
-    Gro(3, address = 27, rate = 1.1989),
-    Bloom(4, address = 22, rate = 1.1989),
+    PhDown(PumpId("65d285fc9c4278469bfb17a7"), address = 17, rate = 1.2540),
+    Micro(PumpId("65d2862b9c4278469bfb17aa"), address = 18, rate = 1.2540),
+    Gro(PumpId("65d286309c4278469bfb17ab"), address = 27, rate = 1.1989),
+    Bloom(PumpId("65d286349c4278469bfb17ac"), address = 22, rate = 1.1989),
 }
 
 fun FakePumpService(): PumpService {
     // Hardcode known pumps
     return PumpService(
-        all = PumpType.values().map { FakePump(it.id, it.rate) }
+        all = PumpType.entries.map { FakePump(it.id, it.rate) }
     )
 }

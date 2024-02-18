@@ -3,14 +3,16 @@ package dev.bnorm.elevated.service.schedule
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.devices.Device
 import dev.bnorm.elevated.model.devices.DeviceActionPrototype
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.model.devices.PumpDispenseArguments
-import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.pumps.PumpId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.service.ApplicationCoroutineScope
 import dev.bnorm.elevated.service.devices.DeviceActionService
 import dev.bnorm.elevated.service.devices.DeviceService
 import dev.bnorm.elevated.service.sensors.SensorReadingService
 import jakarta.annotation.PostConstruct
+import java.time.Instant
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.async
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
+import kotlinx.datetime.toJavaInstant
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -37,62 +40,79 @@ class DeviceDosingSchedule(
 
     @PostConstruct
     fun schedule() {
+        // TODO chart should determine schedule
         applicationCoroutineScope.schedule(name = "Dose Active Chart", frequency = 4.hours) {
             // Starts at hour 0 UTC - 6 PM CST
             // 6 PM .. 10 PM .. 2 AM .. 6 AM .. 10 AM .. 2 PM ..
             for (device in deviceService.getAllDevices().toList()) {
                 val chart = device.chart ?: continue
+
+                // Check that the device doesn't still have pending actions.
+                val lastActionTime = device.lastActionTime?.toJavaInstant() ?: Instant.MIN
+                if (deviceActionService.getActions(device.id, lastActionTime, limit = 1).toList().isNotEmpty()) continue
+
                 val latestReadings = latestSensorReadings(device)
                 dose(device, chart, latestReadings)
             }
         }
     }
 
-    private suspend fun latestSensorReadings(device: Device): Map<SensorId, SensorReading?> = coroutineScope {
+    private suspend fun latestSensorReadings(device: Device): List<SensorReading> {
         val now = Clock.System.now()
-        device.sensors.map {
-            async {
-                val readings = sensorReadingService.getLatestSensorReading(it.id, count = 1)
+        return device.sensors.asyncMap { sensor ->
+            sensorReadingService.getLatestSensorReading(sensor.id, count = 1)
                     .filter { (now - it.timestamp).absoluteValue < 5.minutes } // Reading must be within the last 5 minutes
                     .singleOrNull()
-                it.id to readings
-            }
-        }.awaitAll().toMap()
+        }.filterNotNull()
     }
 
-    // TODO remove hardcoded sensor and pump IDs
-    private suspend fun dose(device: Device, chart: Chart, readings: Map<SensorId, SensorReading?>) {
+    private suspend fun dose(device: Device, chart: Chart, readings: List<SensorReading>) {
         log.debug("Dosing for feedChart={}", chart)
-        coroutineScope {
-            val ph = readings[SensorId("6278048e770bd023d5d971ea")]
-            if (ph != null) {
-                launch {
-                    log.debug("pH reading={}", ph)
-                    if (ph.value > chart.targetPhHigh) {
-                        dispense(device, pump = 1, amount = 1.0)
-                    } else if (ph.value < chart.targetPhLow) {
-                        // TODO emit notification for low pH
-                    }
-                }
-            }
 
-            val ec = readings[SensorId("6278049d770bd023d5d971eb")]
-            if (ec != null) {
+        val boundsByType = chart.bounds.orEmpty().associateBy { it.type }
+        val amounts = chart.amounts.orEmpty()
+
+        // TODO protect against multiple sensors of the same type => unique DB index?
+
+        coroutineScope {
+            for (reading in readings) {
+                val sensor = device.sensors.singleOrNull { it.id == reading.sensorId } ?: continue // TODO error?
+                val bound = boundsByType[sensor.type] ?: continue // TODO error?
+
                 launch {
-                    log.debug("EC reading={}", ec)
-                    if (ec.value < chart.targetEcLow) {
-                        dispense(device, pump = 2, amount = chart.microMl / 2)
-                        dispense(device, pump = 3, amount = chart.groMl / 2)
-                        dispense(device, pump = 4, amount = chart.bloomMl / 2)
-                    } else if (ec.value > chart.targetEcHigh) {
-                        // TODO emit notification for high EC
+                    log.debug("bound={} reading={}", bound, reading)
+                    val pumps = when {
+                        reading.value < bound.low -> device.pumps.filter { it.content.type == bound.type && it.content.increase }
+                        reading.value > bound.high -> device.pumps.filter { it.content.type == bound.type && !it.content.increase }
+                        else -> return@launch // No change needed
+                    }
+
+                    for (pump in pumps) {
+                        val amount = amounts[pump.content] ?: continue // TODO error?
+                        dispense(device, pump.id, amount)
                     }
                 }
             }
         }
     }
 
-    private suspend fun dispense(device: Device, pump: Int, amount: Double) {
-        deviceActionService.submitDeviceAction(device.id, DeviceActionPrototype(PumpDispenseArguments(pump, amount)))
+    private suspend fun dispense(device: Device, pumpId: PumpId, amount: Double) {
+        deviceActionService.submitDeviceAction(
+            deviceId = device.id,
+            prototype = DeviceActionPrototype(
+                args = PumpDispenseArguments(
+                    pump = null,
+                    pumpId = pumpId,
+                    amount = amount,
+                )
+            )
+        )
+    }
+}
+
+suspend fun <T, R> Iterable<T>.asyncMap(transform: suspend (T) -> R): List<R> {
+    val upstream = this
+    return coroutineScope {
+        upstream.map { async { transform(it) } }.awaitAll()
     }
 }

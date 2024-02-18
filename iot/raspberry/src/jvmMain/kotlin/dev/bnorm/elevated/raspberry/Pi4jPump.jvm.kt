@@ -4,6 +4,7 @@ import com.pi4j.context.Context
 import com.pi4j.io.gpio.digital.DigitalOutput
 import com.pi4j.io.gpio.digital.DigitalState
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.elevated.model.pumps.PumpId
 import kotlinx.coroutines.delay
 
 fun Context.PumpService(): PumpService {
@@ -14,7 +15,7 @@ fun Context.PumpService(): PumpService {
 }
 
 fun Context.Pump(
-    id: Int,
+    id: PumpId,
     address: Int,
     rate: Double // ml / second
 ): Pump {
@@ -34,7 +35,7 @@ private class Pi4jPump(
     private val output: DigitalOutput,
     private val name: String,
     private val rate: Double, // ml / second
-    override val id: Int,
+    override val id: PumpId,
     override var state: Pump.State,
 ) : Pump {
     companion object {

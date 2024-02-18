@@ -1,6 +1,9 @@
 package dev.bnorm.elevated.service.charts
 
+import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.charts.ChartCreateRequest
+import dev.bnorm.elevated.model.pumps.PumpContent
+import dev.bnorm.elevated.model.sensors.SensorType
 import dev.bnorm.elevated.service.charts.db.ChartEntity
 import dev.bnorm.elevated.test.container.DockerContainerConfig
 import kotlinx.coroutines.reactor.awaitSingleOrNull
@@ -30,13 +33,23 @@ class ChartServiceTest @Autowired constructor(
         val expected = chartService.createChart(
             prototype = ChartCreateRequest(
                 name = "Test Chart",
-                targetPhLow = 1.0,
-                targetPhHigh = 1.0,
-                targetEcLow = 1.0,
-                targetEcHigh = 1.0,
-                microMl = 1.0,
-                groMl = 1.0,
-                bloomMl = 1.0,
+                bounds = listOf(
+                    Chart.Bound(
+                        type = SensorType.PH,
+                        low = 1.0,
+                        high = 1.0,
+                    ),
+                    Chart.Bound(
+                        type = SensorType.EC,
+                        low = 1.0,
+                        high = 1.0,
+                    ),
+                ),
+                amounts = mapOf(
+                    PumpContent.GENERAL_HYDROPONICS_MICRO to 1.0,
+                    PumpContent.GENERAL_HYDROPONICS_GRO to 1.0,
+                    PumpContent.GENERAL_HYDROPONICS_BLOOM to 1.0,
+                )
             )
         )
         val actual = chartService.getChartById(expected.id)

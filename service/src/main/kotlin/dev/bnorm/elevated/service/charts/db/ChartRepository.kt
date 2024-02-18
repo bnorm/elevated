@@ -67,6 +67,8 @@ class ChartRepository(
             patch(ChartEntity::microMl, chartUpdate.microMl)
             patch(ChartEntity::groMl, chartUpdate.groMl)
             patch(ChartEntity::bloomMl, chartUpdate.bloomMl)
+            patch(ChartEntity::bounds, chartUpdate.bounds)
+            patch(ChartEntity::amounts, chartUpdate.amounts)
         }
         val options = FindAndModifyOptions.options().returnNew(true)
         return mongo.findAndModify<ChartEntity>(query, update, options).awaitSingleOrNull()

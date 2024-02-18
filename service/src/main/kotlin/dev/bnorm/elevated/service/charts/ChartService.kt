@@ -35,7 +35,7 @@ class ChartService(
         return chartRepository.modify(chartId, request.toUpdate())?.toDto()
     }
 
-    private suspend fun ChartEntity.toDto(): Chart {
+    private fun ChartEntity.toDto(): Chart {
         return Chart(
             id = id,
             name = name,
@@ -46,6 +46,16 @@ class ChartService(
             microMl = microMl,
             groMl = groMl,
             bloomMl = bloomMl,
+            bounds = bounds?.map { it.toDto() },
+            amounts = amounts,
+        )
+    }
+
+    private fun ChartEntity.Bound.toDto(): Chart.Bound {
+        return Chart.Bound(
+            type = type,
+            low = low,
+            high = high,
         )
     }
 
@@ -59,6 +69,16 @@ class ChartService(
             microMl = microMl,
             groMl = groMl,
             bloomMl = bloomMl,
+            bounds = bounds.map { it.toEntity() },
+            amounts = amounts,
+        )
+    }
+
+    private fun Chart.Bound.toEntity(): ChartEntity.Bound {
+        return ChartEntity.Bound(
+            type = type,
+            low = low,
+            high = high,
         )
     }
 
@@ -72,6 +92,8 @@ class ChartService(
             microMl = microMl,
             groMl = groMl,
             bloomMl = bloomMl,
+            bounds = bounds?.map { it.toEntity() },
+            amounts = amounts,
         )
     }
 }

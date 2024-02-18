@@ -88,6 +88,7 @@ class DeviceActionService(
         return when (this) {
             is PumpDispenseArgumentsEntity -> PumpDispenseArguments(
                 pump = pump,
+                pumpId = pumpId,
                 amount = amount,
             )
         }
@@ -106,6 +107,7 @@ class DeviceActionService(
         return when (this) {
             is PumpDispenseArguments -> PumpDispenseArgumentsEntity(
                 pump = pump,
+                pumpId = pumpId,
                 amount = amount,
             )
         }

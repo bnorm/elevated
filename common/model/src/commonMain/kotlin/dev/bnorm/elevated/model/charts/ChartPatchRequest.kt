@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.model.charts
 
+import dev.bnorm.elevated.model.pumps.PumpContent
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,4 +13,6 @@ data class ChartPatchRequest(
     val microMl: Double? = null,
     val groMl: Double? = null,
     val bloomMl: Double? = null,
+    val bounds: List<Chart.Bound>? = null,
+    val amounts: Map<PumpContent, Double>? = null,
 )

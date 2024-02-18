@@ -1,10 +1,11 @@
 package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.elevated.model.pumps.PumpId
 import kotlinx.coroutines.delay
 
 interface Pump {
-    val id: Int
+    val id: PumpId
     val state: State
 
     fun on()
@@ -19,7 +20,7 @@ interface Pump {
 }
 
 class FakePump(
-    override val id: Int,
+    override val id: PumpId,
     private val rate: Double, // ml / second
 ) : Pump {
     companion object {
