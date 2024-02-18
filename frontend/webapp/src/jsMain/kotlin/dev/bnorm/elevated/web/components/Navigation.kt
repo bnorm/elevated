@@ -17,12 +17,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AdUnits
-import androidx.compose.material.icons.filled.RotateRight
-import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import dev.bnorm.elevated.icons.AdUnits
+import dev.bnorm.elevated.icons.RotateRight
+import dev.bnorm.elevated.icons.StackedLineChart
 import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.router.HashRouter
 import dev.bnorm.elevated.web.router.Router

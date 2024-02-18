@@ -20,7 +20,6 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.ui)
                 implementation(compose.material)
-                implementation(compose.materialIconsExtended)
             }
         }
         named("androidMain") {
