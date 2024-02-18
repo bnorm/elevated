@@ -8,7 +8,7 @@ RUN wget https://github.com/joan2937/pigpio/archive/master.zip \
     && make install
 
 # actual container
-FROM adoptopenjdk:11-jre-hotspot
+FROM eclipse-temurin:21-jre
 
 # Install pigpio
 COPY --from=pigpio_builder /usr/local /usr/local
