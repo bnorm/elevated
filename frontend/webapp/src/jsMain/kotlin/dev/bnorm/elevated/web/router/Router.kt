@@ -3,6 +3,8 @@ package dev.bnorm.elevated.web.router
 import androidx.compose.runtime.*
 
 public abstract class Router {
+    public abstract val currentPath: Path
+
     public abstract fun navigate(to: String)
 
     @Composable

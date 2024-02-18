@@ -9,20 +9,32 @@ import kotlinx.browser.*
  * Every request will always request `GET /`, so your server needs only to listen and serve this endpoint, or using a SaaS `/index.html`.
  */
 public object HashRouter : Router() {
+    override val currentPath: Path
+        get() = Path.from(currentHash.value)
+
+    private val currentHash: MutableState<String> = mutableStateOf(window.location.hash.currentURL() ?: "")
+
     @Composable
-    override fun getPath(initPath: String): State<String> =
-        produceState(initialValue = currentURL(fallback = initPath)) {
+    override fun getPath(initPath: String): State<String> {
+        LaunchedEffect(Unit) {
+            currentHash.value = window.location.hash.currentURL() ?: initPath
             window.onhashchange = {
-                value = currentURL(fallback = initPath)
+                currentHash.value = window.location.hash.currentURL() ?: ""
                 Unit
             }
         }
+        return currentHash
+    }
 
-    private fun currentURL(fallback: String) = window.location.hash
-        .removePrefix("/").removePrefix("#")
-        .ifBlank { fallback }
+    private fun String.currentURL() = removePrefix("#")
+        .removePrefix("/")
+        .ifBlank { null }
 
     override fun navigate(to: String) {
-        window.location.hash = to
+        if (window.location.hash.currentURL() == to.currentURL()) {
+            currentHash.value = to.removePrefix("#")
+        } else {
+            window.location.hash = to
+        }
     }
 }

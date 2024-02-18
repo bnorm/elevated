@@ -1,6 +1,6 @@
 package dev.bnorm.elevated.web.router
 
-internal data class Path(val path: String, val parameters: Parameters?) {
+data class Path(val path: String, val parameters: Parameters?) {
     fun newPath(currentPath: String) = Path(path = path.removePrefix("/$currentPath"), parameters)
 
     internal companion object {

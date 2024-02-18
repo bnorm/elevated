@@ -1,10 +1,12 @@
 package dev.bnorm.elevated.ui.screen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -66,27 +68,34 @@ class SensorsScreen @Inject constructor(
             }
         }
 
-        Column {
-            Row(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        Box(
+            contentAlignment = Alignment.TopCenter,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.widthIn(max = 1200.dp),
             ) {
-                DurationInputField(
-                    value = presenter.duration.inWholeHours,
-                    onValueChange = { presenter.duration = it.hours },
-                    label = { Text("Hours") },
-                )
-                Button(
-                    modifier = Modifier.padding(start = 16.dp),
-                    onClick = { presenter.refresh() },
+                Row(
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text("Refresh")
+                    DurationInputField(
+                        value = presenter.duration.inWholeHours,
+                        onValueChange = { presenter.duration = it.hours },
+                        label = { Text("Hours") },
+                    )
+                    Button(
+                        modifier = Modifier.padding(start = 16.dp),
+                        onClick = { presenter.refresh() },
+                    ) {
+                        Text("Refresh")
+                    }
                 }
-            }
 
-            Chart("pH", phReadings)
-            Chart("EC", ecReadings)
+                Chart("pH", phReadings)
+                Chart("EC", ecReadings)
+            }
         }
     }
 }
