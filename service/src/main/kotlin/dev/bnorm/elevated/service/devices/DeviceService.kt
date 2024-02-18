@@ -13,6 +13,7 @@ import dev.bnorm.elevated.service.devices.db.DeviceActionRepository
 import dev.bnorm.elevated.service.devices.db.DeviceEntity
 import dev.bnorm.elevated.service.devices.db.DeviceRepository
 import dev.bnorm.elevated.service.devices.db.DeviceUpdate
+import dev.bnorm.elevated.service.pumps.PumpService
 import dev.bnorm.elevated.service.sensors.SensorService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -32,6 +33,7 @@ class DeviceService(
     private val deviceActionRepository: DeviceActionRepository,
     private val passwordEncoder: PasswordEncoder,
     private val jwtEncoder: JwtEncoder,
+    private val pumpService: PumpService,
     private val sensorService: SensorService,
     private val chartService: ChartService,
 ) {
@@ -75,12 +77,14 @@ class DeviceService(
     }
 
     private suspend fun DeviceEntity.toDto(): Device = coroutineScope {
+        val pumps = async { pumpService.getPumpsByDeviceId(id).toList() }
         val sensors = async { sensorService.getSensorsByDeviceId(id).toList() }
         val chart = async { chartId?.let { chartService.getChartById(ChartId(it)) } }
         return@coroutineScope Device(
             id = id,
             name = name,
             status = status,
+            pumps = pumps.await(),
             sensors = sensors.await(),
             lastActionTime = lastActionTime?.toKotlinInstant(),
             chart = chart.await()

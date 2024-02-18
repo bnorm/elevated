@@ -8,6 +8,7 @@ enum class Role(
         Authority.CHARTS_ADMIN,
         Authority.DEVICES_ADMIN,
         Authority.NOTIFICATIONS_ADMIN,
+        Authority.PUMPS_ADMIN,
         Authority.READINGS_ADMIN,
         Authority.SENSORS_ADMIN,
         Authority.USERS_ADMIN,
@@ -18,6 +19,7 @@ enum class Role(
         Authority.CHARTS_READ,
         Authority.DEVICES_READ,
         Authority.NOTIFICATIONS_READ,
+        Authority.PUMPS_READ,
         Authority.READINGS_READ,
         Authority.SENSORS_READ,
     ),
@@ -25,13 +27,14 @@ enum class Role(
     DEVICE(
         Authority.ACTIONS_WRITE,
         Authority.DEVICES_READ,
+        Authority.PUMPS_READ,
         Authority.READINGS_WRITE,
     ),
 
     ;
 
     companion object {
-        val byName = values().associateBy { it.name }
+        val byName = entries.associateBy { it.name }
     }
 
     val authorities: Set<Authority> = setOf(*startingAuthorities).flatten().toSet()
