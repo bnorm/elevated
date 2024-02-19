@@ -3,7 +3,6 @@ package dev.bnorm.elevated.service.schedule
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.devices.Device
 import dev.bnorm.elevated.model.devices.DeviceActionPrototype
-import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.model.devices.PumpDispenseArguments
 import dev.bnorm.elevated.model.pumps.PumpId
 import dev.bnorm.elevated.model.sensors.SensorReading
@@ -87,8 +86,10 @@ class DeviceDosingSchedule(
                         else -> return@launch // No change needed
                     }
 
+                    log.debug("pumps={}", pumps)
                     for (pump in pumps) {
                         val amount = amounts[pump.content] ?: continue // TODO error?
+                        log.debug("pump={} amount={}", pump, amount)
                         dispense(device, pump.id, amount)
                     }
                 }
