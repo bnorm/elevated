@@ -1,6 +1,5 @@
 package dev.bnorm.elevated.ui
 
-import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,12 +22,10 @@ class MainScreen @Inject constructor(
         LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
 
         ElevatedTheme {
-            Surface {
-                when (userState) {
-                    is UserState.Authenticating -> Unit
-                    is UserState.Unauthenticated -> loginScreen.Render()
-                    is UserState.Authenticated -> homeScreen.Render()
-                }
+            when (userState) {
+                is UserState.Authenticating -> Unit
+                is UserState.Unauthenticated -> loginScreen.Render()
+                is UserState.Authenticated -> homeScreen.Render()
             }
         }
     }

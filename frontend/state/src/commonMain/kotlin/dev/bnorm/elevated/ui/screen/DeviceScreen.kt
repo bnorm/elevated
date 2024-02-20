@@ -22,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,18 +36,18 @@ import androidx.compose.ui.unit.sp
 import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.state.device.DeviceModel
-import dev.bnorm.elevated.state.device.DevicesPresenter
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class DevicesScreen @Inject constructor(
-    private val presenter: DevicesPresenter,
+class DeviceScreen @Inject constructor(
+    private val viewModel: DeviceViewModel
 ) {
     @Composable
     fun Render() {
-        val devices = presenter.present()
+        val model by viewModel.models.collectAsState()
+
         LazyColumn {
-            items(devices.orEmpty(), key = { it.device.id.value }) {
+            items(model.devices, key = { it.device.id.value }) {
                 DeviceSummaryCard(it)
             }
         }
@@ -54,7 +55,7 @@ class DevicesScreen @Inject constructor(
 
     @OptIn(ExperimentalMaterialApi::class)
     @Composable
-    private fun DeviceSummaryCard(summary: DeviceModel) {
+    private fun DeviceSummaryCard(summary: DeviceModel.Summary) {
         var expanded by remember { mutableStateOf(false) }
         val rotationState by animateFloatAsState(if (expanded) 180f else 0f) // Rotation State
 

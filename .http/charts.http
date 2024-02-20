@@ -49,9 +49,9 @@ Content-Type: application/json
     ],
     "amounts": {
         "GENERAL_HYDROPONICS_PH_DOWN": 1.0,
-        "GENERAL_HYDROPONICS_MICRO": 4.9,
-        "GENERAL_HYDROPONICS_GRO": 4.6,
-        "GENERAL_HYDROPONICS_BLOOM": 3.4
+        "GENERAL_HYDROPONICS_MICRO": 2.5,
+        "GENERAL_HYDROPONICS_GRO": 2.3,
+        "GENERAL_HYDROPONICS_BLOOM": 1.7
     }
 }
 

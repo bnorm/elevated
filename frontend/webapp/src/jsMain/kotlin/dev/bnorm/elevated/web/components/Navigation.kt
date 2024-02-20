@@ -23,6 +23,13 @@ import androidx.compose.ui.unit.dp
 import dev.bnorm.elevated.icons.AdUnits
 import dev.bnorm.elevated.icons.RotateRight
 import dev.bnorm.elevated.icons.StackedLineChart
+import dev.bnorm.elevated.ui.screen.DeviceScreen
+import dev.bnorm.elevated.ui.screen.DeviceViewModel
+import dev.bnorm.elevated.ui.screen.PumpViewModel
+import dev.bnorm.elevated.ui.screen.PumpsScreen
+import dev.bnorm.elevated.ui.screen.SensorScreen
+import dev.bnorm.elevated.ui.screen.SensorViewModel
+import dev.bnorm.elevated.web.api.client
 import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.router.HashRouter
 import dev.bnorm.elevated.web.router.Router
@@ -30,6 +37,10 @@ import dev.bnorm.elevated.web.router.Router
 const val ROUTE_SENSORS = "/sensors"
 const val ROUTE_DEVICES = "/devices"
 const val ROUTE_PUMPS = "/pumps"
+
+private val sensorScreen = SensorScreen(SensorViewModel(client))
+private val deviceScreen = DeviceScreen(DeviceViewModel(client))
+private val pumpsScreen = PumpsScreen(PumpViewModel(client))
 
 @Composable
 fun Navigation() {
@@ -78,12 +89,10 @@ fun Navigation() {
                 }
             }
         ) {
-            route(ROUTE_SENSORS) { WebSensors() }
-            route(ROUTE_DEVICES) { WebDevices() }
-            route(ROUTE_PUMPS) { WebPumps() }
-            noMatch {
-                Text("Default page")
-            }
+            route(ROUTE_SENSORS) { sensorScreen.Render() }
+            route(ROUTE_DEVICES) { deviceScreen.Render() }
+            route(ROUTE_PUMPS) { pumpsScreen.Render() }
+            noMatch { Text("Default page") }
         }
     }
 }

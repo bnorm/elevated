@@ -1,9 +1,11 @@
 package dev.bnorm.elevated.state.sensor
 
+import dev.bnorm.elevated.model.sensors.Sensor
 import dev.bnorm.elevated.model.sensors.SensorReading
 import kotlinx.datetime.Instant
 
 class SensorGraph(
+    val sensor: Sensor,
     val readings: List<SensorReading>,
     val minX: Double,
     val maxX: Double,
@@ -46,7 +48,10 @@ class SensorGraph(
     }
 
     companion object {
-        fun create(readings: List<SensorReading>): SensorGraph {
+        fun create(
+            sensor: Sensor,
+            readings: List<SensorReading>
+        ): SensorGraph {
             var minTimestamp = Long.MAX_VALUE
             var maxTimestamp = Long.MIN_VALUE
             var minReading = Double.MAX_VALUE
@@ -59,6 +64,7 @@ class SensorGraph(
             }
             val padding = 0.2 * maxOf(maxReading - minReading, 1.0)
             return SensorGraph(
+                sensor = sensor,
                 readings = readings,
                 minX = minTimestamp.toDouble(),
                 maxX = maxTimestamp.toDouble(),

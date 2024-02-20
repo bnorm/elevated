@@ -21,48 +21,47 @@ import androidx.compose.ui.unit.dp
 import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.sensor.SensorGraph
-import dev.bnorm.elevated.state.sensor.SensorsPresenter
+import dev.bnorm.elevated.ui.LaunchedVisible
 import dev.bnorm.elevated.ui.component.DurationInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.DurationUnit
+import kotlinx.coroutines.delay
 import kotlinx.datetime.Instant
 
-class SensorsScreen @Inject constructor(
-    private val presenter: SensorsPresenter,
+class SensorScreen @Inject constructor(
+    private val viewModel: SensorViewModel
 ) {
     @Composable
-    fun Render(
-        refresher: @Composable (presenter: SensorsPresenter) -> Unit = {},
-    ) {
+    fun Render() {
+        val model by viewModel.models.collectAsState()
         var selectedTimestamp by remember { mutableStateOf<Instant?>(null) }
-        val sensors = presenter.present()
 
-        refresher(presenter)
+        LaunchedVisible {
+            while (true) {
+                viewModel.refresh()
+                delay(1.minutes)
+            }
+        }
 
         @Composable
-        fun Chart(name: String, result: NetworkResult<SensorGraph>) {
+        fun Chart(graph: SensorGraph) {
             Column(
                 modifier = Modifier
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp),
             ) {
-                Text(text = "Sensor: $name")
-                when (result) {
-                    NetworkResult.Loading -> Text(text = "Loading sensor $name readings...")
-                    is NetworkResult.Error -> Text(text = "Error loading sensor $name readings! ${result.error.message}")
-                    is NetworkResult.Loaded -> {
-                        if (result.value.readings.isEmpty()) {
-                            Text(text = "No $name readings in time range")
-                        } else {
-                            SensorReadingGraph(
-                                graph = result.value,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
-                                selectedTimestamp = selectedTimestamp,
-                                onSelectedTimestamp = { selectedTimestamp = it }
-                            )
-                        }
-                    }
+                Text(text = "Sensor: ${graph.sensor.name}")
+                if (graph.readings.isEmpty()) {
+                    Text(text = "No ${graph.sensor.name} readings in time range")
+                } else {
+                    SensorReadingGraph(
+                        graph = graph,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        selectedTimestamp = selectedTimestamp,
+                        onSelectedTimestamp = { selectedTimestamp = it }
+                    )
                 }
             }
         }
@@ -80,21 +79,27 @@ class SensorsScreen @Inject constructor(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     DurationInputField(
-                        value = presenter.duration.inWholeHours,
-                        onValueChange = { presenter.duration = it.hours },
+                        value = model.duration,
+                        unit = DurationUnit.HOURS,
+                        onValueChange = { viewModel.setDuration(it) },
                         label = { Text("Hours") },
                     )
                     Button(
                         modifier = Modifier.padding(start = 16.dp),
-                        onClick = { presenter.refresh() },
+                        onClick = { viewModel.refresh() },
                     ) {
                         Text("Refresh")
                     }
                 }
 
-                for (model in sensors.orEmpty()) {
-                    val readings by model.readings.collectAsState(NetworkResult.Loading)
-                    Chart(model.sensor.name, readings)
+                when (val result = model.graphs) {
+                    NetworkResult.Loading -> Text(text = "Loading sensors...")
+                    is NetworkResult.Error -> Text(text = "Error loading sensors! ${result.error.message}")
+                    is NetworkResult.Loaded -> {
+                        for (graph in result.value) {
+                            Chart(graph)
+                        }
+                    }
                 }
             }
         }

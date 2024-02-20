@@ -2,66 +2,84 @@ package dev.bnorm.elevated.state.sensor
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import dev.bnorm.elevated.asyncMap
 import dev.bnorm.elevated.client.ElevatedClient
-import dev.bnorm.elevated.inject.Inject
-import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 
-class SensorsPresenter @Inject constructor(
-    private val client: ElevatedClient,
-) {
-    private var clock: Instant by mutableStateOf(Clock.System.now())
-    var duration: Duration by mutableStateOf(2.hours)
-    private var sensors by mutableStateOf<List<SensorModel>?>(null)
+sealed class SensorViewEvent {
+    data object Refresh : SensorViewEvent()
+    data class SetDuration(val duration: Duration) : SensorViewEvent()
+}
 
-    fun refresh() {
-        clock = Clock.System.now()
+data class SensorModel(
+    val duration: Duration,
+    // TODO unwrap network result into model state?
+    val graphs: NetworkResult<List<SensorGraph>>,
+)
+
+@Composable
+fun SensorPresenter(
+    client: ElevatedClient,
+    events: Flow<SensorViewEvent>,
+): SensorModel {
+    val clock = remember { mutableStateOf(Clock.System.now()) }
+    val duration = remember { mutableStateOf(2.hours) }
+    var after by remember { mutableStateOf(clock.value - duration.value) }
+    LaunchedEffect(clock, duration) {
+        snapshotFlow { clock.value - duration.value }
+            .debounce(200)
+            .collect { after = it }
     }
 
-    @Composable
-    fun present(): List<SensorModel>? {
-        LaunchedEffect(Unit) {
-            sensors = client.getSensorModels()
-        }
 
-        return sensors
-    }
+    // Load sensors and readings based on (debounced) clock and duration.
+    var graphs by remember { NetworkResult.stateOf<List<SensorGraph>>() }
+    LaunchedEffect(after) {
+        withContext(Dispatchers.Default) {
+            graphs = NetworkResult.of {
+                client.getSensors().asyncMap { sensor ->
+                    val averagedReadings = client.getSensorReadings(sensor.id, after)
+                        .sortedBy { it.timestamp }
+                        .simpleMovingAverage()
 
-    private suspend fun ElevatedClient.getSensorModels(): List<SensorModel> = coroutineScope {
-        val sensors = getSensors()
-        sensors.map { sensor ->
-            SensorModel(
-                sensor = sensor,
-                // TODO this is probably REALLY ugly flow/state management
-                readings = readingsFlow(sensor.id)
-            )
+                    SensorGraph.create(sensor, averagedReadings)
+                }
+            }
         }
     }
 
-    private fun readingsFlow(sensorId: SensorId) = snapshotFlow { clock - duration }
-        .debounce(200)
-        .map { after ->
-            runCatching {
-                val readings = client.getSensorReadings(sensorId, after)
-                val averagedReadings = readings.sortedBy { it.timestamp }.simpleMovingAverage()
-                NetworkResult.Loaded(SensorGraph.create(averagedReadings))
-            }.getOrElse { NetworkResult.Error(it) }
+    // Processes incoming events.
+    LaunchedEffect(events) {
+        events.collect {
+            when (it) {
+                SensorViewEvent.Refresh -> {
+                    clock.value = Clock.System.now()
+                }
+
+                is SensorViewEvent.SetDuration -> {
+                    duration.value = it.duration
+                }
+            }
         }
+    }
+
+    return SensorModel(
+        duration = duration.value,
+        graphs = graphs,
+    )
 }
 
 private fun List<SensorReading>.simpleMovingAverage(size: Int = 9): List<SensorReading> {

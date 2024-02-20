@@ -3,47 +3,65 @@ package dev.bnorm.elevated.state.device
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import dev.bnorm.elevated.asyncMap
 import dev.bnorm.elevated.client.ElevatedClient
-import dev.bnorm.elevated.inject.Inject
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceAction
+import dev.bnorm.elevated.model.sensors.SensorId
+import dev.bnorm.elevated.model.sensors.SensorReading
+import dev.bnorm.elevated.state.NetworkResult
+import dev.bnorm.elevated.state.valueOrNull
 import kotlin.time.Duration.Companion.hours
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Clock
 
-class DevicesPresenter @Inject constructor(
-    private val client: ElevatedClient,
+sealed class DeviceViewEvent
+
+data class DeviceModel(
+    val devices: List<Summary>
 ) {
-    private var devices by mutableStateOf<List<DeviceModel>?>(null)
+    data class Summary(
+        val device: Device,
+        val readings: Map<SensorId, SensorReading>,
+        val actions: List<DeviceAction>,
+    )
+}
 
-    @Composable
-    fun present(): List<DeviceModel>? {
-        LaunchedEffect(Unit) {
-            devices = client.getDeviceSummary()
-        }
+@Composable
+fun DevicePresenter(
+    client: ElevatedClient,
+    events: Flow<DeviceViewEvent>,
+): DeviceModel {
+    var model by remember { NetworkResult.stateOf<DeviceModel>() }
 
-        return devices
+    // Load devices.
+    LaunchedEffect(Unit) {
+        val now = Clock.System.now()
+        model = NetworkResult.of { client.getDevices() }
+            .map { devices ->
+                devices.asyncMap { device ->
+                    val actions = async {
+                        client.getDeviceActions(device.id, submittedAfter = now - 48.hours)
+                    }
+                    val latestReadings = device.sensors
+                        .asyncMap { client.getLatestSensorReadings(it.id, count = 1) }
+                        .mapNotNull { it.singleOrNull() }
+                        .associateBy { it.sensorId }
+
+                    DeviceModel.Summary(
+                        device = device,
+                        readings = latestReadings,
+                        actions = actions.await()
+                    )
+                }
+            }
+            .map { summaries ->
+                DeviceModel(devices = summaries)
+            }
     }
 
-    private suspend fun ElevatedClient.getDeviceSummary(): List<DeviceModel> = coroutineScope {
-        val devices = getDevices()
-        val readings = devices
-            .flatMap { it.sensors }.map { it.id }.distinct()
-            .map { async { getLatestSensorReadings(it, count = 1).singleOrNull() } }.awaitAll()
-            .filterNotNull().associateBy { it.sensorId }
-        val actions = devices
-            .map { async { it.id to getDeviceActions(it.id, submittedAfter = Clock.System.now() - 48.hours) } }
-            .awaitAll()
-            .toMap()
-
-        devices.map { device ->
-            DeviceModel(
-                device = device,
-                readings = device.sensors.mapNotNull { readings[it.id] }.associateBy { it.sensorId },
-                actions = actions[device.id] ?: emptyList()
-            )
-        }
-    }
+    return model.valueOrNull ?: DeviceModel(emptyList())
 }
