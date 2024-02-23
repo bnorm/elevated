@@ -15,36 +15,28 @@ dependencies {
 
     implementation(libs.kotlinx.coroutines.slf4j)
     implementation(libs.kotlinx.coroutines.reactor)
-//    implementation("io.projectreactor:reactor-tools")
 
     implementation(libs.kotlinx.serialization.json)
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation(libs.kotlin.reflect)
 
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.security)
+    implementation(libs.spring.boot.starter.oauth2.resource.server)
+    implementation(libs.spring.boot.starter.actuator)
 
-    implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
-
-    implementation("org.springframework.kafka:spring-kafka")
-    implementation("org.apache.kafka:kafka-streams")
+    implementation(libs.spring.boot.starter.data.mongodb.reactive)
 
     testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter.api)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit.jupiter.engine)
+
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.security.test)
+
     testImplementation(platform(libs.testcontainers.bom))
-
-    testImplementation("org.junit.jupiter:junit-jupiter-api")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
-    testImplementation("org.springframework.security:spring-security-test")
-
-    testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:kafka")
-    testImplementation("org.testcontainers:mongodb")
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.mongodb)
 }
 
 tasks.withType<KotlinCompile> {

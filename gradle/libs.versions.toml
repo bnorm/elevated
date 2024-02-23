@@ -1,16 +1,36 @@
 [versions]
+
+# Common libraries.
 kotlin = "1.9.22"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.5.0"
 kotlinx-serialization = "1.6.2"
-ktor = "2.3.8"
 junit = "5.10.2"
+
+# Server-side libraries.
 spring-boot = "3.2.2"
 testcontainers = "1.19.5"
-pi4j = "2.4.0"
+
+# Client-side libraries.
+ktor = "2.3.8"
 slf4j = "1.7.36"
 
+## Raspberry PI libraries.
+pi4j = "2.4.0"
+
+## UI Libraries
+molecule = "1.3.2"
+
+### Android libraries.
+
+### Web libraries.
+
+
 [libraries]
+
+# Common libraries.
+
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 
 kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
@@ -21,6 +41,32 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+
+# Server-side libraries.
+
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
+spring-boot-starter-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-data-mongodb-reactive = { module = "org.springframework.boot:spring-boot-starter-data-mongodb-reactive" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-security-test = { module = "org.springframework.security:spring-security-test" }
+
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+testcontainers-mongodb = { module = "org.testcontainers:mongodb" }
+
+
+# Client-side libraries.
+
 ktor-bom = { module = "io.ktor:ktor-bom", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
@@ -30,23 +76,52 @@ ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.re
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
-junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
-junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
-junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
-spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
-
-testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+## Raspberry PI libraries.
 
 pi4j-core = { module = "com.pi4j:pi4j-core", version.ref = "pi4j" }
 pi4j-plugin-raspberrypi = { module = "com.pi4j:pi4j-plugin-raspberrypi", version.ref = "pi4j" }
 pi4j-plugin-pigpio = { module = "com.pi4j:pi4j-plugin-pigpio", version.ref = "pi4j" }
 pi4j-plugin-linuxfs = { module = "com.pi4j:pi4j-plugin-linuxfs", version.ref = "pi4j" }
 
-slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+
+## UI Libraries
+
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+
+molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
+
+
+### Android libraries.
+
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version = "1.6.1" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version = "1.6.1" }
+androidx-compose-material = { module = "androidx.compose.material:material", version = "1.6.1" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.6.1" }
+
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
+
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.7.7" }
+
+google-android-material = { module = "com.google.android.material:material", version = "1.11.0" }
+
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.7.0" }
+
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.9.0" }
+
+dagger = { module = "com.google.dagger:dagger", version = "2.46.1" }
+dagger-android = { module = "com.google.dagger:dagger-android", version = "2.46.1" }
+dagger-android-support = { module = "com.google.dagger:dagger-android-support", version = "2.46.1" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version = "2.46.1" }
+
+
+### Web libraries.
+
 
 [bundles]
 pi4j-raspberrypi = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]
+androidx-compose = ["androidx-compose-ui", "androidx-compose-ui-tooling", "androidx-compose-material", "androidx-compose-material-icons-extended"]
+dagger-android = ["dagger", "dagger-android", "dagger-android-support"]
 
 [plugins]
 #kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -21,14 +21,14 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.material)
 
-                api("app.cash.molecule:molecule-runtime:1.3.2")
+                api(libs.molecule.runtime)
             }
         }
         named("androidMain") {
             dependencies {
-                implementation("javax.inject:javax.inject:1")
+                implementation(libs.javax.inject)
 
-                implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+                implementation(libs.androidx.lifecycle.runtime.ktx)
             }
         }
         named("jsMain") {
