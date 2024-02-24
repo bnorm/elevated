@@ -2,9 +2,6 @@ spring:
   application:
     name: elevated-service
 
-  webflux:
-    static-path-pattern: /ui/**
-
 logging:
   pattern:
     mdc: "[requestId=%X{request.id} subject=%X{jwt.sub} role=%X{jwt.role} email=%X{jwt.email}]"
