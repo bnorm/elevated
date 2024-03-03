@@ -9,8 +9,8 @@ on:
 
 jobs:
 
-  deploy:
-    name: "Deploy"
+  deploy-server:
+    name: "Deploy Server"
     runs-on: ubuntu-latest
 
     permissions:
@@ -41,4 +41,44 @@ jobs:
             docker compose pull service
             docker compose up -d service
             docker compose exec -it nginx nginx -s reload
+            docker image prune -f
+
+  deploy-raspberry:
+    name: "Deploy Raspberry"
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Copy deployment configuration files
+        uses: appleboy/scp-action@master
+        with:
+          host: raspberrypi
+          username: pi
+          key: ${{ secrets.DEPLOY_KEY }}
+          strip_components: 1
+          source: "deploy/iot/raspberry"
+          target: "~/elevated"
+          timeout: 120s
+
+      - name: Deploy latest version of service
+        uses: appleboy/ssh-action@master
+        with:
+          host: raspberrypi
+          username: pi
+          key: ${{ secrets.DEPLOY_KEY }}
+          script: |
+            cd elevated
+            docker compose pull raspberry
+            docker compose up -d raspberry
             docker image prune -f
