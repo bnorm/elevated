@@ -13,7 +13,7 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
 
     steps:
-      - name: Deploy latest version of service
+      - name: Run Let's Encrypt update
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEPLOY_HOST }}

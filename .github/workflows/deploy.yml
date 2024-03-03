@@ -63,7 +63,7 @@ jobs:
       - name: Copy deployment configuration files
         uses: appleboy/scp-action@master
         with:
-          host: raspberrypi
+          host: 100.125.194.127
           username: pi
           key: ${{ secrets.DEPLOY_KEY }}
           strip_components: 1
@@ -74,7 +74,7 @@ jobs:
       - name: Deploy latest version of service
         uses: appleboy/ssh-action@master
         with:
-          host: raspberrypi
+          host: 100.125.194.127
           username: pi
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
