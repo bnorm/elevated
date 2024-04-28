@@ -5,6 +5,8 @@ import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.devices.DeviceId
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import java.time.Duration
+import okhttp3.OkHttpClient
 
 actual fun createApplication(): Application {
     val env = System.getenv()
@@ -15,7 +17,11 @@ actual fun createApplication(): Application {
     }
 
     val elevatedClient = ElevatedClient(
-        httpClient = HttpClient(OkHttp),
+        httpClient = HttpClient(OkHttp.create {
+            preconfigured = OkHttpClient.Builder().apply {
+                pingInterval(Duration.ofSeconds(30))
+            }.build()
+        }),
         deviceId = DeviceId("62780348770bd023d5d971e9"),
         deviceKey = Password(env.getValue("DEVICE_KEY"))
     )
