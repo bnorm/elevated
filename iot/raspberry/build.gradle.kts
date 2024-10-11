@@ -13,7 +13,7 @@ kotlin {
     linuxArm64 {
         binaries {
             executable {
-                linkTask.dependsOn(tasks.named("nativeLibs"))
+                linkTaskProvider.configure { dependsOn(tasks.named("nativeLibs")) }
                 linkerOpts.add("-L$buildDir/native/libs/usr/lib/aarch64-linux-gnu/")
             }
         }
@@ -24,12 +24,12 @@ kotlin {
             languageSettings.optIn("kotlin.ExperimentalStdlibApi")
         }
 
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(project(":common:client"))
             }
         }
-        val jvmMain by getting {
+        jvmMain {
             dependencies {
                 implementation(libs.slf4j.simple)
 
@@ -38,13 +38,13 @@ kotlin {
                 implementation(libs.bundles.pi4j.raspberrypi)
             }
         }
-        val jvmTest by getting {
+        jvmTest {
             dependencies {
                 implementation(libs.junit.jupiter.api)
                 runtimeOnly(libs.junit.jupiter.engine)
             }
         }
-        val linuxArm64Main by getting {
+        linuxArm64Main {
             languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
             dependencies {
                 implementation(project(":iot:gpio"))

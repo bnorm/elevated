@@ -1,19 +1,21 @@
-@file:Suppress("UnstableApiUsage")
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    kotlin("plugin.compose")
     id("org.jetbrains.compose")
 }
 
 kotlin {
     androidTarget()
-    js(IR) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         browser()
     }
 
     sourceSets {
-        named("commonMain") {
+        commonMain {
             dependencies {
                 api(project(":common:client"))
                 implementation(compose.runtime)
@@ -24,20 +26,18 @@ kotlin {
                 api(libs.molecule.runtime)
             }
         }
-        named("androidMain") {
+        androidMain {
             dependencies {
                 implementation(libs.javax.inject)
 
                 implementation(libs.androidx.lifecycle.runtime.ktx)
             }
         }
-        named("jsMain") {
-        }
     }
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     namespace = "dev.bnorm.elevated.state"
     defaultConfig {

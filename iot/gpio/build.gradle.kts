@@ -20,7 +20,7 @@ kotlin {
     }
 
     sourceSets {
-        val linuxArm64Main by getting {
+        linuxArm64Main {
             languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
             languageSettings.optIn("kotlinx.cinterop.ExperimentalForeignApi")
         }

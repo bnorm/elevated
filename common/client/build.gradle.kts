@@ -1,16 +1,19 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     kotlin("multiplatform")
 }
 
 kotlin {
     jvm()
-    js(IR) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         browser()
     }
     linuxArm64()
 
     sourceSets {
-        named("commonMain") {
+        commonMain {
             dependencies {
                 api(project(":common:model"))
 
@@ -20,17 +23,17 @@ kotlin {
                 api(libs.ktor.serialization.kotlinx.json)
             }
         }
-        named("jsMain") {
+        wasmJsMain {
             dependencies {
                 api(libs.ktor.client.js)
             }
         }
-        named("jvmMain") {
+        jvmMain {
             dependencies {
                 api(libs.ktor.client.okhttp)
             }
         }
-        named("linuxArm64Main") {
+        linuxArm64Main {
             dependencies {
                 api(libs.ktor.client.cio)
             }

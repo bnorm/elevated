@@ -1,8 +1,10 @@
 package dev.bnorm.elevated.ui.screen
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
@@ -13,16 +15,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -32,6 +39,8 @@ import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.state.auth.UserSession
+import io.ktor.client.plugins.ResponseException
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -40,6 +49,7 @@ class LoginScreen @Inject constructor(
 ) {
     @Composable
     fun Render() {
+        val focusManager = LocalFocusManager.current
         var error by rememberSaveable { mutableStateOf<String?>(null) }
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
@@ -53,8 +63,14 @@ class LoginScreen @Inject constructor(
                 try {
                     userSession.login(Email(email), Password(password))
                 } catch (t: Throwable) {
-                    if (t is CancellationException) throw t
-                    error = "Unable to login: ${t.message}"
+                    error = when {
+                        t is CancellationException -> throw t
+
+                        t is ResponseException && t.response.status == HttpStatusCode.Unauthorized
+                        -> "Invalid username or password"
+
+                        else -> "Unable to login: ${t.message}"
+                    }
                 }
                 email = ""
                 password = ""
@@ -87,6 +103,11 @@ class LoginScreen @Inject constructor(
                             true
                         }
 
+                        it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
+                            focusManager.moveFocus(FocusDirection.Next)
+                            true
+                        }
+
                         else -> false
                     }
                 }
@@ -109,13 +130,27 @@ class LoginScreen @Inject constructor(
                     val description = if (passwordVisible) "Hide password" else "Show password"
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, description)
+                        Icon(imageVector = image, description, modifier = Modifier.onPreviewKeyEvent {
+                            when {
+                                it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                    passwordVisible = !passwordVisible
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        })
                     }
                 },
                 modifier = Modifier.onPreviewKeyEvent {
                     when {
                         it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
                             if (isValidLogin()) login()
+                            true
+                        }
+
+                        it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
+                            focusManager.moveFocus(FocusDirection.Next)
                             true
                         }
 

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
@@ -5,13 +7,14 @@ plugins {
 
 kotlin {
     jvm()
-    js(IR) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         browser()
     }
     linuxArm64()
 
     sourceSets {
-        named("commonMain") {
+        commonMain {
             dependencies {
                 api(libs.kotlinx.datetime)
                 api(libs.kotlinx.serialization.json)

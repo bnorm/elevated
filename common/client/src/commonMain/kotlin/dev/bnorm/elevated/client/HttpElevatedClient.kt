@@ -25,6 +25,7 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -46,6 +47,7 @@ import io.ktor.serialization.kotlinx.json.DefaultJson
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.channelFlow
@@ -66,7 +68,7 @@ class HttpElevatedClient(
 ) : ElevatedClient {
     private val httpClient = baseHttpClient.config {
         install(WebSockets) {
-            pingInterval = 30_000
+            pingInterval = 30.seconds
         }
 
         install(ContentNegotiation) {

@@ -12,28 +12,25 @@ import dev.bnorm.elevated.state.auth.UserState
 import dev.bnorm.elevated.ui.screen.LoginScreen
 import dev.bnorm.elevated.web.api.userSession
 import dev.bnorm.elevated.web.components.Navigation
-import org.jetbrains.skiko.wasm.onWasmReady
 
 private val loginScreen = LoginScreen(userSession)
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    onWasmReady {
-        CanvasBasedWindow {
-            val state by userSession.state.collectAsState()
-            LaunchedEffect(Unit) {
-                runCatching { userSession.refresh() }
-                    .onFailure { it.printStackTrace() }
-            }
+    CanvasBasedWindow {
+        val state by userSession.state.collectAsState()
+        LaunchedEffect(Unit) {
+            runCatching { userSession.refresh() }
+                .onFailure { it.printStackTrace() }
+        }
 
-            Box(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                when (state) {
-                    is UserState.Authenticating -> Unit
-                    is UserState.Unauthenticated -> loginScreen.Render()
-                    is UserState.Authenticated -> Navigation()
-                }
+        Box(
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            when (state) {
+                is UserState.Authenticating -> Unit
+                is UserState.Unauthenticated -> loginScreen.Render()
+                is UserState.Authenticated -> Navigation()
             }
         }
     }

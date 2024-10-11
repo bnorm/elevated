@@ -4,6 +4,10 @@
 # Gradle
 .gradle/
 build/
+local.properties
+
+# Kotlin
+.kotlin/
 
 # Idea
 .idea/
@@ -11,7 +15,6 @@ build/
 http-client.private.env.json
 
 # Android
-local.properties
 /captures
 .externalNativeBuild
 .cxx

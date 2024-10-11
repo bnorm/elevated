@@ -35,11 +35,11 @@ fun SensorPresenter(
     client: ElevatedClient,
     events: Flow<SensorViewEvent>,
 ): SensorModel {
-    val clock = remember { mutableStateOf(Clock.System.now()) }
+    val instant = remember { mutableStateOf(Clock.System.now()) }
     val duration = remember { mutableStateOf(2.hours) }
-    var after by remember { mutableStateOf(clock.value - duration.value) }
-    LaunchedEffect(clock, duration) {
-        snapshotFlow { clock.value - duration.value }
+    var after by remember { mutableStateOf(instant.value - duration.value) }
+    LaunchedEffect(instant, duration) {
+        snapshotFlow { instant.value - duration.value }
             .debounce(200)
             .collect { after = it }
     }
@@ -66,7 +66,7 @@ fun SensorPresenter(
         events.collect {
             when (it) {
                 SensorViewEvent.Refresh -> {
-                    clock.value = Clock.System.now()
+                    instant.value = Clock.System.now()
                 }
 
                 is SensorViewEvent.SetDuration -> {

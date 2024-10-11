@@ -1,50 +1,57 @@
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
+
 plugins {
     kotlin("multiplatform")
+    kotlin("plugin.compose")
     id("org.jetbrains.compose")
 }
 
 kotlin {
-    js(IR) {
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
         binaries.executable()
         browser {
             commonWebpackConfig {
-                sourceMaps = true
-                cssSupport { enabled.set(true) }
-                scssSupport { enabled.set(true) }
-
                 val env: String? by project
-                val proxy: MutableMap<String, Any> = when (env) {
-                    "prod" -> mutableMapOf(
-                        "/api/v1/devices/[a-zA-Z0-9]+/connect" to mapOf(
-                            "target" to "wss://elevated.bnorm.dev",
-                            "changeOrigin" to true,
-                            "ws" to true
+                val proxy = when (env) {
+                    "dev" -> mutableListOf(
+                        KotlinWebpackConfig.DevServer.Proxy(
+                            context = mutableListOf("/api/v1/devices/[a-zA-Z0-9]+/connect"),
+                            target = "ws://localhost:8080",
+//                            "ws" to true
                         ),
-                        "/api/**" to mapOf(
-                            "target" to "https://elevated.bnorm.dev",
-                            "changeOrigin" to true,
+                        KotlinWebpackConfig.DevServer.Proxy(
+                            context = mutableListOf("/api/**"),
+                            target = "http://localhost:8080",
                         )
                     )
-                    else -> mutableMapOf(
-                        "/api/v1/devices/[a-zA-Z0-9]+/connect" to mapOf(
-                            "target" to "ws://localhost:8080",
-                            "ws" to true
+
+                    else -> mutableListOf(
+                        KotlinWebpackConfig.DevServer.Proxy(
+                            context = mutableListOf("/api/v1/devices/[a-zA-Z0-9]+/connect"),
+                            target = "wss://elevated.bnorm.dev",
+                            changeOrigin = true,
+//                            "ws" to true
                         ),
-                        "/api/**" to "http://localhost:8080",
+                        KotlinWebpackConfig.DevServer.Proxy(
+                            context = mutableListOf("/api/**"),
+                            target = "https://elevated.bnorm.dev",
+                            changeOrigin = true,
+                        )
                     )
+
                 }
 
                 // TODO: use dsl after KT-32016 will be fixed
                 devServer = devServer?.copy(
-                    port = 8081,
-                    proxy = proxy,
-                    static = mutableListOf("$buildDir/processedResources/js/main")
+                    proxy = (devServer?.proxy.orEmpty() + proxy).toMutableList(),
                 )
             }
         }
     }
     sourceSets {
-        named("jsMain") {
+        wasmJsMain {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -56,8 +63,4 @@ kotlin {
             }
         }
     }
-}
-
-compose.experimental {
-    web.application {}
 }
