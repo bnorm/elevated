@@ -26,8 +26,8 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           strip_components: 1
-          source: "deploy/"
-          target: "~/"
+          source: "deploy/elevated"
+          target: "~/elevated"
           timeout: 120s
 
       - name: Deploy latest version of service
@@ -40,7 +40,6 @@ jobs:
             cd elevated
             docker compose pull service
             docker compose up -d service
-            docker compose exec -it nginx nginx -s reload
             docker image prune -f
 
   deploy-raspberry:

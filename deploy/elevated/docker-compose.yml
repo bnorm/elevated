@@ -1,35 +1,15 @@
 version: "3"
 
+networks:
+  nginx_nginx-network:
+    external: true
+
 services:
-  nginx:
-    image: nginx:mainline-alpine
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx-conf:/etc/nginx/conf.d
-      - ./dhparam:/etc/ssl/certs
-      - ./web-root:/var/www/html
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./web-root:/var/www/html
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    depends_on:
-      - nginx
-    command: >-
-             certonly --webroot --webroot-path=/var/www/html
-             --email brian@bnorm.com --agree-tos --no-eff-email
-             --reinstall -d elevated.bnorm.dev
-
   service:
     image: ghcr.io/bnorm/elevated-service:latest
     restart: unless-stopped
+    networks:
+      - nginx-network
     depends_on:
       - mongodb
 #      - kafka
