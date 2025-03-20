@@ -1,6 +1,7 @@
 version: "3"
 
 networks:
+  elevated:
   nginx_nginx-network:
     external: true
 
@@ -9,7 +10,8 @@ services:
     image: ghcr.io/bnorm/elevated-service:latest
     restart: unless-stopped
     networks:
-      - nginx-network
+      - elevated
+      - nginx_nginx-network
     depends_on:
       - mongodb
 #      - kafka
@@ -21,6 +23,8 @@ services:
   mongodb:
     image: mongo:5.0
     restart: unless-stopped
+    networks:
+      - elevated
     ports:
       - "27017:27017"
 
