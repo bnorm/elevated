@@ -8,6 +8,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
@@ -59,11 +60,11 @@ class LoginScreen(
                 try {
                     userSession.login(Email(email), Password(password))
                 } catch (t: Throwable) {
-                    error = when {
-                        t is CancellationException -> throw t
+                    error = when (t) {
+                        is CancellationException -> throw t
 
-                        t is ResponseException && t.response.status == HttpStatusCode.Unauthorized
-                        -> "Invalid username or password"
+                        is ResponseException if t.response.status == HttpStatusCode.Unauthorized
+                            -> "Invalid username or password"
 
                         else -> "Unable to login: ${t.message}"
                     }
@@ -73,93 +74,95 @@ class LoginScreen(
             }
         }
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            val errorMessage = error
-            if (errorMessage != null) {
-                Text(errorMessage)
-            }
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it.trim() },
-                label = { Text("Email") },
-                isError = email.isEmpty(),
-                keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.Email,
-                ),
-                modifier = Modifier.onPreviewKeyEvent {
-                    when {
-                        it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
-                            if (isValidLogin()) login()
-                            true
-                        }
-
-                        it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
-                            focusManager.moveFocus(FocusDirection.Next)
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            )
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it.trim() },
-                label = { Text("Password") },
-                isError = password.isEmpty(),
-                keyboardOptions = KeyboardOptions(
-                    autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.Password,
-                ),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    val image = if (passwordVisible) Icons.Filled.Visibility
-                    else Icons.Filled.VisibilityOff
-
-                    val description = if (passwordVisible) "Hide password" else "Show password"
-
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, description, modifier = Modifier.onPreviewKeyEvent {
-                            when {
-                                it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
-                                    passwordVisible = !passwordVisible
-                                    true
-                                }
-
-                                else -> false
-                            }
-                        })
-                    }
-                },
-                modifier = Modifier.onPreviewKeyEvent {
-                    when {
-                        it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
-                            if (isValidLogin()) login()
-                            true
-                        }
-
-                        it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
-                            focusManager.moveFocus(FocusDirection.Next)
-                            true
-                        }
-
-                        else -> false
-                    }
-                }
-            )
-
-            Button(
-                enabled = isValidLogin(),
-                onClick = { login() },
+        Surface {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "Login")
+                val errorMessage = error
+                if (errorMessage != null) {
+                    Text(errorMessage)
+                }
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it.trim() },
+                    label = { Text("Email") },
+                    isError = email.isEmpty(),
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrectEnabled = false,
+                        keyboardType = KeyboardType.Email,
+                    ),
+                    modifier = Modifier.onPreviewKeyEvent {
+                        when {
+                            it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                if (isValidLogin()) login()
+                                true
+                            }
+
+                            it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
+                                focusManager.moveFocus(FocusDirection.Next)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                )
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it.trim() },
+                    label = { Text("Password") },
+                    isError = password.isEmpty(),
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrectEnabled = false,
+                        keyboardType = KeyboardType.Password,
+                    ),
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    trailingIcon = {
+                        val image = if (passwordVisible) Icons.Filled.Visibility
+                        else Icons.Filled.VisibilityOff
+
+                        val description = if (passwordVisible) "Hide password" else "Show password"
+
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, description, modifier = Modifier.onPreviewKeyEvent {
+                                when {
+                                    it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                        passwordVisible = !passwordVisible
+                                        true
+                                    }
+
+                                    else -> false
+                                }
+                            })
+                        }
+                    },
+                    modifier = Modifier.onPreviewKeyEvent {
+                        when {
+                            it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                if (isValidLogin()) login()
+                                true
+                            }
+
+                            it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
+                                focusManager.moveFocus(FocusDirection.Next)
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+                )
+
+                Button(
+                    enabled = isValidLogin(),
+                    onClick = { login() },
+                ) {
+                    Text(text = "Login")
+                }
             }
         }
     }
