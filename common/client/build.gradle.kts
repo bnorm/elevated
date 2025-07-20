@@ -21,6 +21,7 @@ kotlin {
             dependencies {
                 api(project(":common:model"))
 
+                api(dependencies.platform(libs.ktor.bom))
                 api(libs.ktor.client.core)
                 api(libs.ktor.client.websockets)
                 api(libs.ktor.client.content.negotiation)
