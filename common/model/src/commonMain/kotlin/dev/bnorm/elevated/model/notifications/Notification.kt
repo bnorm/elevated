@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.model.notifications
 
 import dev.bnorm.elevated.model.users.UserId
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

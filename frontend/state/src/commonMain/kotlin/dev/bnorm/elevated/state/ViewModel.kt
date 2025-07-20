@@ -15,6 +15,7 @@ abstract class ViewModel<Event, Model> {
     // TODO link this to a better Job so it is cancelled properly.
     //  android = application lifecycle?
     //  web = custom?
+    @Suppress("DEPRECATION")
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main + DefaultMonotonicFrameClock)
 
     // Events have a capacity large enough to handle simultaneous UI events, but

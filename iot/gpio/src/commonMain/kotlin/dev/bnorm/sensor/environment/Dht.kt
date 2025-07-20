@@ -27,6 +27,8 @@ import dev.bnorm.gpio.PinState
 import dev.bnorm.use
 import dev.bnorm.util.sleep
 import kotlin.math.min
+import kotlin.time.ComparableTimeMark
+import kotlin.time.TimeSource
 
 abstract class Dht internal constructor(private val pin: Int, private val gpio: Gpio) {
 
@@ -76,16 +78,16 @@ abstract class Dht internal constructor(private val pin: Int, private val gpio: 
       sleep(13)
     }
 
-    val time = dev.bnorm.nanotime()
+    val mark = TimeSource.Monotonic.markNow()
     val transitions = gpio.input(pin).use { input ->
-      val transitions = mutableListOf<Long>()
+      val transitions = mutableListOf<ComparableTimeMark>()
       var state = PinState.HIGH
-      while (dev.bnorm.nanotime() - time < 250_000_000) {
+      while (mark.elapsedNow().inWholeNanoseconds < 250_000_000) {
         val newState = input.getState()
 
         if (newState != state) {
           state = newState
-          transitions.add(dev.bnorm.nanotime())
+          transitions.add(TimeSource.Monotonic.markNow())
         }
       }
 
@@ -93,7 +95,7 @@ abstract class Dht internal constructor(private val pin: Int, private val gpio: 
     }
 
     return UIntArray(transitions.size - 2) { i ->
-      min(65535, (transitions[i + 1] - transitions[i]) / 1000).toUInt()
+      min(65535, (transitions[i + 1] - transitions[i]).inWholeNanoseconds / 1000).toUInt()
     }
   }
 

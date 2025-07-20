@@ -1,9 +1,9 @@
 package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.log.getLogger
+import kotlin.time.Clock
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import kotlinx.datetime.Clock
 
 class SensorReadingService(
     private val sensorService: SensorService,

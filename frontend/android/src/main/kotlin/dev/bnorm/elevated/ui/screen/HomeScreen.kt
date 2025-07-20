@@ -22,9 +22,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import javax.inject.Inject
+import dev.zacsweers.metro.Inject
 
-class HomeScreen @Inject constructor(
+@Inject
+class HomeScreen(
     private val sensorScreen: SensorScreen,
     private val pumpsScreen: PumpsScreen,
     private val deviceScreen: DeviceScreen,

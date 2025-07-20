@@ -1,14 +1,16 @@
 apply("$rootDir/gradle/native-libs.gradle.kts")
 
 plugins {
-    kotlin("multiplatform")
-    application
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
     jvm {
-        // Needed for integration with application plugin
-        withJava()
+        binaries {
+            executable {
+                mainClass.set("MainKt")
+            }
+        }
     }
     linuxArm64 {
         binaries {
@@ -17,6 +19,11 @@ kotlin {
                 linkerOpts.add("-L$buildDir/native/libs/usr/lib/aarch64-linux-gnu/")
             }
         }
+    }
+
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
+        optIn.add("kotlinx.cinterop.ExperimentalForeignApi")
     }
 
     sourceSets {
@@ -51,8 +58,4 @@ kotlin {
             }
         }
     }
-}
-
-application {
-    mainClass.set("MainKt")
 }

@@ -9,9 +9,10 @@ import dev.bnorm.elevated.state.auth.UserState
 import dev.bnorm.elevated.ui.screen.HomeScreen
 import dev.bnorm.elevated.ui.screen.LoginScreen
 import dev.bnorm.elevated.ui.theme.ElevatedTheme
-import javax.inject.Inject
+import dev.zacsweers.metro.Inject
 
-class MainScreen @Inject constructor(
+@Inject
+class MainScreen(
     private val userSession: UserSession,
     private val homeScreen: HomeScreen,
     private val loginScreen: LoginScreen,

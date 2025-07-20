@@ -12,6 +12,10 @@ kotlin {
     }
     linuxArm64()
 
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
+    }
+
     sourceSets {
         commonMain {
             dependencies {
@@ -26,6 +30,7 @@ kotlin {
         wasmJsMain {
             dependencies {
                 api(libs.ktor.client.js)
+                implementation(libs.kotlinx.browser)
             }
         }
         jvmMain {

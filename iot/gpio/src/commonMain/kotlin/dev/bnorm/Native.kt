@@ -28,7 +28,6 @@ import dev.bnorm.spi.Spi
 
 expect fun println(message: Any?)
 expect fun sleep(sec: Long, nanos: Long)
-expect fun nanotime(): Long
 expect fun readFile(path: String): ByteArray
 expect fun readLine(): String?
 

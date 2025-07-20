@@ -11,13 +11,13 @@ import dev.bnorm.elevated.asyncMap
 import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 
 sealed class SensorViewEvent {
     data object Refresh : SensorViewEvent()

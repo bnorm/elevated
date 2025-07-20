@@ -1,6 +1,6 @@
 package dev.bnorm.elevated.model.sensors
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

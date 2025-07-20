@@ -4,12 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dev.bnorm.elevated.state.auth.UserSession
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 
-class UserSessionRefreshWorker @AssistedInject constructor(
+@Inject
+class UserSessionRefreshWorker(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
     private val userSession: UserSession,

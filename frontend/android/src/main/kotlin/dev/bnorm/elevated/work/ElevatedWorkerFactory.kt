@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import javax.inject.Inject
-import javax.inject.Singleton
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
+import kotlin.reflect.KClass
 
-@Singleton
-class ElevatedWorkerFactory @Inject constructor(
-    private val workerFactories: Map<Class<out ListenableWorker>, @JvmSuppressWildcards AbstractWorkerFactory<*>>
+@SingleIn(AppScope::class)
+@Inject
+class ElevatedWorkerFactory(
+    private val workerFactories: Map<KClass<out ListenableWorker>, AbstractWorkerFactory<*>>
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
@@ -17,7 +20,7 @@ class ElevatedWorkerFactory @Inject constructor(
         workerParameters: WorkerParameters
     ): ListenableWorker? {
         val forName = Class.forName(workerClassName)
-        val foundEntry = workerFactories.entries.find { forName.isAssignableFrom(it.key) }
+        val foundEntry = workerFactories.entries.find { forName.isAssignableFrom(it.key.java) }
         val factoryProvider = foundEntry?.value ?: return null
         return factoryProvider.create(appContext, workerParameters)
     }

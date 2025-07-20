@@ -9,16 +9,16 @@ import dev.bnorm.elevated.service.notifications.db.NotificationEntity
 import dev.bnorm.elevated.service.notifications.db.NotificationRepository
 import dev.bnorm.elevated.service.notifications.db.NotificationUpdate
 import dev.bnorm.elevated.service.users.UserService
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import kotlin.time.toKotlinInstant
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.toKotlinInstant
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.temporal.ChronoUnit
 
 @Service
 class NotificationService(

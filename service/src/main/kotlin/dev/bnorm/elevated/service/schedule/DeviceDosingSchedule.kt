@@ -12,8 +12,10 @@ import dev.bnorm.elevated.service.devices.DeviceService
 import dev.bnorm.elevated.service.sensors.SensorReadingService
 import jakarta.annotation.PostConstruct
 import java.time.Instant
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.toJavaInstant
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -21,8 +23,6 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.singleOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.toJavaInstant
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 

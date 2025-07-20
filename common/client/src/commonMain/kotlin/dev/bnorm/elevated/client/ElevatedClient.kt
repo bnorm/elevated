@@ -18,8 +18,8 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import dev.bnorm.elevated.model.users.UserId
 import dev.bnorm.elevated.model.users.UserLoginRequest
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Instant
 
 interface ElevatedClient {
     suspend fun login(request: UserLoginRequest): AuthenticatedUser

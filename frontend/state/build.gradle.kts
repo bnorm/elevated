@@ -1,10 +1,11 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    id("com.android.library")
-    kotlin("multiplatform")
-    kotlin("plugin.compose")
-    id("org.jetbrains.compose")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.plugin.compose)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.metro)
 }
 
 kotlin {
@@ -12,6 +13,10 @@ kotlin {
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         browser()
+    }
+
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
     }
 
     sourceSets {
@@ -23,13 +28,13 @@ kotlin {
                 implementation(compose.ui)
                 implementation(compose.material)
 
+                implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
+
                 api(libs.molecule.runtime)
             }
         }
         androidMain {
             dependencies {
-                implementation(libs.javax.inject)
-
                 implementation(libs.androidx.lifecycle.runtime.ktx)
             }
         }

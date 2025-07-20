@@ -12,14 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateMap
 import androidx.compose.ui.text.input.KeyboardType
-import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.pump.PumpModel
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PumpsScreen @Inject constructor(
+@Inject
+class PumpsScreen(
     private val viewModel: PumpViewModel,
 ) {
     @Composable
@@ -67,7 +68,7 @@ class PumpsScreen @Inject constructor(
                         isError = amount.isNotEmpty() && amount.toDoubleOrNull() == null,
                         label = { Text("${pump.name} pump (Milliliters)") },
                         keyboardOptions = KeyboardOptions(
-                            autoCorrect = false,
+                            autoCorrectEnabled = false,
                             keyboardType = KeyboardType.Number,
                         )
                     )

@@ -1,14 +1,14 @@
 package dev.bnorm.elevated.log
 
-import kotlinx.cinterop.ExperimentalForeignApi
-import platform.posix.*
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import platform.posix.fprintf
+import platform.posix.stderr
+import platform.posix.stdout
 
 actual fun getLogger(name: String): Logger {
     return StdLogger(Clock.System, name)
 }
 
-@OptIn(ExperimentalForeignApi::class)
 private class StdLogger(
     private val clock: Clock,
     private val name: String,

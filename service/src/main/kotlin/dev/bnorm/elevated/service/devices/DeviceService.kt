@@ -4,7 +4,12 @@ import dev.bnorm.elevated.model.auth.AuthenticatedDevice
 import dev.bnorm.elevated.model.auth.AuthorizationToken
 import dev.bnorm.elevated.model.auth.JwtToken
 import dev.bnorm.elevated.model.charts.ChartId
-import dev.bnorm.elevated.model.devices.*
+import dev.bnorm.elevated.model.devices.Device
+import dev.bnorm.elevated.model.devices.DeviceCreateRequest
+import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.devices.DeviceLoginRequest
+import dev.bnorm.elevated.model.devices.DevicePatchRequest
+import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
@@ -15,17 +20,17 @@ import dev.bnorm.elevated.service.devices.db.DeviceRepository
 import dev.bnorm.elevated.service.devices.db.DeviceUpdate
 import dev.bnorm.elevated.service.pumps.PumpService
 import dev.bnorm.elevated.service.sensors.SensorService
+import java.time.Instant
+import kotlin.time.toKotlinInstant
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.datetime.toKotlinInstant
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.stereotype.Service
-import java.time.Instant
 
 @Service
 class DeviceService(

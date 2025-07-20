@@ -2,12 +2,13 @@ package dev.bnorm.elevated.state
 
 import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.notifications.Notification
-import javax.inject.Inject
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 
-class NotificationManager @Inject constructor(
+@Inject
+class NotificationManager(
     private val elevatedClient: ElevatedClient,
 ) {
     private val _notifications = MutableStateFlow<List<Notification>>(emptyList())

@@ -13,10 +13,10 @@ import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.valueOrNull
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.Clock
 
 sealed class DeviceViewEvent
 

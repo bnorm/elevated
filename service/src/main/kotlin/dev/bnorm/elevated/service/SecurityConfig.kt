@@ -3,6 +3,9 @@ package dev.bnorm.elevated.service
 import com.nimbusds.jose.jwk.source.ImmutableSecret
 import dev.bnorm.elevated.service.auth.AuthorityRoleHierarchy
 import dev.bnorm.elevated.service.auth.ROLE_CLAIM
+import java.nio.charset.StandardCharsets
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.lang.Nullable
@@ -21,9 +24,7 @@ import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtGrantedAuthoritiesConverterAdapter
-import java.nio.charset.StandardCharsets
-import javax.crypto.SecretKey
-import javax.crypto.spec.SecretKeySpec
+import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
 @EnableWebFluxSecurity
@@ -43,12 +44,12 @@ class SecurityConfig {
     }
 
     @Bean
-    fun jwtDecoder(): ReactiveJwtDecoder =
-        NimbusReactiveJwtDecoder.withSecretKey(jwtSecretKey()).build()
+    fun jwtDecoder(secretKey: SecretKey): ReactiveJwtDecoder =
+        NimbusReactiveJwtDecoder.withSecretKey(secretKey).build()
 
     @Bean
-    fun jwtEncoder(): JwtEncoder =
-        NimbusJwtEncoder(ImmutableSecret(jwtSecretKey()))
+    fun jwtEncoder(secretKey: SecretKey): JwtEncoder =
+        NimbusJwtEncoder(ImmutableSecret(secretKey))
 
     @Bean
     fun roleHierarchy(@Nullable handler: AbstractSecurityExpressionHandler<*>?): RoleHierarchy =
@@ -69,7 +70,11 @@ class SecurityConfig {
     }
 
     @Bean
-    fun springSecurityFilterChain(http: ServerHttpSecurity) = http {
+    fun springSecurityFilterChain(
+        http: ServerHttpSecurity,
+        jwtDecoder: ReactiveJwtDecoder,
+        jwtAuthenticationConverter: ReactiveJwtAuthenticationConverter
+    ): SecurityWebFilterChain = http {
         csrf {
             disable()
         }
@@ -90,8 +95,8 @@ class SecurityConfig {
         }
         oauth2ResourceServer {
             jwt {
-                jwtDecoder = jwtDecoder()
-                jwtAuthenticationConverter = jwtAuthenticationConverter()
+                this.jwtDecoder = jwtDecoder
+                this.jwtAuthenticationConverter = jwtAuthenticationConverter
             }
         }
     }

@@ -2,7 +2,7 @@ package dev.bnorm.elevated.state.sensor
 
 import dev.bnorm.elevated.model.sensors.Sensor
 import dev.bnorm.elevated.model.sensors.SensorReading
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 class SensorGraph(
     val sensor: Sensor,

@@ -1,30 +1,52 @@
 [versions]
 
+agp = "8.10.1"
+
 # Common libraries.
-kotlin = "1.9.22"
-kotlinx-coroutines = "1.7.3"
-kotlinx-datetime = "0.5.0"
-kotlinx-serialization = "1.6.2"
+compose = "1.8.2"
+kotlin = "2.2.0"
+kotlinx-coroutines = "1.10.2"
+kotlinx-datetime = "0.7.1"
+kotlinx-serialization = "1.9.0"
 junit = "5.10.2"
 
 # Server-side libraries.
-spring-boot = "3.4.4"
-testcontainers = "1.19.5"
+spring-boot = "3.5.3"
+testcontainers = "1.21.3"
 
 # Client-side libraries.
-ktor = "3.0.0"
+ktor = "3.2.2"
 slf4j = "1.7.36"
 
 ## Raspberry PI libraries.
 pi4j = "2.4.0"
 
 ## UI Libraries
-molecule = "1.4.1"
+molecule = "2.1.0"
 
 ### Android libraries.
 
 ### Web libraries.
 
+kotlinx-browser = "0.3"
+
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlin-plugin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+
+metro = { id = "dev.zacsweers.metro", version = "0.5.1" }
 
 [libraries]
 
@@ -87,8 +109,6 @@ pi4j-plugin-linuxfs = { module = "com.pi4j:pi4j-plugin-linuxfs", version.ref = "
 
 ## UI Libraries
 
-javax-inject = { module = "javax.inject:javax.inject", version = "1" }
-
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 
 
@@ -109,23 +129,12 @@ androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtim
 
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.9.0" }
 
-dagger = { module = "com.google.dagger:dagger", version = "2.46.1" }
-dagger-android = { module = "com.google.dagger:dagger-android", version = "2.46.1" }
-dagger-android-support = { module = "com.google.dagger:dagger-android-support", version = "2.46.1" }
-dagger-compiler = { module = "com.google.dagger:dagger-compiler", version = "2.46.1" }
-
 
 ### Web libraries.
+
+kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinx-browser" }
 
 
 [bundles]
 pi4j-raspberrypi = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]
 androidx-compose = ["androidx-compose-ui", "androidx-compose-ui-tooling", "androidx-compose-material", "androidx-compose-material-icons-extended"]
-dagger-android = ["dagger", "dagger-android", "dagger-android-support"]
-
-[plugins]
-#kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-#kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-#kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
-#kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-#kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

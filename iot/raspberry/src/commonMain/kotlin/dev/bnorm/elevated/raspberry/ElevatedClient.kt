@@ -15,15 +15,16 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 
 // TODO replace with something from :common:client
@@ -84,6 +85,7 @@ class ElevatedClient(
         }
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun recordSensorReading(
         sensorId: SensorId,
         value: Double,

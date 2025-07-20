@@ -25,6 +25,8 @@ package dev.bnorm.sensor.environment
 import dev.bnorm.gpio.Gpio
 import dev.bnorm.gpio.Input
 import dev.bnorm.gpio.PinState
+import kotlin.time.ComparableTimeMark
+import kotlin.time.TimeSource
 
 class Hcsr04(triggerPin: Int, echoPin: Int, gpio: Gpio) : dev.bnorm.Closeable {
 
@@ -39,14 +41,14 @@ class Hcsr04(triggerPin: Int, echoPin: Int, gpio: Gpio) : dev.bnorm.Closeable {
     val startTime = waitUntil(echo, PinState.LOW)
     val endTime = waitUntil(echo, PinState.HIGH)
 
-    return (endTime - startTime) * 343.0 / 10000000 / 2.0
+    return (endTime - startTime).inWholeNanoseconds * 343.0 / 10000000 / 2.0
   }
 
   @Suppress("ControlFlowWithEmptyBody")
-  private fun waitUntil(input: Input, state: PinState): Long {
+  private fun waitUntil(input: Input, state: PinState): ComparableTimeMark {
     while (input.getState() == state) {
     }
-    return dev.bnorm.nanotime()
+    return TimeSource.Monotonic.markNow()
   }
 
   override fun close() {

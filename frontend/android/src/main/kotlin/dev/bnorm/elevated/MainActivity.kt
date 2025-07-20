@@ -7,20 +7,19 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import dagger.android.AndroidInjection
 import dev.bnorm.elevated.ui.MainScreen
 import dev.bnorm.elevated.work.NotificationSyncWorker
 import dev.bnorm.elevated.work.UserSessionRefreshWorker
 import dev.bnorm.elevated.work.constraints
+import dev.zacsweers.metro.Inject
 import java.time.Duration
-import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var component: MainScreen
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
+        (application as ElevatedApplication).inject(this)
         super.onCreate(savedInstanceState)
         setContent { component.Render() }
 

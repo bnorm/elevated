@@ -5,12 +5,12 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.model.sensors.SensorReadingPrototype
 import dev.bnorm.elevated.service.sensors.db.SensorReadingEntity
 import dev.bnorm.elevated.service.sensors.db.SensorReadingRepository
+import java.time.Instant
+import kotlin.time.toJavaInstant
+import kotlin.time.toKotlinInstant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toKotlinInstant
 import org.springframework.stereotype.Service
-import java.time.Instant
 
 @Service
 class SensorReadingService(

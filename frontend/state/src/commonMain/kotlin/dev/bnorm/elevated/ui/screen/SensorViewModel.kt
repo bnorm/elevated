@@ -2,15 +2,16 @@ package dev.bnorm.elevated.ui.screen
 
 import androidx.compose.runtime.Composable
 import dev.bnorm.elevated.client.ElevatedClient
-import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.state.ViewModel
 import dev.bnorm.elevated.state.sensor.SensorModel
 import dev.bnorm.elevated.state.sensor.SensorPresenter
 import dev.bnorm.elevated.state.sensor.SensorViewEvent
-import kotlinx.coroutines.flow.Flow
+import dev.zacsweers.metro.Inject
 import kotlin.time.Duration
+import kotlinx.coroutines.flow.Flow
 
-class SensorViewModel @Inject constructor(
+@Inject
+class SensorViewModel(
     private val client: ElevatedClient,
 ) : ViewModel<SensorViewEvent, SensorModel>() {
     fun refresh() {

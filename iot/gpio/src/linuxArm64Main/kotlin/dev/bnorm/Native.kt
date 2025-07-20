@@ -67,9 +67,6 @@ actual fun sleep(sec: Long, nanos: Long) {
     nanosleep(spec, null)
 }
 
-@Suppress("RemoveRedundantCallsOfConversionMethods")
-actual fun nanotime(): Long = getTimeNanos().toLong()
-
 actual fun readFile(path: String): ByteArray {
     val f = fopen(path, "rb")
     try {

@@ -29,7 +29,7 @@ fun DurationInputField(
         isError = text.isNotEmpty() && text.toLongOrNull() == null,
         label = label,
         keyboardOptions = KeyboardOptions(
-            autoCorrect = false,
+            autoCorrectEnabled = false,
             keyboardType = KeyboardType.Number,
         )
     )

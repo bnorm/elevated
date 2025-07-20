@@ -27,9 +27,9 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.sensor.SensorGraph
 import kotlin.math.roundToLong
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Instant
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 

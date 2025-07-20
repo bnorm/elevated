@@ -1,36 +1,31 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.compose")
-    kotlin("kapt")
-    id("com.android.application")
-    id("org.jetbrains.compose")
-    id("com.squareup.anvil")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.plugin.compose)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.metro)
 }
 
 kotlin {
-    androidTarget()
-    sourceSets {
-        androidMain {
-            dependencies {
-                implementation(project(":common:client"))
-                implementation(project(":frontend:state"))
-
-                implementation(libs.bundles.androidx.compose)
-                implementation(libs.androidx.activity.compose)
-                implementation(libs.androidx.navigation.compose)
-
-                implementation(libs.google.android.material)
-
-                implementation(libs.androidx.lifecycle.runtime.ktx)
-                implementation(libs.androidx.work.runtime.ktx)
-
-                implementation(libs.bundles.dagger.android)
-                configurations.get("kapt").dependencies.add(libs.dagger.compiler.get())
-            }
-        }
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
     }
+}
+
+dependencies {
+    implementation(project(":common:client"))
+    implementation(project(":frontend:state"))
+
+    implementation(libs.bundles.androidx.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.google.android.material)
+
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
 }
 
 android {

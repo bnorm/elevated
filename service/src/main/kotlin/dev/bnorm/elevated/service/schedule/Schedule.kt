@@ -1,12 +1,17 @@
 package dev.bnorm.elevated.service.schedule
 
-import kotlinx.coroutines.*
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
+import kotlin.time.Duration
+import kotlin.time.Instant
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.until
 import org.slf4j.LoggerFactory
-import kotlin.time.Duration
 
 private val log = LoggerFactory.getLogger("dev.bnorm.elevated.schedule")
 

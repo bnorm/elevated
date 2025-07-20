@@ -3,7 +3,7 @@ package dev.bnorm.elevated.model.devices
 import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.pumps.Pump
 import dev.bnorm.elevated.model.sensors.Sensor
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

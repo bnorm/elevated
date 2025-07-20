@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    kotlin("multiplatform")
-    kotlin("plugin.serialization")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.plugin.serialization)
 }
 
 kotlin {
@@ -12,6 +12,10 @@ kotlin {
         browser()
     }
     linuxArm64()
+
+    compilerOptions {
+        optIn.add("kotlin.time.ExperimentalTime")
+    }
 
     sourceSets {
         commonMain {

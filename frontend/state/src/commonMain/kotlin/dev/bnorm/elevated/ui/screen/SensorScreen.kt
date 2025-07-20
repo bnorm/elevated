@@ -18,18 +18,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.sensor.SensorGraph
 import dev.bnorm.elevated.ui.LaunchedVisible
 import dev.bnorm.elevated.ui.component.DurationInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
+import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlinx.coroutines.delay
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
-class SensorScreen @Inject constructor(
+@Inject
+class SensorScreen(
     private val viewModel: SensorViewModel
 ) {
     @Composable

@@ -33,13 +33,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.bnorm.elevated.inject.Inject
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.state.device.DeviceModel
+import dev.zacsweers.metro.Inject
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class DeviceScreen @Inject constructor(
+@Inject
+class DeviceScreen(
     private val viewModel: DeviceViewModel
 ) {
     @Composable
