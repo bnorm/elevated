@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.service.charts.db
 
 import dev.bnorm.elevated.model.charts.ChartId
-import dev.bnorm.elevated.service.mongo.ensureIndex
+import dev.bnorm.elevated.service.mongo.createIndex
 import dev.bnorm.elevated.service.mongo.Update
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +28,7 @@ class ChartRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(ChartEntity.COLLECTION_NAME)
-        indexOps.ensureIndex {
+        indexOps.createIndex {
             on(ChartEntity::name.toDotPath(), Sort.Direction.ASC)
             unique()
             background()

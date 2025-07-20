@@ -2,7 +2,7 @@ package dev.bnorm.elevated.service.notifications.db
 
 import dev.bnorm.elevated.model.notifications.NotificationId
 import dev.bnorm.elevated.model.users.UserId
-import dev.bnorm.elevated.service.mongo.ensureIndex
+import dev.bnorm.elevated.service.mongo.createIndex
 import dev.bnorm.elevated.service.mongo.Update
 import jakarta.annotation.PostConstruct
 import java.time.Instant
@@ -33,7 +33,7 @@ class NotificationRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(NotificationEntity.COLLECTION_NAME)
-        indexOps.ensureIndex {
+        indexOps.createIndex {
             on(NotificationEntity::userId.toDotPath(), Sort.Direction.ASC)
         }
     }

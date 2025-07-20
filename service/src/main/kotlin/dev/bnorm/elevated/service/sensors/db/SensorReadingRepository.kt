@@ -1,7 +1,7 @@
 package dev.bnorm.elevated.service.sensors.db
 
 import dev.bnorm.elevated.model.sensors.SensorId
-import dev.bnorm.elevated.service.mongo.ensureIndex
+import dev.bnorm.elevated.service.mongo.createIndex
 import jakarta.annotation.PostConstruct
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +41,7 @@ class SensorReadingRepository(
         }
 
         val indexOps = mongo.indexOps(SensorReadingEntity.COLLECTION_NAME)
-        indexOps.ensureIndex {
+        indexOps.createIndex {
             on(SensorReadingEntity::sensorId.toDotPath(), Sort.Direction.ASC)
             on(SensorReadingEntity::timestamp.toDotPath(), Sort.Direction.ASC)
         }

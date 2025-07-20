@@ -2,7 +2,7 @@ package dev.bnorm.elevated.service.devices.db
 
 import dev.bnorm.elevated.model.devices.DeviceActionId
 import dev.bnorm.elevated.model.devices.DeviceId
-import dev.bnorm.elevated.service.mongo.ensureIndex
+import dev.bnorm.elevated.service.mongo.createIndex
 import dev.bnorm.elevated.service.mongo.Update
 import jakarta.annotation.PostConstruct
 import java.time.Instant
@@ -33,7 +33,7 @@ class DeviceActionRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(DeviceActionEntity.COLLECTION_NAME)
-        indexOps.ensureIndex {
+        indexOps.createIndex {
             on(DeviceActionEntity::deviceId.toDotPath(), Sort.Direction.ASC)
             on(DeviceActionEntity::submitted.toDotPath(), Sort.Direction.ASC)
         }

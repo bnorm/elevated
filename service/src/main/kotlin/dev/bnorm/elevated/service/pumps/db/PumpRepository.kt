@@ -2,7 +2,7 @@ package dev.bnorm.elevated.service.pumps.db
 
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.pumps.PumpId
-import dev.bnorm.elevated.service.mongo.ensureIndex
+import dev.bnorm.elevated.service.mongo.createIndex
 import dev.bnorm.elevated.service.mongo.Update
 import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +30,7 @@ class PumpRepository(
     @PostConstruct
     fun setup(): Unit = runBlocking {
         val indexOps = mongo.indexOps(PumpEntity.COLLECTION_NAME)
-        indexOps.ensureIndex {
+        indexOps.createIndex {
             on(PumpEntity::deviceId.toDotPath(), Sort.Direction.ASC)
         }
     }
