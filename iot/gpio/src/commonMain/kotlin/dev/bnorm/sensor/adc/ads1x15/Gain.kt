@@ -25,5 +25,5 @@ package dev.bnorm.sensor.adc.ads1x15
 import dev.bnorm.sensor.adc.Reading
 
 class Gain internal constructor(private val fsr: Double, internal val pga: UShort) {
-  internal fun reading(value: Int) = Reading(value, value.toDouble() * fsr / 32767)
+    internal fun reading(value: Int) = Reading(value, value.toDouble() * fsr / 32767)
 }

@@ -23,5 +23,5 @@
 package dev.bnorm.display
 
 interface WithBacklight {
-  var backlight: Boolean
+    var backlight: Boolean
 }

@@ -22,4 +22,5 @@
 
 package dev.bnorm.sensor.adc
 
+@ConsistentCopyVisibility
 data class Reading internal constructor(val value: Int, val voltage: Double)

@@ -30,7 +30,6 @@ import dev.bnorm.i2c.I2c
 import dev.bnorm.i2c.SMBus
 import dev.bnorm.spi.Spi
 import dev.bnorm.spi.SpiImpl
-import kotlin.system.getTimeNanos
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.cValue
@@ -55,10 +54,6 @@ fun <T> ULong.toIoctlRequest(): T = this as T
 
 fun Long.toTimeT(): time_t = this
 
-actual fun println(message: Any?) {
-    kotlin.io.println(message)
-}
-
 actual fun sleep(sec: Long, nanos: Long) {
     val spec = cValue<timespec> {
         tv_sec = sec.toTimeT()
@@ -82,10 +77,6 @@ actual fun readFile(path: String): ByteArray {
     } finally {
         fclose(f)
     }
-}
-
-actual fun readLine(): String? {
-    return kotlin.io.readLine()
 }
 
 actual fun Gpio(n: Int, consumer: String): Gpio = Gpiod(n, consumer)

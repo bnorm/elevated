@@ -25,9 +25,9 @@ package dev.bnorm.graphics
 import dev.bnorm.display.Orientation
 
 interface PixelOutput {
-  fun setWindow(x0: Int, y0: Int, x1: Int, y1: Int)
-  fun putData(data: UByteArray)
-  val width: Int
-  val height: Int
-  var orientation: Orientation
+    fun setWindow(x0: Int, y0: Int, x1: Int, y1: Int)
+    fun putData(data: UByteArray)
+    val width: Int
+    val height: Int
+    var orientation: Orientation
 }

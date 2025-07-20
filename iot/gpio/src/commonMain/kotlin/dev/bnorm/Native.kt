@@ -26,10 +26,8 @@ import dev.bnorm.gpio.Gpio
 import dev.bnorm.i2c.I2c
 import dev.bnorm.spi.Spi
 
-expect fun println(message: Any?)
 expect fun sleep(sec: Long, nanos: Long)
 expect fun readFile(path: String): ByteArray
-expect fun readLine(): String?
 
 expect fun Gpio(n: Int = 0, consumer: String = "dev.bnorm.gpio"): Gpio
 expect fun Spi(device: String): Spi

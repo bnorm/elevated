@@ -30,29 +30,29 @@ import kotlin.time.TimeSource
 
 class Hcsr04(triggerPin: Int, echoPin: Int, gpio: Gpio) : dev.bnorm.Closeable {
 
-  private val trigger = gpio.output(triggerPin)
-  private val echo = gpio.input(echoPin)
+    private val trigger = gpio.output(triggerPin)
+    private val echo = gpio.input(echoPin)
 
-  fun measure(): Double {
-    trigger.setState(PinState.HIGH)
-      dev.bnorm.sleep(sec = 0, nanos = 10000)
-    trigger.setState(PinState.LOW)
+    fun measure(): Double {
+        trigger.setState(PinState.HIGH)
+        dev.bnorm.sleep(sec = 0, nanos = 10000)
+        trigger.setState(PinState.LOW)
 
-    val startTime = waitUntil(echo, PinState.LOW)
-    val endTime = waitUntil(echo, PinState.HIGH)
+        val startTime = waitUntil(echo, PinState.LOW)
+        val endTime = waitUntil(echo, PinState.HIGH)
 
-    return (endTime - startTime).inWholeNanoseconds * 343.0 / 10000000 / 2.0
-  }
-
-  @Suppress("ControlFlowWithEmptyBody")
-  private fun waitUntil(input: Input, state: PinState): ComparableTimeMark {
-    while (input.getState() == state) {
+        return (endTime - startTime).inWholeNanoseconds * 343.0 / 10000000 / 2.0
     }
-    return TimeSource.Monotonic.markNow()
-  }
 
-  override fun close() {
-    trigger.close()
-    echo.close()
-  }
+    @Suppress("ControlFlowWithEmptyBody")
+    private fun waitUntil(input: Input, state: PinState): ComparableTimeMark {
+        while (input.getState() == state) {
+        }
+        return TimeSource.Monotonic.markNow()
+    }
+
+    override fun close() {
+        trigger.close()
+        echo.close()
+    }
 }

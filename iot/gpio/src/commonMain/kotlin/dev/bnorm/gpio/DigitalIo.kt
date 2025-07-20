@@ -24,47 +24,47 @@ package dev.bnorm.gpio
 
 internal class DigitalIo(private val pin: Int, private val gpio: Gpio) : Input, Output {
 
-  private var input: Input? = null
-  private var output: Output? = null
+    private var input: Input? = null
+    private var output: Output? = null
 
-  override fun setState(state: PinState) {
-    output().setState(state)
-  }
-
-  override fun getState(): PinState {
-    return input().getState()
-  }
-
-  private fun output(): Output {
-    if (input != null) {
-      input!!.close()
-      input = null
+    override fun setState(state: PinState) {
+        output().setState(state)
     }
 
-    if (output == null) {
-      output = gpio.output(pin)
+    override fun getState(): PinState {
+        return input().getState()
     }
 
-    return output!!
-  }
+    private fun output(): Output {
+        if (input != null) {
+            input!!.close()
+            input = null
+        }
 
-  private fun input(): Input {
-    if (output != null) {
-      output!!.close()
-      output = null
+        if (output == null) {
+            output = gpio.output(pin)
+        }
+
+        return output!!
     }
 
-    if (input == null) {
-      input = gpio.input(pin)
+    private fun input(): Input {
+        if (output != null) {
+            output!!.close()
+            output = null
+        }
+
+        if (input == null) {
+            input = gpio.input(pin)
+        }
+
+        return input!!
     }
 
-    return input!!
-  }
-
-  override fun close() {
-    input?.close()
-    output?.close()
-    input = null
-    output = null
-  }
+    override fun close() {
+        input?.close()
+        output?.close()
+        input = null
+        output = null
+    }
 }

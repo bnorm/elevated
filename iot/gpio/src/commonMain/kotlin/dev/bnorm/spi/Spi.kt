@@ -23,14 +23,14 @@
 package dev.bnorm.spi
 
 interface Spi : dev.bnorm.Closeable {
-  fun transfer(settings: Settings, byte: UByte)
-  fun transfer(settings: Settings, bytes: UByteArray)
-  fun getBitsPerWord(): UByte
-  fun getBlockSize(): Int
-  fun setMode(mode: UByte)
-  fun getMode(): UByte
-  fun setLsbFirst(value: Boolean)
-  var maxSpeed: UInt
+    fun transfer(settings: Settings, byte: UByte)
+    fun transfer(settings: Settings, bytes: UByteArray)
+    fun getBitsPerWord(): UByte
+    fun getBlockSize(): Int
+    fun setMode(mode: UByte)
+    fun getMode(): UByte
+    fun setLsbFirst(value: Boolean)
+    var maxSpeed: UInt
 
-  data class Settings(val bitsPerWord: UByte, val speedHz: UInt)
+    data class Settings(val bitsPerWord: UByte, val speedHz: UInt)
 }

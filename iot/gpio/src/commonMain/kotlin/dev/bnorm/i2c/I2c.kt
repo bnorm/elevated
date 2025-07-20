@@ -23,12 +23,12 @@
 package dev.bnorm.i2c
 
 interface I2c : dev.bnorm.Closeable {
-  fun device(address: UInt): I2cDevice
-  fun probe(address: UInt): Boolean
+    fun device(address: UInt): I2cDevice
+    fun probe(address: UInt): Boolean
 }
 
 interface I2cDevice {
-  fun write(value: UByte)
-  fun write(command: UByte, values: UByteArray)
-  fun read(command: UByte, length: UByte): UByteArray
+    fun write(value: UByte)
+    fun write(command: UByte, values: UByteArray)
+    fun read(command: UByte, length: UByte): UByteArray
 }

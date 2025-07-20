@@ -23,7 +23,7 @@
 package dev.bnorm.graphics
 
 interface Graphics {
-  fun hLine(x: Int, y: Int, w: Int, color: Color)
-  fun vLine(x: Int, y: Int, h: Int, color: Color)
-  fun fillRect(x: Int, y: Int, w: Int, h: Int, color: Color)
+    fun hLine(x: Int, y: Int, w: Int, color: Color)
+    fun vLine(x: Int, y: Int, h: Int, color: Color)
+    fun fillRect(x: Int, y: Int, w: Int, h: Int, color: Color)
 }

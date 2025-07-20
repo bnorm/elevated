@@ -23,11 +23,11 @@
 package dev.bnorm.display
 
 enum class Orientation {
-  PORTRAIT,
-  LANDSCAPE,
-  PORTRAIT_FLIPPED,
-  LANDSCAPE_FLIPPED;
+    PORTRAIT,
+    LANDSCAPE,
+    PORTRAIT_FLIPPED,
+    LANDSCAPE_FLIPPED;
 
-  val portrait: Boolean
-    get() = this == PORTRAIT || this == PORTRAIT_FLIPPED
+    val portrait: Boolean
+        get() = this == PORTRAIT || this == PORTRAIT_FLIPPED
 }

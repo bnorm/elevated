@@ -23,21 +23,21 @@
 package dev.bnorm.util
 
 internal fun UShort.toUByteArray(): UByteArray {
-  return UByteArray(2) {
-    when (it) {
-      0 -> (toInt() shr 8).toUByte()
-      else -> toUByte()
+    return UByteArray(2) {
+        when (it) {
+            0 -> (toInt() shr 8).toUByte()
+            else -> toUByte()
+        }
     }
-  }
 }
 
 internal fun toUByteArray(s1: UShort, s2: UShort): UByteArray {
-  return UByteArray(4) {
-    when (it) {
-      0 -> (s1.toInt() shr 8).toUByte()
-      1 -> s1.toUByte()
-      2 -> (s2.toInt() shr 8).toUByte()
-      else -> s2.toUByte()
+    return UByteArray(4) {
+        when (it) {
+            0 -> (s1.toInt() shr 8).toUByte()
+            1 -> s1.toUByte()
+            2 -> (s2.toInt() shr 8).toUByte()
+            else -> s2.toUByte()
+        }
     }
-  }
 }

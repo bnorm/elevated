@@ -23,7 +23,7 @@
 package dev.bnorm.display.tm1637
 
 data class Config(
-  val clkPin: Int,
-  val dioPin: Int,
-  val segments: Int = 4
+    val clkPin: Int,
+    val dioPin: Int,
+    val segments: Int = 4
 )

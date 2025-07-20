@@ -23,7 +23,7 @@
 package dev.bnorm.display.hd44780
 
 data class Config(
-  val lines: UByte = 2U,
-  val columns: UByte = 16U,
-  val font: Font = Font.FONT_5_8,
+    val lines: UByte = 2U,
+    val columns: UByte = 16U,
+    val font: Font = Font.FONT_5_8,
 )

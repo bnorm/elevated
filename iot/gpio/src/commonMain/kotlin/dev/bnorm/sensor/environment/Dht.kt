@@ -32,88 +32,89 @@ import kotlin.time.TimeSource
 
 abstract class Dht internal constructor(private val pin: Int, private val gpio: Gpio) {
 
-  private val hiLevel: ULong = 51U
+    private val hiLevel: ULong = 51U
 
-  fun measure(): Reading {
-    val pulses = getPulses()
-    if (pulses.size < 80) {
-      error("Not enough data to perform measurement")
-    }
-
-    val binary = UIntArray(5) {
-      pulsesToBinary(pulses, it * 16, it * 16 + 16)
-    }
-
-    val checksum = binary.asSequence().take(4).sum()
-
-    if (checksum and 0xFFU != binary[4]) {
-      error("Checksum validation failed")
-    }
-
-    return getReading(binary)
-  }
-
-  protected abstract fun getReading(binary: UIntArray): Reading
-
-  private fun pulsesToBinary(pulses: UIntArray, start: Int, end: Int): UInt {
-    var binary = 0
-    var hi = false
-    for (i in start until end) {
-      if (hi) {
-        val bit = if (pulses[i] > hiLevel) 1 else 0
-        binary = (binary shl 1) or bit
-      }
-
-      hi = !hi
-    }
-
-    return binary.toUInt()
-  }
-
-  private fun getPulses(): UIntArray {
-    gpio.output(pin, PinState.LOW).use { output ->
-      output.setState(PinState.HIGH)
-      sleep(100)
-      output.setState(PinState.LOW)
-      sleep(13)
-    }
-
-    val mark = TimeSource.Monotonic.markNow()
-    val transitions = gpio.input(pin).use { input ->
-      val transitions = mutableListOf<ComparableTimeMark>()
-      var state = PinState.HIGH
-      while (mark.elapsedNow().inWholeNanoseconds < 250_000_000) {
-        val newState = input.getState()
-
-        if (newState != state) {
-          state = newState
-          transitions.add(TimeSource.Monotonic.markNow())
+    fun measure(): Reading {
+        val pulses = getPulses()
+        if (pulses.size < 80) {
+            error("Not enough data to perform measurement")
         }
-      }
 
-      transitions.takeLast(82)
+        val binary = UIntArray(5) {
+            pulsesToBinary(pulses, it * 16, it * 16 + 16)
+        }
+
+        val checksum = binary.asSequence().take(4).sum()
+
+        if (checksum and 0xFFU != binary[4]) {
+            error("Checksum validation failed")
+        }
+
+        return getReading(binary)
     }
 
-    return UIntArray(transitions.size - 2) { i ->
-      min(65535, (transitions[i + 1] - transitions[i]).inWholeNanoseconds / 1000).toUInt()
-    }
-  }
+    protected abstract fun getReading(binary: UIntArray): Reading
 
-  data class Reading internal constructor(val temperature: Double, val humidity: Double)
+    private fun pulsesToBinary(pulses: UIntArray, start: Int, end: Int): UInt {
+        var binary = 0
+        var hi = false
+        for (i in start until end) {
+            if (hi) {
+                val bit = if (pulses[i] > hiLevel) 1 else 0
+                binary = (binary shl 1) or bit
+            }
+
+            hi = !hi
+        }
+
+        return binary.toUInt()
+    }
+
+    private fun getPulses(): UIntArray {
+        gpio.output(pin, PinState.LOW).use { output ->
+            output.setState(PinState.HIGH)
+            sleep(100)
+            output.setState(PinState.LOW)
+            sleep(13)
+        }
+
+        val mark = TimeSource.Monotonic.markNow()
+        val transitions = gpio.input(pin).use { input ->
+            val transitions = mutableListOf<ComparableTimeMark>()
+            var state = PinState.HIGH
+            while (mark.elapsedNow().inWholeNanoseconds < 250_000_000) {
+                val newState = input.getState()
+
+                if (newState != state) {
+                    state = newState
+                    transitions.add(TimeSource.Monotonic.markNow())
+                }
+            }
+
+            transitions.takeLast(82)
+        }
+
+        return UIntArray(transitions.size - 2) { i ->
+            min(65535, (transitions[i + 1] - transitions[i]).inWholeNanoseconds / 1000).toUInt()
+        }
+    }
+
+    @ConsistentCopyVisibility
+    data class Reading internal constructor(val temperature: Double, val humidity: Double)
 }
 
 class Dht11(pin: Int, gpio: Gpio) : Dht(pin, gpio) {
-  override fun getReading(binary: UIntArray): Reading {
-    return Reading(binary[2].toDouble(), binary[0].toDouble())
-  }
+    override fun getReading(binary: UIntArray): Reading {
+        return Reading(binary[2].toDouble(), binary[0].toDouble())
+    }
 }
 
 class Dht22(pin: Int, gpio: Gpio) : Dht(pin, gpio) {
-  override fun getReading(binary: UIntArray): Reading {
-    val humidity = ((binary[0] shl 8) or binary[1]).toInt() / 10.0
-    val sign = if (binary[2] and 0x80U != 0U) -1 else 1
-    val temperature = sign * ((((binary[2] and 0x7FU) shl 8) or binary[3]).toInt() / 10.0)
+    override fun getReading(binary: UIntArray): Reading {
+        val humidity = ((binary[0] shl 8) or binary[1]).toInt() / 10.0
+        val sign = if (binary[2] and 0x80U != 0U) -1 else 1
+        val temperature = sign * ((((binary[2] and 0x7FU) shl 8) or binary[3]).toInt() / 10.0)
 
-    return Reading(temperature, humidity)
-  }
+        return Reading(temperature, humidity)
+    }
 }

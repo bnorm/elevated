@@ -23,33 +23,33 @@
 package dev.bnorm.graphics
 
 class Graphics16 internal constructor(private val display: PixelOutput) : Graphics {
-  override fun hLine(x: Int, y: Int, w: Int, color: Color) {
-    val color16 = color.toRgb565()
-    display.setWindow(x, y, x + w - 1, y)
-    display.putData(
-      UByteArray(w * 2) { i ->
-        if (i % 2 == 0) color16.b1 else color16.b2
-      }
-    )
-  }
+    override fun hLine(x: Int, y: Int, w: Int, color: Color) {
+        val color16 = color.toRgb565()
+        display.setWindow(x, y, x + w - 1, y)
+        display.putData(
+            UByteArray(w * 2) { i ->
+                if (i % 2 == 0) color16.b1 else color16.b2
+            }
+        )
+    }
 
-  override fun vLine(x: Int, y: Int, h: Int, color: Color) {
-    val color16 = color.toRgb565()
-    display.setWindow(x, y, x, y + h - 1)
-    display.putData(
-      UByteArray(h * 2) { i ->
-        if (i % 2 == 0) color16.b1 else color16.b2
-      }
-    )
-  }
+    override fun vLine(x: Int, y: Int, h: Int, color: Color) {
+        val color16 = color.toRgb565()
+        display.setWindow(x, y, x, y + h - 1)
+        display.putData(
+            UByteArray(h * 2) { i ->
+                if (i % 2 == 0) color16.b1 else color16.b2
+            }
+        )
+    }
 
-  override fun fillRect(x: Int, y: Int, w: Int, h: Int, color: Color) {
-    val color16 = color.toRgb565()
-    display.setWindow(x, y, x + w - 1, y + h - 1)
-    display.putData(
-      UByteArray(w * h * 2) { i ->
-        if (i % 2 == 0) color16.b1 else color16.b2
-      }
-    )
-  }
+    override fun fillRect(x: Int, y: Int, w: Int, h: Int, color: Color) {
+        val color16 = color.toRgb565()
+        display.setWindow(x, y, x + w - 1, y + h - 1)
+        display.putData(
+            UByteArray(w * h * 2) { i ->
+                if (i % 2 == 0) color16.b1 else color16.b2
+            }
+        )
+    }
 }

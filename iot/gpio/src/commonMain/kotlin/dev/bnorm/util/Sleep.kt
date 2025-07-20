@@ -23,6 +23,6 @@
 package dev.bnorm.util
 
 fun sleep(millis: Long) {
-  val secs = millis / 1_000
+    val secs = millis / 1_000
     dev.bnorm.sleep(secs, (millis - secs * 1_000) * 1_000_000)
 }

@@ -23,13 +23,13 @@
 package dev.bnorm.display.st7735
 
 data class Config(
-  val dcPin: Int,
-  val rstPin: Int?,
-  val backlightPin: Int?,
-  val width: Int = ST7735_TFTWIDTH,
-  val height: Int = ST7735_TFTHEIGHT,
-  val offsetLeft: Int = 0,
-  val offsetTop: Int = 0,
-  val bgr: Boolean = true,
-  val spiSpeedHz: Int = 4000000
+    val dcPin: Int,
+    val rstPin: Int?,
+    val backlightPin: Int?,
+    val width: Int = ST7735_TFTWIDTH,
+    val height: Int = ST7735_TFTHEIGHT,
+    val offsetLeft: Int = 0,
+    val offsetTop: Int = 0,
+    val bgr: Boolean = true,
+    val spiSpeedHz: Int = 4000000
 )

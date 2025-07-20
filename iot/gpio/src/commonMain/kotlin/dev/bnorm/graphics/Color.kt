@@ -23,18 +23,18 @@
 package dev.bnorm.graphics
 
 open class Color(val r: UByte, val g: UByte, val b: UByte) {
-  fun toRgb565(): Color16 {
-    val rb = (r.toInt() and 0xF8) shl 8
-    val rg = (g.toInt() and 0xFC) shl 3
-    val bb = b.toInt() shr 3
-    return Color16((rb or rg or bb).toUShort())
-  }
+    fun toRgb565(): Color16 {
+        val rb = (r.toInt() and 0xF8) shl 8
+        val rg = (g.toInt() and 0xFC) shl 3
+        val bb = b.toInt() shr 3
+        return Color16((rb or rg or bb).toUShort())
+    }
 
-  companion object {
-    val BLACK: Color = Color(0U, 0U, 0U)
-    val WHITE: Color = Color(0xFFU, 0xFFU, 0xFFU)
-    val RED: Color = Color(0xFFU, 0U, 0U)
-    val GREEN: Color = Color(0U, 0xFFU, 0U)
-    val BLUE: Color = Color(0U, 0U, 0xFFU)
-  }
+    companion object {
+        val BLACK: Color = Color(0U, 0U, 0U)
+        val WHITE: Color = Color(0xFFU, 0xFFU, 0xFFU)
+        val RED: Color = Color(0xFFU, 0U, 0U)
+        val GREEN: Color = Color(0U, 0xFFU, 0U)
+        val BLUE: Color = Color(0U, 0U, 0xFFU)
+    }
 }

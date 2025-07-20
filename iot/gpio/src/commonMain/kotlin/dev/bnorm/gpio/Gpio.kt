@@ -23,52 +23,53 @@
 package dev.bnorm.gpio
 
 interface Gpio : dev.bnorm.Closeable {
-  fun input(
-    pin: Int,
-    activeLow: Boolean = false,
-    bias: Bias = Bias.DISABLE
-  ): Input
+    fun input(
+        pin: Int,
+        activeLow: Boolean = false,
+        bias: Bias = Bias.DISABLE
+    ): Input
 
-  fun output(
-    pin: Int,
-    defaultState: PinState = PinState.LOW,
-    activeLow: Boolean = false
-  ): Output
+    fun output(
+        pin: Int,
+        defaultState: PinState = PinState.LOW,
+        activeLow: Boolean = false
+    ): Output
 
-  fun listen(
-    pin: Int,
-    activeLow: Boolean = false,
-    bias: Bias = Bias.DISABLE,
-    accept: (Event) -> Boolean
-  )
+    fun listen(
+        pin: Int,
+        activeLow: Boolean = false,
+        bias: Bias = Bias.DISABLE,
+        accept: (Event) -> Boolean
+    )
 }
 
 interface Output : dev.bnorm.Closeable {
-  fun setState(state: PinState)
+    fun setState(state: PinState)
 }
 
 interface Input : dev.bnorm.Closeable {
-  fun getState(): PinState
+    fun getState(): PinState
 }
 
+@ConsistentCopyVisibility
 data class Event internal constructor(
-  val type: Type,
-  val sec: Long,
-  val nSec: Long
+    val type: Type,
+    val sec: Long,
+    val nSec: Long
 ) {
-  enum class Type {
-    RISING_EDGE,
-    FALLING_EDGE
-  }
+    enum class Type {
+        RISING_EDGE,
+        FALLING_EDGE
+    }
 }
 
 enum class Bias {
-  DISABLE,
-  PULL_DOWN,
-  PULL_UP
+    DISABLE,
+    PULL_DOWN,
+    PULL_UP
 }
 
 enum class PinState(val value: Int) {
-  LOW(0),
-  HIGH(1);
+    LOW(0),
+    HIGH(1);
 }

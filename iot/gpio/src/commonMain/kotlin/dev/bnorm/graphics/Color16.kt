@@ -23,6 +23,6 @@
 package dev.bnorm.graphics
 
 class Color16(short: UShort) {
-  internal val b1 = (short.toInt() shr 8).toUByte()
-  internal val b2 = short.toUByte()
+    internal val b1 = (short.toInt() shr 8).toUByte()
+    internal val b2 = short.toUByte()
 }

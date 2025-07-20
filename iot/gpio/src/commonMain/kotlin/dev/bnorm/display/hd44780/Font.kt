@@ -23,6 +23,6 @@
 package dev.bnorm.display.hd44780
 
 enum class Font {
-  FONT_5_8,
-  FONT_5_10,
+    FONT_5_8,
+    FONT_5_10,
 }
