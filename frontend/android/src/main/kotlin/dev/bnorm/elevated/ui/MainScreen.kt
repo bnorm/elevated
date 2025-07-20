@@ -8,6 +8,7 @@ import dev.bnorm.elevated.state.auth.UserSession
 import dev.bnorm.elevated.state.auth.UserState
 import dev.bnorm.elevated.ui.screen.HomeScreen
 import dev.bnorm.elevated.ui.screen.LoginScreen
+import dev.bnorm.elevated.ui.screen.Screen
 import dev.bnorm.elevated.ui.theme.ElevatedTheme
 import dev.zacsweers.metro.Inject
 
@@ -16,9 +17,9 @@ class MainScreen(
     private val userSession: UserSession,
     private val homeScreen: HomeScreen,
     private val loginScreen: LoginScreen,
-) {
+) : Screen {
     @Composable
-    fun Render() {
+    override fun Render() {
         val userState by userSession.state.collectAsState()
         LaunchedEffect(Unit) { runCatching { userSession.refresh() } }
 

@@ -42,9 +42,9 @@ import kotlinx.coroutines.launch
 @Inject
 class LoginScreen(
     private val userSession: UserSession,
-) {
+) : Screen {
     @Composable
-    fun Render() {
+    override fun Render() {
         val focusManager = LocalFocusManager.current
         var error by rememberSaveable { mutableStateOf<String?>(null) }
         var email by rememberSaveable { mutableStateOf("") }

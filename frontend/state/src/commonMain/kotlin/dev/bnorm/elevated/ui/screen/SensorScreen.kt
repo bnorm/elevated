@@ -26,15 +26,15 @@ import dev.bnorm.elevated.ui.component.SensorReadingGraph
 import dev.zacsweers.metro.Inject
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
-import kotlinx.coroutines.delay
 import kotlin.time.Instant
+import kotlinx.coroutines.delay
 
 @Inject
 class SensorScreen(
     private val viewModel: SensorViewModel
-) {
+) : Screen {
     @Composable
-    fun Render() {
+    override fun Render() {
         val model by viewModel.models.collectAsState()
         var selectedTimestamp by remember { mutableStateOf<Instant?>(null) }
 

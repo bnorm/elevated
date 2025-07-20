@@ -22,9 +22,9 @@ import kotlinx.coroutines.launch
 @Inject
 class PumpsScreen(
     private val viewModel: PumpViewModel,
-) {
+) : Screen {
     @Composable
-    fun Render() {
+    override fun Render() {
         val model by viewModel.models.collectAsState()
 
         Column {

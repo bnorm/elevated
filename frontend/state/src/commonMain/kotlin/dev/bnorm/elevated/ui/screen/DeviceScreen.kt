@@ -42,9 +42,9 @@ import kotlinx.datetime.toLocalDateTime
 @Inject
 class DeviceScreen(
     private val viewModel: DeviceViewModel
-) {
+) : Screen {
     @Composable
-    fun Render() {
+    override fun Render() {
         val model by viewModel.models.collectAsState()
 
         LazyColumn {

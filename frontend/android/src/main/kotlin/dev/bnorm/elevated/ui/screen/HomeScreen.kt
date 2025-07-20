@@ -9,9 +9,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AdUnits
-import androidx.compose.material.icons.filled.RotateRight
-import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,6 +19,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dev.bnorm.elevated.icons.AdUnits
+import dev.bnorm.elevated.icons.RotateRight
+import dev.bnorm.elevated.icons.StackedLineChart
 import dev.zacsweers.metro.Inject
 
 @Inject
@@ -29,7 +29,7 @@ class HomeScreen(
     private val sensorScreen: SensorScreen,
     private val pumpsScreen: PumpsScreen,
     private val deviceScreen: DeviceScreen,
-) {
+) : Screen {
     private class Tab(
         val label: String,
         val icon: ImageVector,
@@ -44,7 +44,7 @@ class HomeScreen(
     )
 
     @Composable
-    fun Render() {
+    override fun Render() {
         val navController = rememberNavController()
         Scaffold(
             bottomBar = {
