@@ -17,7 +17,7 @@ RUN ldconfig
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 
-ADD build/distributions/ .
+ADD build/install/raspberry-jvm/ .
 RUN tar -xvf *.tar --strip 1
 
 EXPOSE 8080

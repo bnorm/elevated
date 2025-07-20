@@ -39,7 +39,7 @@ jobs:
         build-scan-terms-of-service-agree: "yes"
 
     - name: Build Project
-      run: ./gradlew check bootJar distTar linkReleaseExecutableLinuxArm64 --parallel
+      run: ./gradlew check bootJar installJvmDist linkReleaseExecutableLinuxArm64 --parallel
 
     - name: Publish Test Report
       if: success() || failure()
