@@ -17,6 +17,7 @@ kotlin {
 
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
+        optIn.add("kotlinx.coroutines.FlowPreview")
     }
 
     sourceSets {
@@ -27,8 +28,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.ui)
                 implementation(compose.material)
-
-                implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
+                implementation(libs.jetbrains.compose.material.icons.core)
 
                 api(libs.molecule.runtime)
             }

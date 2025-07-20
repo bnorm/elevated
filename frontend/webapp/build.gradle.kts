@@ -57,8 +57,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.ui)
                 implementation(compose.material)
-
-                implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
+                implementation(libs.jetbrains.compose.material.icons.core)
 
                 implementation(project(":common:client"))
                 implementation(project(":frontend:state"))

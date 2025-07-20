@@ -11,6 +11,7 @@ plugins {
 kotlin {
     compilerOptions {
         optIn.add("kotlin.time.ExperimentalTime")
+        optIn.add("kotlin.ExperimentalUnsignedTypes")
     }
 }
 

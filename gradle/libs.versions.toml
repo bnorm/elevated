@@ -3,7 +3,6 @@
 agp = "8.10.1"
 
 # Common libraries.
-compose = "1.8.2"
 kotlin = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
@@ -22,6 +21,9 @@ slf4j = "1.7.36"
 pi4j = "2.4.0"
 
 ## UI Libraries
+jb-compose = "1.8.2"
+androidx-compose = "1.8.3"
+material-icons-core = "1.7.3"
 molecule = "2.1.0"
 
 ### Android libraries.
@@ -44,7 +46,7 @@ spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 
-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 
 metro = { id = "dev.zacsweers.metro", version = "0.5.1" }
 
@@ -114,20 +116,21 @@ molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref 
 
 ### Android libraries.
 
-androidx-compose-ui = { module = "androidx.compose.ui:ui", version = "1.6.1" }
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version = "1.6.1" }
-androidx-compose-material = { module = "androidx.compose.material:material", version = "1.6.1" }
-androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version = "1.6.1" }
+androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
+androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-core" }
+jetbrains-compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons-core" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.2" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.10.1" }
 
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.7.7" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.2" }
 
-google-android-material = { module = "com.google.android.material:material", version = "1.11.0" }
+google-android-material = { module = "com.google.android.material:material", version = "1.12.0" }
 
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.7.0" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.9.2" }
 
-androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.9.0" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.10.2" }
 
 
 ### Web libraries.
