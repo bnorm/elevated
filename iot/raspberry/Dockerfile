@@ -1,5 +1,5 @@
 # build contianer
-FROM gcc as pigpio_builder
+FROM gcc:14 as pigpio_builder
 # Follow the install guide from creator of pigpio, http://abyz.me.uk/rpi/pigpio/download.html
 RUN wget https://github.com/joan2937/pigpio/archive/master.zip \
     && unzip master.zip \
