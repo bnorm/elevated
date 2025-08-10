@@ -1,5 +1,7 @@
 package dev.bnorm.elevated.service.mongo
 
+import dev.bnorm.elevated.model.Optional
+import dev.bnorm.elevated.model.ifPresent
 import java.time.Instant
 import java.time.LocalDate
 import kotlin.reflect.KProperty1
@@ -16,6 +18,10 @@ class UpdateBuilder<T> {
 
     fun <E> patch(property: KProperty1<T, E>, value: E?) {
         if (value != null) set(property, value)
+    }
+
+    fun <E> patch(property: KProperty1<T, E>, value: Optional<E>) {
+        value.ifPresent { set(property, it) }
     }
 
     fun <E> set(property: KProperty1<T, E>, value: E?) {

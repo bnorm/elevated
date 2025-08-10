@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.service.devices.db
 
 import dev.bnorm.elevated.model.devices.DeviceId
+import dev.bnorm.elevated.model.map
 import dev.bnorm.elevated.service.mongo.Update
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.reactive.asFlow
@@ -48,7 +49,7 @@ class DeviceRepository(
             patch(DeviceEntity::keyHash, deviceUpdate.keyHash)
             patch(DeviceEntity::status, deviceUpdate.status)
             patch(DeviceEntity::lastActionTime, deviceUpdate.lastActionTime)
-            patch(DeviceEntity::chartId, deviceUpdate.chartId?.value)
+            patch(DeviceEntity::chartId, deviceUpdate.chartId.map { it?.value })
         }
         val options = FindAndModifyOptions.options()
             .returnNew(true)

@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.service.devices
 
+import dev.bnorm.elevated.model.Optional
 import dev.bnorm.elevated.model.auth.AuthenticatedDevice
 import dev.bnorm.elevated.model.auth.AuthorizationToken
 import dev.bnorm.elevated.model.auth.JwtToken
@@ -10,6 +11,7 @@ import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.model.devices.DeviceLoginRequest
 import dev.bnorm.elevated.model.devices.DevicePatchRequest
 import dev.bnorm.elevated.model.devices.DeviceStatus
+import dev.bnorm.elevated.model.map
 import dev.bnorm.elevated.service.auth.encode
 import dev.bnorm.elevated.service.auth.matches
 import dev.bnorm.elevated.service.auth.toClaims
@@ -74,11 +76,11 @@ class DeviceService(
     }
 
     suspend fun updateDevice(deviceId: DeviceId, timestamp: Instant): Device? {
-        return deviceRepository.modify(deviceId, DeviceUpdate(lastActionTime = timestamp))?.toDto()
+        return deviceRepository.modify(deviceId, DeviceUpdate(lastActionTime = Optional.of(timestamp)))?.toDto()
     }
 
     suspend fun setDeviceStatus(deviceId: DeviceId, status: DeviceStatus): Device? {
-        return deviceRepository.modify(deviceId, DeviceUpdate(status = status))?.toDto()
+        return deviceRepository.modify(deviceId, DeviceUpdate(status = Optional.of(status)))?.toDto()
     }
 
     private suspend fun DeviceEntity.toDto(): Device = coroutineScope {
@@ -106,9 +108,9 @@ class DeviceService(
     private fun DevicePatchRequest.toUpdate(): DeviceUpdate {
         return DeviceUpdate(
             name = name,
-            keyHash = key?.let { passwordEncoder.encode(it) },
-            status = null,
-            lastActionTime = null,
+            keyHash = key.map { passwordEncoder.encode(it) },
+            status = Optional.empty(),
+            lastActionTime = Optional.empty(),
             chartId = chartId,
         )
     }
