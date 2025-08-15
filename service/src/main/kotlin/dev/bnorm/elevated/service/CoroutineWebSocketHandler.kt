@@ -87,7 +87,16 @@ abstract class CoroutineWebSocketHandler(
                                 val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
                                 val response = pong?.data?.decodeToString()
                                 log.debug { "marker=WebSocket.PingPong pong=$response" }
-                                if (response == now) break
+                                if (response == now) {
+                                    break
+                                } else if (pong != null &&
+                                    pong.data.decodeToString()
+                                        .let { it.startsWith("[ping ") && it.endsWith(" ping]") }
+                                ) {
+                                    // TODO there is an issue somewhere...
+                                    //  - Spring seems to be receiving PING messages as PONG messages from Ktor Curl.
+                                    sendChannel.send(pong)
+                                }
                             }
                         }
                     }
