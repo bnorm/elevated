@@ -41,7 +41,7 @@ kotlin {
         }
         linuxArm64Main {
             dependencies {
-                api(libs.ktor.client.cio)
+                api(libs.ktor.client.curl)
             }
         }
     }
