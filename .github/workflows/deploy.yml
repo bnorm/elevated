@@ -13,6 +13,10 @@ jobs:
     name: "Deploy Server"
     runs-on: ubuntu-latest
 
+    concurrency:
+      group: deploy-server
+      cancel-in-progress: true
+
     permissions:
       contents: read
 
@@ -25,7 +29,8 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "deploy/elevated/*"
+          strip_components: 2
+          source: "deploy/elevated"
           target: "~/elevated"
           timeout: 120s
 
@@ -44,6 +49,10 @@ jobs:
   deploy-raspberry:
     name: "Deploy Raspberry"
     runs-on: ubuntu-latest
+
+    concurrency:
+      group: deploy-raspberry
+      cancel-in-progress: true
 
     permissions:
       contents: read
@@ -64,7 +73,8 @@ jobs:
           host: 100.125.194.127
           username: pi
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "deploy/iot/raspberry/*"
+          strip_components: 3
+          source: "deploy/iot/raspberry"
           target: "~/elevated"
           timeout: 120s
 
