@@ -5,6 +5,7 @@ import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.SendChannel
@@ -77,7 +78,7 @@ abstract class CoroutineWebSocketHandler(
                     val sendChannel = Channel<Frame>()
                     val pongResponse = Channel<Frame.Pong>(Channel.UNLIMITED)
 
-                    launch {
+                    val pinger = launch {
                         while (isActive) {
                             delay(pingInterval.toMillis())
                             val now = Clock.System.now().toString()
@@ -90,7 +91,7 @@ abstract class CoroutineWebSocketHandler(
                         }
                     }
 
-                    launch {
+                    val sender = launch {
                         webSocketSession.send(
                             sendChannel.consumeAsFlow()
                                 .onEach { log.debug { "marker=WebSocket.Send message=\"$it\"" } }
@@ -123,20 +124,15 @@ abstract class CoroutineWebSocketHandler(
                                 is Frame.Text -> emit(frame)
                                 is Frame.Binary -> emit(frame)
                                 is Frame.Ping -> sendChannel.send(Frame.Pong(frame.data))
-                                is Frame.Pong -> {
-                                    // TODO there is an issue somewhere...
-                                    //  - Spring seems to be receiving PING messages as PONG messages from Ktor Curl.
-                                    if (frame.data.decodeToString().let { it.startsWith("[ping ") && it.endsWith(" ping]") }) {
-                                        sendChannel.send(frame)
-                                    } else {
-                                        pongResponse.send(frame)
-                                    }
-                                }
+                                is Frame.Pong -> pongResponse.send(frame)
                             }
                         }
                         .produceIn(this)
 
                     handle(webSocketSession.handshakeInfo, sendChannel, receiveChannel)
+                    pinger.cancelAndJoin()
+                    sendChannel.close()
+                    sender.cancelAndJoin()
                     webSocketSession.close(CloseStatus.NORMAL).awaitSingleOrNull()
                 }
 

@@ -25,7 +25,6 @@ import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.plugins.websocket.pingInterval
 import io.ktor.client.plugins.websocket.webSocket
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -47,7 +46,6 @@ import io.ktor.serialization.kotlinx.json.DefaultJson
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.websocket.Frame
 import io.ktor.websocket.readText
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -68,7 +66,9 @@ class HttpElevatedClient(
 ) : ElevatedClient {
     private val httpClient = baseHttpClient.config {
         install(WebSockets) {
-            pingInterval = 30.seconds
+            // TODO re-enable pings
+            //  - https://youtrack.jetbrains.com/issue/KTOR-8767/Curl-WebSocket-PONG-frames-interpreted-as-PING
+            // pingInterval = 30.seconds
         }
 
         install(ContentNegotiation) {
