@@ -10,6 +10,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.produceIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
@@ -29,10 +30,29 @@ import org.springframework.web.reactive.socket.WebSocketSession
 import reactor.core.publisher.Mono
 
 sealed class Frame {
-    class Text(val data: String) : Frame()
-    class Binary(val data: ByteArray) : Frame()
-    class Ping(val data: ByteArray) : Frame()
-    class Pong(val data: ByteArray) : Frame()
+    class Text(val data: String) : Frame() {
+        override fun toString(): String {
+            return "Frame.Text(data=$data}"
+        }
+    }
+
+    class Binary(val data: ByteArray) : Frame() {
+        override fun toString(): String {
+            return "Frame.Binary(data=${data.toHexString()}"
+        }
+    }
+
+    class Ping(val data: ByteArray) : Frame() {
+        override fun toString(): String {
+            return "Frame.Ping(data=${data.toHexString()}"
+        }
+    }
+
+    class Pong(val data: ByteArray) : Frame() {
+        override fun toString(): String {
+            return "Frame.Pong(data=${data.toHexString()}"
+        }
+    }
 }
 
 abstract class CoroutineWebSocketHandler(
@@ -46,21 +66,25 @@ abstract class CoroutineWebSocketHandler(
         return mono {
             try {
                 val sendChannel = Channel<Frame>()
-                val pongResponse = Channel<Frame.Pong>()
+                val pongResponse = Channel<Frame.Pong>(1)
 
                 launch {
                     while (isActive) {
                         delay(pingInterval.toMillis())
                         val now = Clock.System.now().toString()
+                        log.debug { "marker=WebSocket.PingPong ping=$now" }
                         sendChannel.send(Frame.Ping(now.encodeToByteArray()))
                         val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
-                        require(pong?.data?.decodeToString() == now)
+                        val response = pong?.data?.decodeToString()
+                        log.debug { "marker=WebSocket.PingPong pong=$response" }
+                        require(response == now)
                     }
                 }
 
                 launch {
                     webSocketSession.send(
                         sendChannel.consumeAsFlow()
+                            .onEach { log.debug { "marker=WebSocket.Send message=\"$it\"" } }
                             .map { frame ->
                                 when (frame) {
                                     is Frame.Text -> webSocketSession.textMessage(frame.data)
@@ -84,6 +108,7 @@ abstract class CoroutineWebSocketHandler(
                         }
                     }
                     .asFlow()
+                    .onEach { log.debug { "marker=WebSocket.Receive message=\"$it\"" } }
                     .transform { frame ->
                         when (frame) {
                             is Frame.Text -> emit(frame)
