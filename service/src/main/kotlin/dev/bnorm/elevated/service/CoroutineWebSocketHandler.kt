@@ -1,6 +1,7 @@
 package dev.bnorm.elevated.service
 
 import java.time.Duration
+import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
@@ -19,8 +20,11 @@ import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.asFlux
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
+import kotlinx.coroutines.slf4j.MDCContext
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.slf4j.LoggerFactory
+import org.slf4j.MDC
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.web.reactive.socket.CloseStatus
 import org.springframework.web.reactive.socket.HandshakeInfo
@@ -38,19 +42,19 @@ sealed class Frame {
 
     class Binary(val data: ByteArray) : Frame() {
         override fun toString(): String {
-            return "Frame.Binary(data=${data.toHexString()}"
+            return "Frame.Binary(data=${data.toHexString()})"
         }
     }
 
     class Ping(val data: ByteArray) : Frame() {
         override fun toString(): String {
-            return "Frame.Ping(data=${data.toHexString()}"
+            return "Frame.Ping(data=${data.toHexString()})"
         }
     }
 
     class Pong(val data: ByteArray) : Frame() {
         override fun toString(): String {
-            return "Frame.Pong(data=${data.toHexString()}"
+            return "Frame.Pong(data=${data.toHexString()})"
         }
     }
 }
@@ -63,64 +67,72 @@ abstract class CoroutineWebSocketHandler(
     }
 
     override fun handle(webSocketSession: WebSocketSession): Mono<Void> {
+        val context = MDC.getCopyOfContextMap() ?: mutableMapOf()
+        val xRequestId = webSocketSession.handshakeInfo.headers.getFirst("X-Request-ID") ?: Random.randomRequestId()
+        context["request.id"] = xRequestId
+
         return mono {
             try {
-                val sendChannel = Channel<Frame>()
-                val pongResponse = Channel<Frame.Pong>(1)
+                withContext(MDCContext(context)) {
+                    val sendChannel = Channel<Frame>()
+                    val pongResponse = Channel<Frame.Pong>(Channel.UNLIMITED)
 
-                launch {
-                    while (isActive) {
-                        delay(pingInterval.toMillis())
-                        val now = Clock.System.now().toString()
-                        log.debug { "marker=WebSocket.PingPong ping=$now" }
-                        sendChannel.send(Frame.Ping(now.encodeToByteArray()))
-                        val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
-                        val response = pong?.data?.decodeToString()
-                        log.debug { "marker=WebSocket.PingPong pong=$response" }
-                        require(response == now)
-                    }
-                }
-
-                launch {
-                    webSocketSession.send(
-                        sendChannel.consumeAsFlow()
-                            .onEach { log.debug { "marker=WebSocket.Send message=\"$it\"" } }
-                            .map { frame ->
-                                when (frame) {
-                                    is Frame.Text -> webSocketSession.textMessage(frame.data)
-                                    is Frame.Binary -> webSocketSession.binaryMessage { it.wrap(frame.data) }
-                                    is Frame.Ping -> webSocketSession.pingMessage { it.wrap(frame.data) }
-                                    is Frame.Pong -> webSocketSession.pongMessage { it.wrap(frame.data) }
-                                }
-                            }.asFlux()
-                    ).awaitSingleOrNull()
-                }
-
-                val receiveChannel = webSocketSession.receive()
-                    .map {
-                        // this must be before asFlow() - byte buffer dereferenced on discard?
-                        @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-                        when (it.type) {
-                            WebSocketMessage.Type.TEXT -> Frame.Text(it.payloadAsText)
-                            WebSocketMessage.Type.BINARY -> Frame.Binary(it.payload.toByteArray())
-                            WebSocketMessage.Type.PING -> Frame.Ping(it.payload.toByteArray())
-                            WebSocketMessage.Type.PONG -> Frame.Pong(it.payload.toByteArray())
+                    launch {
+                        while (isActive) {
+                            delay(pingInterval.toMillis())
+                            val now = Clock.System.now().toString()
+                            log.debug { "marker=WebSocket.PingPong ping=$now" }
+                            sendChannel.send(Frame.Ping(now.encodeToByteArray()))
+                            while (true) {
+                                val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
+                                val response = pong?.data?.decodeToString()
+                                log.debug { "marker=WebSocket.PingPong pong=$response" }
+                                if (response == now) break
+                            }
                         }
                     }
-                    .asFlow()
-                    .onEach { log.debug { "marker=WebSocket.Receive message=\"$it\"" } }
-                    .transform { frame ->
-                        when (frame) {
-                            is Frame.Text -> emit(frame)
-                            is Frame.Binary -> emit(frame)
-                            is Frame.Ping -> sendChannel.send(Frame.Pong(frame.data))
-                            is Frame.Pong -> pongResponse.send(frame)
-                        }
-                    }
-                    .produceIn(this)
 
-                handle(webSocketSession.handshakeInfo, sendChannel, receiveChannel)
-                webSocketSession.close(CloseStatus.NORMAL).awaitSingleOrNull()
+                    launch {
+                        webSocketSession.send(
+                            sendChannel.consumeAsFlow()
+                                .onEach { log.debug { "marker=WebSocket.Send message=\"$it\"" } }
+                                .map { frame ->
+                                    when (frame) {
+                                        is Frame.Text -> webSocketSession.textMessage(frame.data)
+                                        is Frame.Binary -> webSocketSession.binaryMessage { it.wrap(frame.data) }
+                                        is Frame.Ping -> webSocketSession.pingMessage { it.wrap(frame.data) }
+                                        is Frame.Pong -> webSocketSession.pongMessage { it.wrap(frame.data) }
+                                    }
+                                }.asFlux()
+                        ).awaitSingleOrNull()
+                    }
+
+                    val receiveChannel = webSocketSession.receive()
+                        .map {
+                            // this must be before asFlow() - byte buffer dereferenced on discard?
+                            @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+                            when (it.type) {
+                                WebSocketMessage.Type.TEXT -> Frame.Text(it.payloadAsText)
+                                WebSocketMessage.Type.BINARY -> Frame.Binary(it.payload.toByteArray())
+                                WebSocketMessage.Type.PING -> Frame.Ping(it.payload.toByteArray())
+                                WebSocketMessage.Type.PONG -> Frame.Pong(it.payload.toByteArray())
+                            }
+                        }
+                        .asFlow()
+                        .onEach { log.debug { "marker=WebSocket.Receive message=\"$it\"" } }
+                        .transform { frame ->
+                            when (frame) {
+                                is Frame.Text -> emit(frame)
+                                is Frame.Binary -> emit(frame)
+                                is Frame.Ping -> sendChannel.send(Frame.Pong(frame.data))
+                                is Frame.Pong -> pongResponse.send(frame)
+                            }
+                        }
+                        .produceIn(this)
+
+                    handle(webSocketSession.handshakeInfo, sendChannel, receiveChannel)
+                    webSocketSession.close(CloseStatus.NORMAL).awaitSingleOrNull()
+                }
 
                 null
             } catch (t: Throwable) {

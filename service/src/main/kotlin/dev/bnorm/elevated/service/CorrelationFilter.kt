@@ -68,7 +68,7 @@ class CorrelationFilter : CoroutineWebFilter() {
             }
         }
     }
-
-    private fun Random.randomRequestId(): String =
-        nextUBytes(16).joinToString("") { it.toString(radix = 16).padStart(2, padChar = '0') }
 }
+
+fun Random.randomRequestId(): String =
+    nextUBytes(16).toHexString()
