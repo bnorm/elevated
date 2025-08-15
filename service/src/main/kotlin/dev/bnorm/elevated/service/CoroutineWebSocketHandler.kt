@@ -1,6 +1,8 @@
 package dev.bnorm.elevated.service
 
 import java.time.Duration
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -16,6 +18,7 @@ import kotlinx.coroutines.reactive.asFlow
 import kotlinx.coroutines.reactor.asFlux
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import kotlinx.coroutines.reactor.mono
+import kotlinx.coroutines.withTimeoutOrNull
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.web.reactive.socket.CloseStatus
@@ -28,8 +31,8 @@ import reactor.core.publisher.Mono
 sealed class Frame {
     class Text(val data: String) : Frame()
     class Binary(val data: ByteArray) : Frame()
-    object Ping : Frame()
-    object Pong : Frame()
+    class Ping(val data: ByteArray) : Frame()
+    class Pong(val data: ByteArray) : Frame()
 }
 
 abstract class CoroutineWebSocketHandler(
@@ -43,11 +46,15 @@ abstract class CoroutineWebSocketHandler(
         return mono {
             try {
                 val sendChannel = Channel<Frame>()
+                val pongResponse = Channel<Frame.Pong>()
 
                 launch {
                     while (isActive) {
                         delay(pingInterval.toMillis())
-                        sendChannel.send(Frame.Ping)
+                        val now = Clock.System.now().toString()
+                        sendChannel.send(Frame.Ping(now.encodeToByteArray()))
+                        val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
+                        require(pong?.data?.decodeToString() == now)
                     }
                 }
 
@@ -58,8 +65,8 @@ abstract class CoroutineWebSocketHandler(
                                 when (frame) {
                                     is Frame.Text -> webSocketSession.textMessage(frame.data)
                                     is Frame.Binary -> webSocketSession.binaryMessage { it.wrap(frame.data) }
-                                    Frame.Ping -> webSocketSession.pingMessage { it.allocateBuffer(0) }
-                                    Frame.Pong -> webSocketSession.pongMessage { it.allocateBuffer(0) }
+                                    is Frame.Ping -> webSocketSession.pingMessage { it.wrap(frame.data) }
+                                    is Frame.Pong -> webSocketSession.pongMessage { it.wrap(frame.data) }
                                 }
                             }.asFlux()
                     ).awaitSingleOrNull()
@@ -72,8 +79,8 @@ abstract class CoroutineWebSocketHandler(
                         when (it.type) {
                             WebSocketMessage.Type.TEXT -> Frame.Text(it.payloadAsText)
                             WebSocketMessage.Type.BINARY -> Frame.Binary(it.payload.toByteArray())
-                            WebSocketMessage.Type.PING -> Frame.Ping
-                            WebSocketMessage.Type.PONG -> Frame.Pong
+                            WebSocketMessage.Type.PING -> Frame.Ping(it.payload.toByteArray())
+                            WebSocketMessage.Type.PONG -> Frame.Pong(it.payload.toByteArray())
                         }
                     }
                     .asFlow()
@@ -81,8 +88,8 @@ abstract class CoroutineWebSocketHandler(
                         when (frame) {
                             is Frame.Text -> emit(frame)
                             is Frame.Binary -> emit(frame)
-                            Frame.Ping -> sendChannel.send(Frame.Pong)
-                            Frame.Pong -> Unit
+                            is Frame.Ping -> sendChannel.send(Frame.Pong(frame.data))
+                            is Frame.Pong -> pongResponse.send(frame)
                         }
                     }
                     .produceIn(this)
@@ -91,9 +98,8 @@ abstract class CoroutineWebSocketHandler(
                 webSocketSession.close(CloseStatus.NORMAL).awaitSingleOrNull()
 
                 null
-            } catch (t: CancellationException) {
-                throw t
             } catch (t: Throwable) {
+                if (t is CancellationException) throw t
                 log.warn("marker=WebSocket.Error", t)
                 webSocketSession.close(CloseStatus.SERVER_ERROR.withNullableReason(t.message)).awaitSingleOrNull()
                 throw t
