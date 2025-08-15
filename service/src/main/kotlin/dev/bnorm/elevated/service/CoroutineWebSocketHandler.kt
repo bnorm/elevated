@@ -83,21 +83,10 @@ abstract class CoroutineWebSocketHandler(
                             val now = Clock.System.now().toString()
                             log.debug { "marker=WebSocket.PingPong ping=$now" }
                             sendChannel.send(Frame.Ping(now.encodeToByteArray()))
-                            while (true) {
-                                val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
-                                val response = pong?.data?.decodeToString()
-                                log.debug { "marker=WebSocket.PingPong pong=$response" }
-                                if (response == now) {
-                                    break
-                                } else if (pong != null &&
-                                    pong.data.decodeToString()
-                                        .let { it.startsWith("[ping ") && it.endsWith(" ping]") }
-                                ) {
-                                    // TODO there is an issue somewhere...
-                                    //  - Spring seems to be receiving PING messages as PONG messages from Ktor Curl.
-                                    sendChannel.send(pong)
-                                }
-                            }
+                            val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
+                            val response = pong?.data?.decodeToString()
+                            log.debug { "marker=WebSocket.PingPong pong=$response" }
+                            require(response == now)
                         }
                     }
 
@@ -134,7 +123,15 @@ abstract class CoroutineWebSocketHandler(
                                 is Frame.Text -> emit(frame)
                                 is Frame.Binary -> emit(frame)
                                 is Frame.Ping -> sendChannel.send(Frame.Pong(frame.data))
-                                is Frame.Pong -> pongResponse.send(frame)
+                                is Frame.Pong -> {
+                                    // TODO there is an issue somewhere...
+                                    //  - Spring seems to be receiving PING messages as PONG messages from Ktor Curl.
+                                    if (frame.data.decodeToString().let { it.startsWith("[ping ") && it.endsWith(" ping]") }) {
+                                        sendChannel.send(frame)
+                                    } else {
+                                        pongResponse.send(frame)
+                                    }
+                                }
                             }
                         }
                         .produceIn(this)
