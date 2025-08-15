@@ -1,5 +1,9 @@
 # build contianer
 FROM gcc:14 as pigpio_builder
+
+RUN apt update && \
+    apt install -y python3-setuptools
+
 # Follow the install guide from creator of pigpio, http://abyz.me.uk/rpi/pigpio/download.html
 RUN wget https://github.com/joan2937/pigpio/archive/master.zip \
     && unzip master.zip \
