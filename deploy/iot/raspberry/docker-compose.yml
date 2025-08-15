@@ -1,13 +1,6 @@
 version: "3"
 
 services:
-  #  watchtower:
-  #    image: containrrr/watchtower
-  #    restart: unless-stopped
-  #    volumes:
-  #      - /var/run/docker.sock:/var/run/docker.sock
-  #    command: --interval 30
-
   raspberry:
     image: ghcr.io/bnorm/elevated-iot-raspberry:latest
     ports:
@@ -16,5 +9,3 @@ services:
     privileged: true
     environment:
       - "DEVICE_KEY=${DEVICE_KEY}"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"

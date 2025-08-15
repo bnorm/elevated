@@ -25,7 +25,6 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          strip_components: 1
           source: "deploy/elevated"
           target: "~/elevated"
           timeout: 120s
@@ -65,7 +64,6 @@ jobs:
           host: 100.125.194.127
           username: pi
           key: ${{ secrets.DEPLOY_KEY }}
-          strip_components: 1
           source: "deploy/iot/raspberry"
           target: "~/elevated"
           timeout: 120s

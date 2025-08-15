@@ -39,7 +39,7 @@ jobs:
         build-scan-terms-of-service-agree: "yes"
 
     - name: Build Project
-      run: ./gradlew check bootJar installJvmDist linkReleaseExecutableLinuxArm64 --parallel
+      run: ./gradlew check bootJar installJvmDist linkReleaseExecutableLinuxArm64
 
     - name: Publish Test Report
       if: success() || failure()
@@ -92,7 +92,3 @@ jobs:
         platforms: linux/arm64
         tags: ${{ steps.meta-iot-raspberry.outputs.tags }}
         labels: ${{ steps.meta-iot-raspberry.outputs.labels }}
-
-#      - uses: softprops/action-gh-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
