@@ -5,6 +5,7 @@ import kotlin.random.Random
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -72,7 +73,7 @@ abstract class CoroutineWebSocketHandler(
         val xRequestId = webSocketSession.handshakeInfo.headers.getFirst("X-Request-ID") ?: Random.randomRequestId()
         context["request.id"] = xRequestId
 
-        return mono {
+        return mono<Void> {
             try {
                 withContext(MDCContext(context)) {
                     val sendChannel = Channel<Frame>()
@@ -109,7 +110,6 @@ abstract class CoroutineWebSocketHandler(
                     val receiveChannel = webSocketSession.receive()
                         .map {
                             // this must be before asFlow() - byte buffer dereferenced on discard?
-                            @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
                             when (it.type) {
                                 WebSocketMessage.Type.TEXT -> Frame.Text(it.payloadAsText)
                                 WebSocketMessage.Type.BINARY -> Frame.Binary(it.payload.toByteArray())
@@ -137,13 +137,21 @@ abstract class CoroutineWebSocketHandler(
                 }
 
                 null
+            } catch (t: CancellationException) {
+                log.info("marker=WebSocket.Cancel", t)
+                withContext(NonCancellable) {
+                    webSocketSession.close(CloseStatus.NORMAL.withNullableReason(t.message))
+                        .awaitSingleOrNull()
+                }
+                throw t
             } catch (t: Throwable) {
-                if (t is CancellationException) throw t
                 log.warn("marker=WebSocket.Error", t)
-                webSocketSession.close(CloseStatus.SERVER_ERROR.withNullableReason(t.message)).awaitSingleOrNull()
+                webSocketSession.close(CloseStatus.SERVER_ERROR.withNullableReason(t.message))
+                    .awaitSingleOrNull()
                 throw t
             }
         }
+            .doFinally { log.info("marker=WebSocket.Final signal={}", it) }
     }
 
     abstract suspend fun handle(

@@ -64,7 +64,7 @@ class ElevatedClient(
         return elevatedClient.completeDeviceAction(deviceId, deviceActionId)
     }
 
-    suspend fun getActionQueue(): Flow<DeviceAction> {
+    fun getActionQueue(): Flow<DeviceAction> {
         return flow {
             while (true) {
                 try {
@@ -76,8 +76,8 @@ class ElevatedClient(
                     )
                     log.info { "Disconnected from server" }
                 } catch (t: Throwable) {
-                    if (t is CancellationException) throw t
                     log.warn(t) { "Error in WebSocket" }
+                    if (t is CancellationException) throw t
                 }
 
                 delay(15.seconds)
