@@ -21,13 +21,9 @@
  */
 
 val nativeLibs = listOf(
-    "http://ftp.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_armhf.deb",
     "http://ftp.debian.org/debian/pool/main/libg/libgpiod/libgpiod2_1.6.2-1_arm64.deb",
-    "http://ftp.debian.org/debian/pool/main/libg/libgpiod/libgpiod-dev_1.6.2-1_armhf.deb",
     "http://ftp.debian.org/debian/pool/main/libg/libgpiod/libgpiod-dev_1.6.2-1_arm64.deb",
-    "http://ftp.debian.org/debian/pool/main/i/i2c-tools/libi2c-dev_4.2-1+b1_armhf.deb",
     "http://ftp.debian.org/debian/pool/main/i/i2c-tools/libi2c-dev_4.2-1+b1_arm64.deb",
-    "http://ftp.debian.org/debian/pool/main/i/i2c-tools/libi2c0_4.2-1+b1_armhf.deb",
     "http://ftp.debian.org/debian/pool/main/i/i2c-tools/libi2c0_4.2-1+b1_arm64.deb"
 )
 
@@ -35,7 +31,7 @@ val subtasks = nativeLibs.map { url ->
     val fileName = url.substringAfterLast("/")
 
     val download = tasks.register("download$fileName") {
-        val target = file("$buildDir/native/$fileName")
+        val target = file("${layout.buildDirectory.get()}/native/$fileName")
         outputs.file(target)
 
         doFirst {
@@ -44,21 +40,21 @@ val subtasks = nativeLibs.map { url ->
     }
 
     val unpackData = tasks.register<Exec>("unpackData$fileName") {
-        val target = file("$buildDir/native/unpacked/$fileName/data.tar.xz")
+        val target = file("${layout.buildDirectory.get()}/native/unpacked/$fileName/data.tar.xz")
         target.parentFile.mkdirs()
         workingDir(target.parentFile)
-        inputs.file("$buildDir/native/$fileName")
+        inputs.file("${layout.buildDirectory.get()}/native/$fileName")
         outputs.file(target)
-        commandLine("ar", "x", "$buildDir/native/$fileName", "data.tar.xz")
+        commandLine("ar", "x", "${layout.buildDirectory.get()}/native/$fileName", "data.tar.xz")
         dependsOn(download)
     }
 
     tasks.register<Exec>("unpackLib$fileName") {
         val unpackDataTask = unpackData.get()
-        val target = file("$buildDir/native/libs/")
+        val target = file("${layout.buildDirectory.get()}/native/libs/")
         val source = unpackDataTask.outputs.files.singleFile
         target.mkdirs()
-        workingDir("$buildDir/native/libs/")
+        workingDir("${layout.buildDirectory.get()}/native/libs/")
         inputs.file(source)
         commandLine("tar", "-xf", source.absolutePath, "./usr/lib/")
 

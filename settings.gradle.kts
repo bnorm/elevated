@@ -1,8 +1,18 @@
+import org.gradle.kotlin.dsl.mavenCentral
+import org.gradle.kotlin.dsl.repositories
+
 pluginManagement {
     repositories {
         mavenCentral()
         google()
         gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        google()
     }
 }
 
@@ -16,5 +26,3 @@ include("frontend:webapp")
 include("iot:gpio")
 include("iot:raspberry")
 include("service")
-
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

@@ -1,5 +1,3 @@
-version: "3"
-
 networks:
   elevated:
   nginx_nginx-network:

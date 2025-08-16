@@ -19,11 +19,6 @@ plugins {
 allprojects {
     group = "dev.bnorm.elevated"
 
-    repositories {
-        mavenCentral()
-        google()
-    }
-
     tasks.withType<Test> {
         useJUnitPlatform()
     }

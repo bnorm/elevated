@@ -16,7 +16,7 @@ kotlin {
         binaries {
             executable {
                 linkTaskProvider.configure { dependsOn(tasks.named("nativeLibs")) }
-                linkerOpts.add("-L$buildDir/native/libs/usr/lib/aarch64-linux-gnu/")
+                linkerOpts.add("-L${layout.buildDirectory.get()}/native/libs/usr/lib/aarch64-linux-gnu/")
             }
         }
     }
