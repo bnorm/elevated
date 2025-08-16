@@ -13,6 +13,10 @@ import kotlinx.coroutines.flow.Flow
 class DeviceViewModel(
     private val client: ElevatedClient,
 ) : ViewModel<DeviceViewEvent, DeviceModel>() {
+    fun refresh() {
+        take(DeviceViewEvent.Refresh)
+    }
+
     @Composable
     override fun models(events: Flow<DeviceViewEvent>): DeviceModel {
         return DevicePresenter(client, events)

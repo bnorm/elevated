@@ -35,7 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.state.device.DeviceModel
+import dev.bnorm.elevated.ui.LaunchedVisible
 import dev.zacsweers.metro.Inject
+import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -46,6 +49,13 @@ class DeviceScreen(
     @Composable
     override fun Render() {
         val model by viewModel.models.collectAsState()
+
+        LaunchedVisible {
+            while (true) {
+                viewModel.refresh()
+                delay(1.minutes)
+            }
+        }
 
         LazyColumn {
             items(model.devices, key = { it.device.id.value }) {
