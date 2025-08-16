@@ -1,0 +1,12 @@
+name: Project Verification
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  gradle-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
