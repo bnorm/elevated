@@ -1,6 +1,8 @@
 package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.log.getLogger
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Instant
@@ -18,6 +20,7 @@ private val log = getLogger("dev.bnorm.elevated.schedule")
 fun CoroutineScope.schedule(
     name: String,
     frequency: Duration,
+    context: CoroutineContext = EmptyCoroutineContext,
     immediate: Boolean = false,
     action: suspend () -> Unit,
 ) {
@@ -31,7 +34,7 @@ fun CoroutineScope.schedule(
         }
     }
 
-    launch(start = if (immediate) CoroutineStart.UNDISPATCHED else CoroutineStart.DEFAULT) {
+    launch(start = if (immediate) CoroutineStart.UNDISPATCHED else CoroutineStart.DEFAULT, context = context) {
         val start = Clock.System.now()
         val truncated = (start.toEpochMilliseconds() / frequency.inWholeMilliseconds) * frequency.inWholeMilliseconds
         var next = Instant.fromEpochMilliseconds(truncated)
