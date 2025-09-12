@@ -7,4 +7,3 @@ services:
     privileged: true
     environment:
       - "DEVICE_KEY=${DEVICE_KEY}"
-      - "KTOR_LOG_LEVEL=TRACE"

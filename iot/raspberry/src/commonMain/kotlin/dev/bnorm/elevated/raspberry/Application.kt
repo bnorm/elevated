@@ -43,11 +43,18 @@ class DefaultApplication(
 
             launch(context = context) {
                 elevatedClient.getActionQueue().collect {
-                    when (val args = it.args) {
-                        is PumpDispenseArguments -> {
-                            pumpService[args.pumpId ?: return@collect]?.dispense(args.amount)
-                            elevatedClient.completeDeviceAction(it.id)
+                    try {
+                        log.info { "Received action: $it" }
+                        when (val args = it.args) {
+                            is PumpDispenseArguments -> {
+                                pumpService[args.pumpId ?: return@collect]?.dispense(args.amount)
+                                elevatedClient.completeDeviceAction(it.id)
+                            }
                         }
+                        log.info { "Completed action: $it" }
+                    } catch (t: Throwable) {
+                        log.warn(t) { "Error processing action: $it" }
+                        throw t
                     }
                 }
             }
