@@ -1,8 +1,8 @@
 package dev.bnorm.elevated.log
 
 import kotlin.time.Clock
+import platform.posix.fflush
 import platform.posix.fprintf
-import platform.posix.stderr
 import platform.posix.stdout
 
 actual fun getLogger(name: String): Logger {
@@ -14,35 +14,34 @@ private class StdLogger(
     private val name: String,
 ) : Logger {
     override fun trace(t: Throwable?, msg: () -> String) {
-        stdout(t, msg)
+        stdout(t, "TRACE", msg)
     }
 
     override fun debug(t: Throwable?, msg: () -> String) {
-        stdout(t, msg)
+        stdout(t, "DEBUG", msg)
     }
 
     override fun info(t: Throwable?, msg: () -> String) {
-        stdout(t, msg)
+        stdout(t, "INFO", msg)
     }
 
     override fun warn(t: Throwable?, msg: () -> String) {
-        stderr(t, msg)
+        stdout(t, "WARN", msg)
     }
 
     override fun error(t: Throwable?, msg: () -> String) {
-        stderr(t, msg)
+        stdout(t, "ERROR", msg)
     }
 
-    private fun stdout(t: Throwable?, msg: () -> String) {
-        fprintf(stdout, buildString(t, msg))
+    private fun stdout(t: Throwable?, level: String, msg: () -> String) {
+        fprintf(stdout, buildString(t, level, msg))
+        fflush(stdout)
     }
 
-    private fun stderr(t: Throwable?, msg: () -> String) {
-        fprintf(stderr, buildString(t, msg))
-    }
-
-    private fun buildString(t: Throwable?, msg: () -> String): String = buildString {
+    private fun buildString(t: Throwable?, level: String, msg: () -> String): String = buildString {
         append(clock.now())
+        append(" ")
+        append(level)
         append(" ")
         append(name)
         append(" ")
