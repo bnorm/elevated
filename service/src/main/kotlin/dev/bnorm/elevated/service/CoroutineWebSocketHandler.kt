@@ -3,7 +3,6 @@ package dev.bnorm.elevated.service
 import java.time.Duration
 import kotlin.random.Random
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.cancelAndJoin
@@ -62,7 +61,8 @@ sealed class Frame {
 }
 
 abstract class CoroutineWebSocketHandler(
-    private val pingInterval: Duration = Duration.ofSeconds(30),
+    private val pingDelay: Duration = Duration.ofSeconds(30),
+    private val pingTimeout: Duration = Duration.ofSeconds(30),
 ) : WebSocketHandler {
     companion object {
         private val log = LoggerFactory.getLogger(CoroutineWebSocketHandler::class.java)
@@ -81,11 +81,11 @@ abstract class CoroutineWebSocketHandler(
 
                     val pinger = launch {
                         while (isActive) {
-                            delay(pingInterval.toMillis())
+                            delay(pingDelay.toMillis())
                             val now = Clock.System.now().toString()
                             log.debug { "marker=WebSocket.PingPong ping=$now" }
                             sendChannel.send(Frame.Ping(now.encodeToByteArray()))
-                            val pong = withTimeoutOrNull(5.seconds) { pongResponse.receive() }
+                            val pong = withTimeoutOrNull(pingTimeout.toMillis()) { pongResponse.receive() }
                             val response = pong?.data?.decodeToString()
                             log.debug { "marker=WebSocket.PingPong pong=$response" }
                             require(response == now)
