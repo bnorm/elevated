@@ -29,7 +29,10 @@ fun CoroutineScope.schedule(
             log.debug { "Performing scheduled action $name" }
             action()
         } catch (t: Throwable) {
-            if (t is CancellationException) throw t
+            if (t is CancellationException) {
+                log.warn(t) { "Scheduled action $name cancelled at $timestamp" }
+                throw t
+            }
             log.warn(t) { "Unable to perform scheduled action $name at $timestamp" }
         }
     }
