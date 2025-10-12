@@ -3,6 +3,7 @@ package dev.bnorm.elevated.raspberry
 import com.pi4j.context.Context
 import com.pi4j.io.i2c.I2C
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.model.sensors.SensorId
 import java.io.IOException
 import kotlinx.coroutines.delay
@@ -12,7 +13,7 @@ import kotlinx.coroutines.sync.withLock
 fun Context.SensorService(): SensorService {
     // Hardcode known sensors
     return SensorService(
-        all = SensorType.entries.map { Sensor(it.id, it.bus, it.device) }
+        all = SensorType.entries.map { Sensor(it.id, it.bus, it.device, it.measurement) }
     )
 }
 
@@ -20,6 +21,7 @@ fun Context.Sensor(
     id: SensorId,
     bus: Int = 1,
     device: Int,
+    type: MeasurementType,
 ): Sensor {
     val name = "sensor" + id.toString().padStart(2, '0')
     val config = I2C.newConfigBuilder(this)
@@ -29,13 +31,14 @@ fun Context.Sensor(
         .device(device)
         .provider("linuxfs-i2c")
     val i2c = create(config)
-    return Pi4jSensor(i2c, name, id)
+    return Pi4jSensor(i2c, name, id, type)
 }
 
 private class Pi4jSensor(
     private val i2c: I2C,
     private val name: String,
     override val id: SensorId,
+    override val type: MeasurementType,
 ) : Sensor {
     companion object {
         private val log = getLogger<Sensor>()

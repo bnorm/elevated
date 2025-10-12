@@ -2,7 +2,7 @@ package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.log.getLogger
 import kotlin.time.Clock
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.supervisorScope
 
 class SensorReadingService(
@@ -16,15 +16,14 @@ class SensorReadingService(
     suspend fun record() {
         supervisorScope {
             val timestamp = Clock.System.now()
-            for (type in SensorType.values()) {
-                launch {
-                    val reading = sensorService[type].read()
-                    runCatching {
-                        elevatedClient.recordSensorReading(type.id, reading, timestamp)
-                    }.onFailure { error ->
-                        log.warn(error) { "Unable to upload $type sensor reading to elevated.bnorm.dev" }
-                    }
+            for (sensor in sensorService.all) {
+                val reading = sensor.read()
+                runCatching {
+                    elevatedClient.recordSensorReading(sensor.id, reading, timestamp)
+                }.onFailure { error ->
+                    log.warn(error) { "Unable to upload ${sensor.type} sensor reading to elevated.bnorm.dev" }
                 }
+                delay(1_000) // Isolate each reading.
             }
         }
     }

@@ -1,16 +1,19 @@
 package dev.bnorm.elevated.raspberry
 
 import dev.bnorm.elevated.log.getLogger
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.model.sensors.SensorId
 
 interface Sensor {
     val id: SensorId
+    val type: MeasurementType
 
     suspend fun read(): Double
 }
 
 class FakeSensor(
     override val id: SensorId,
+    override val type: MeasurementType,
     private val generator: () -> Double,
 ) : Sensor {
     companion object {
