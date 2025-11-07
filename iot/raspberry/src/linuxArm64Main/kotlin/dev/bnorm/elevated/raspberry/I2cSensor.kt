@@ -11,6 +11,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 fun SensorService(): SensorService {
+    // https://github.com/AtlasScientific/Raspberry-Pi-sample-code
+
+    // https://files.atlas-scientific.com/EZO_RTD_Datasheet.pdf
     val tmpId = SensorId("68ebd42babc1449a36207c24")
     val tmp = AtlasI2cSensor(
         i2cDevice = I2cDevice(address = 0x66u, bus = 1u),
@@ -19,6 +22,8 @@ fun SensorService(): SensorService {
         type = MeasurementType.TMP,
     )
 
+    // https://files.atlas-scientific.com/pH_EZO_Datasheet.pdf
+    // https://atlas-scientific.com/blog/how-to-calibrate-ph-meter
     val phId = SensorId("6278048e770bd023d5d971ea")
     val ph = TemperatureCompensatedAtlasI2cSensor(
         i2cDevice = I2cDevice(address = 0x63u, bus = 1u),
@@ -28,6 +33,7 @@ fun SensorService(): SensorService {
         temperatureSensor = tmp,
     )
 
+    // https://files.atlas-scientific.com/EC_EZO_Datasheet.pdf
     val ecId = SensorId("6278049d770bd023d5d971eb")
     val ec = TemperatureCompensatedAtlasI2cSensor(
         i2cDevice = I2cDevice(address = 0x64u, bus = 1u),
