@@ -36,12 +36,15 @@ import androidx.compose.ui.unit.sp
 import dev.bnorm.elevated.model.devices.DeviceStatus
 import dev.bnorm.elevated.state.device.DeviceModel
 import dev.bnorm.elevated.ui.LaunchedVisible
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.delay
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
+@SingleIn(AppScope::class)
 @Inject
 class DeviceScreen(
     private val viewModel: DeviceViewModel

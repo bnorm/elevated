@@ -22,8 +22,11 @@ import androidx.navigation.compose.rememberNavController
 import dev.bnorm.elevated.icons.AdUnits
 import dev.bnorm.elevated.icons.RotateRight
 import dev.bnorm.elevated.icons.StackedLineChart
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
+@SingleIn(AppScope::class)
 @Inject
 class HomeScreen(
     private val sensorScreen: SensorScreen,

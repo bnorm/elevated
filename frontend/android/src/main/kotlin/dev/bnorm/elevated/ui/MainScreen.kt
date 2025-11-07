@@ -16,8 +16,11 @@ import dev.bnorm.elevated.ui.screen.HomeScreen
 import dev.bnorm.elevated.ui.screen.LoginScreen
 import dev.bnorm.elevated.ui.screen.Screen
 import dev.bnorm.elevated.ui.theme.ElevatedTheme
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
+@SingleIn(AppScope::class)
 @Inject
 class MainScreen(
     private val userSession: UserSession,

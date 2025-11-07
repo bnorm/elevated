@@ -34,12 +34,15 @@ import dev.bnorm.elevated.icons.VisibilityOff
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.state.auth.UserSession
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
+@SingleIn(AppScope::class)
 @Inject
 class LoginScreen(
     private val userSession: UserSession,

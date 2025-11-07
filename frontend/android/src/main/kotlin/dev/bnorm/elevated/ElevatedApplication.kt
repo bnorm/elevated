@@ -1,40 +1,61 @@
 package dev.bnorm.elevated
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import dev.bnorm.elevated.di.ElevatedApplicationComponent
+import dev.bnorm.elevated.di.ElevatedAppGraph
 import dev.bnorm.elevated.state.SharedPreferenceTokenStore
-import dev.bnorm.elevated.work.ElevatedWorkerFactory
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.MembersInjector
+import dev.bnorm.elevated.work.NotificationSyncWorker
+import dev.bnorm.elevated.work.UserSessionRefreshWorker
+import dev.bnorm.elevated.work.constraints
 import dev.zacsweers.metro.createGraphFactory
-import kotlin.reflect.KClass
+import java.time.Duration
 
 class ElevatedApplication : Application() {
-    @Inject
-    private lateinit var workerFactory: ElevatedWorkerFactory
-
-    @Inject
-    private lateinit var activityInjectors: Map<KClass<*>, MembersInjector<Activity>>
-
-    fun inject(activity: Activity) {
-        activityInjectors.getValue(activity::class).injectMembers(activity)
-    }
+    lateinit var graph: ElevatedAppGraph
 
     override fun onCreate() {
         val tokenStore = SharedPreferenceTokenStore(getSharedPreferences("KEYS", Context.MODE_PRIVATE))
-        val component = createGraphFactory<ElevatedApplicationComponent.Factory>()
+        graph = createGraphFactory<ElevatedAppGraph.Factory>()
             .create(tokenStore)
-        component.inject(this)
 
         super.onCreate()
 
         val workManagerConfiguration = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
+            .setWorkerFactory(graph.workerFactory)
             .build()
         WorkManager.initialize(this, workManagerConfiguration)
+
+        val workManager = WorkManager.getInstance(this)
+
+        workManager.enqueueUniquePeriodicWork(
+            uniqueWorkName = "NotificationSync",
+            existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
+            request = PeriodicWorkRequestBuilder<NotificationSyncWorker>(
+                repeatInterval = Duration.ofMinutes(15),
+                flexTimeInterval = Duration.ofMinutes(5),
+            ).apply {
+                constraints {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                }
+            }.build(),
+        )
+
+        workManager.enqueueUniquePeriodicWork(
+            uniqueWorkName = "UserSessionRefresh",
+            existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.UPDATE,
+            request = PeriodicWorkRequestBuilder<UserSessionRefreshWorker>(
+                repeatInterval = Duration.ofHours(1),
+                flexTimeInterval = Duration.ofHours(1),
+            ).apply {
+                constraints {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                }
+            }.build(),
+        )
     }
 }

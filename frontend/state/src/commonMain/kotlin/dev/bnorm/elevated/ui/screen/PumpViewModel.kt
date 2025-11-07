@@ -11,9 +11,12 @@ import dev.bnorm.elevated.state.ViewModel
 import dev.bnorm.elevated.state.pump.PumpModel
 import dev.bnorm.elevated.state.pump.PumpPresenter
 import dev.bnorm.elevated.state.pump.PumpViewEvent
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.Flow
 
+@SingleIn(AppScope::class)
 @Inject
 class PumpViewModel(
     private val client: ElevatedClient,

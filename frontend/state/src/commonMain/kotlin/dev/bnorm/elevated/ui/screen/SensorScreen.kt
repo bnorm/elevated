@@ -23,12 +23,15 @@ import dev.bnorm.elevated.state.sensor.SensorGraph
 import dev.bnorm.elevated.ui.LaunchedVisible
 import dev.bnorm.elevated.ui.component.DurationInputField
 import dev.bnorm.elevated.ui.component.SensorReadingGraph
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
 
+@SingleIn(AppScope::class)
 @Inject
 class SensorScreen(
     private val viewModel: SensorViewModel

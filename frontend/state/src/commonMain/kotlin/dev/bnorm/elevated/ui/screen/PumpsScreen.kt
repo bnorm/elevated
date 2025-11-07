@@ -15,10 +15,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.pump.PumpModel
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+@SingleIn(AppScope::class)
 @Inject
 class PumpsScreen(
     private val viewModel: PumpViewModel,
