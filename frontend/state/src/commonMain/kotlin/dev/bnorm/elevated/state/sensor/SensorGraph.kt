@@ -1,11 +1,13 @@
 package dev.bnorm.elevated.state.sensor
 
+import dev.bnorm.elevated.model.charts.Chart
 import dev.bnorm.elevated.model.sensors.Sensor
 import dev.bnorm.elevated.model.sensors.SensorReading
 import kotlin.time.Instant
 
 class SensorGraph(
     val sensor: Sensor,
+    val bound: Chart.Bound?,
     val readings: List<SensorReading>,
     val minX: Double,
     val maxX: Double,
@@ -47,29 +49,45 @@ class SensorGraph(
         return (height * (maxY - value) / spanY)
     }
 
+    fun Double.toY(height: Double): Double {
+        return (height * (maxY - this) / spanY)
+    }
+
     companion object {
         fun create(
             sensor: Sensor,
+            bound: Chart.Bound?,
             readings: List<SensorReading>
         ): SensorGraph {
             var minTimestamp = Long.MAX_VALUE
             var maxTimestamp = Long.MIN_VALUE
             var minReading = Double.MAX_VALUE
             var maxReading = Double.MIN_VALUE
+
             for (reading in readings) {
                 minTimestamp = minOf(minTimestamp, reading.timestamp.epochSeconds)
                 maxTimestamp = maxOf(maxTimestamp, reading.timestamp.epochSeconds)
                 minReading = minOf(minReading, reading.value)
                 maxReading = maxOf(maxReading, reading.value)
             }
+
+            if (bound != null) {
+                minReading = minOf(minReading, bound.low)
+                maxReading = maxOf(maxReading, bound.high)
+            }
+
             val padding = 0.2 * maxOf(maxReading - minReading, 1.0)
+            minReading -= padding
+            maxReading += padding
+
             return SensorGraph(
                 sensor = sensor,
+                bound = bound,
                 readings = readings,
                 minX = minTimestamp.toDouble(),
                 maxX = maxTimestamp.toDouble(),
-                minY = (minReading - padding),
-                maxY = (maxReading + padding),
+                minY = minReading,
+                maxY = maxReading,
             )
         }
     }

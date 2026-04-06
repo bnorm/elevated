@@ -3,6 +3,7 @@ package dev.bnorm.elevated.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,6 +16,7 @@ import org.w3c.dom.get
 private val Document.visibilityState: String get() = this["visibilityState"].toString()
 
 @Composable
+@NonRestartableComposable
 actual fun LaunchedVisible(block: suspend () -> Unit) {
     var visibility by remember { mutableStateOf(document.visibilityState) }
 

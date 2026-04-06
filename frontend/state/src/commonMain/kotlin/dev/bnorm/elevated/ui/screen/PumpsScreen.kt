@@ -1,6 +1,10 @@
 package dev.bnorm.elevated.ui.screen
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
@@ -11,7 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.toMutableStateMap
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import dev.bnorm.elevated.model.devices.DeviceId
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.pump.PumpModel
@@ -30,7 +37,12 @@ class PumpsScreen(
     override fun Render() {
         val model by viewModel.models.collectAsState()
 
-        Column {
+        Box(
+            contentAlignment = Alignment.TopCenter,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+        ) {
             when (val result = model) {
                 is NetworkResult.Loaded -> ShowPumps(result.value)
                 is NetworkResult.Error -> Text(text = "Error loading pumps: ${result.error.message}")
@@ -61,25 +73,30 @@ class PumpsScreen(
             }
         }
 
-        if (model.pumps.isNotEmpty()) {
-            Column {
-                for (pump in model.pumps) {
-                    val amount = amounts.getValue(pump.id)
-                    OutlinedTextField(
-                        value = amount,
-                        onValueChange = { amounts[pump.id] = it },
-                        isError = amount.isNotEmpty() && amount.toDoubleOrNull() == null,
-                        label = { Text("${pump.name} pump (Milliliters)") },
-                        keyboardOptions = KeyboardOptions(
-                            autoCorrectEnabled = false,
-                            keyboardType = KeyboardType.Number,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (model.pumps.isNotEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    for (pump in model.pumps) {
+                        val amount = amounts.getValue(pump.id)
+                        OutlinedTextField(
+                            value = amount,
+                            onValueChange = { amounts[pump.id] = it },
+                            isError = amount.isNotEmpty() && amount.toDoubleOrNull() == null,
+                            label = { Text("${pump.name} pump (Milliliters)") },
+                            keyboardOptions = KeyboardOptions(
+                                autoCorrectEnabled = false,
+                                keyboardType = KeyboardType.Number,
+                            )
                         )
-                    )
+                    }
                 }
-            }
 
-            Button(onClick = { dispenseAll() }) {
-                Text(text = "Dispense")
+                Button(onClick = { dispenseAll() }) {
+                    Text(text = "Dispense")
+                }
             }
         }
     }

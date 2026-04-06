@@ -44,18 +44,27 @@ fun SensorPresenter(
             .collect { after = it }
     }
 
-
     // Load sensors and readings based on (debounced) clock and duration.
     var graphs by remember { NetworkResult.stateOf<List<SensorGraph>>() }
     LaunchedEffect(after) {
         withContext(Dispatchers.Default) {
             graphs = NetworkResult.of {
+                val bounds = buildMap {
+                    val devices = client.getDevices()
+                    for (device in devices) {
+                        val bounds = device.chart?.bounds?.associateBy { it.type }.orEmpty()
+                        for (sensor in device.sensors) {
+                            put(sensor.id, bounds[sensor.type])
+                        }
+                    }
+                }
+
                 client.getSensors().asyncMap { sensor ->
                     val averagedReadings = client.getSensorReadings(sensor.id, after)
                         .sortedBy { it.timestamp }
                         .simpleMovingAverage()
 
-                    SensorGraph.create(sensor, averagedReadings)
+                    SensorGraph.create(sensor, bounds[sensor.id], averagedReadings)
                 }
             }
         }

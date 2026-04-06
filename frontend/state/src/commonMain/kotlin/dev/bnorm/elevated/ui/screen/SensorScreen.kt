@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -50,36 +52,42 @@ class SensorScreen(
 
         @Composable
         fun Chart(graph: SensorGraph) {
-            Column(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp),
+            Surface(
+                elevation = 12.dp,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.padding(8.dp),
             ) {
-                Text(text = "Sensor: ${graph.sensor.name}")
-                if (graph.readings.isEmpty()) {
-                    Text(text = "No ${graph.sensor.name} readings in time range")
-                } else {
-                    SensorReadingGraph(
-                        graph = graph,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        selectedTimestamp = selectedTimestamp,
-                        onSelectedTimestamp = { selectedTimestamp = it }
-                    )
+                Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Text(text = "Sensor: ${graph.sensor.name}")
+                    if (graph.readings.isEmpty()) {
+                        Text(text = "No ${graph.sensor.name} readings in time range")
+                    } else {
+                        SensorReadingGraph(
+                            graph = graph,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            selectedTimestamp = selectedTimestamp,
+                            onSelectedTimestamp = { selectedTimestamp = it }
+                        )
+                    }
                 }
             }
         }
 
         Box(
             contentAlignment = Alignment.TopCenter,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.widthIn(max = 1200.dp),
             ) {
                 Row(
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                    modifier = Modifier.padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     DurationInputField(

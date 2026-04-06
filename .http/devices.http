@@ -34,6 +34,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
+    "chartId": "{{chartId}}"
 }
 
 ### Get device actions

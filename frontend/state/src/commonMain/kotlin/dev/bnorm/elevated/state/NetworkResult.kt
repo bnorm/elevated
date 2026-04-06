@@ -12,11 +12,14 @@ sealed class NetworkResult<out T> {
 
     abstract suspend fun <R> map(transform: suspend (T) -> R): NetworkResult<R>
 
+    abstract suspend fun <R> flatMap(transform: suspend (T) -> NetworkResult<R>): NetworkResult<R>
+
     data object Loading : NetworkResult<Nothing>() {
         override val value: Nothing
             get() = throw RuntimeException("Loading")
 
         override suspend fun <R> map(transform: suspend (Nothing) -> R): Loading = this
+        override suspend fun <R> flatMap(transform: suspend (Nothing) -> NetworkResult<R>): Loading = this
     }
 
     class Error(val error: Throwable) : NetworkResult<Nothing>() {
@@ -24,11 +27,16 @@ sealed class NetworkResult<out T> {
             get() = throw error
 
         override suspend fun <R> map(transform: suspend (Nothing) -> R): Error = this
+        override suspend fun <R> flatMap(transform: suspend (Nothing) -> NetworkResult<R>): Error = this
     }
 
     class Loaded<T>(override val value: T) : NetworkResult<T>() {
         override suspend fun <R> map(transform: suspend (T) -> R): NetworkResult<R> {
             return of { transform(value) }
+        }
+
+        override suspend fun <R> flatMap(transform: suspend (T) -> NetworkResult<R>): NetworkResult<R> {
+            return transform(value)
         }
     }
 

@@ -18,3 +18,6 @@ http-client.private.env.json
 /captures
 .externalNativeBuild
 .cxx
+
+# Elevated
+.elevated/
