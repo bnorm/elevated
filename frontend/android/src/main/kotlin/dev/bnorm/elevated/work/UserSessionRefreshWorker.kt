@@ -7,14 +7,14 @@ import androidx.work.WorkerParameters
 import dev.bnorm.elevated.state.auth.UserSession
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.AssistedInject
 
-@Inject
+@AssistedInject
 class UserSessionRefreshWorker(
-    @Assisted context: Context,
-    @Assisted workerParams: WorkerParameters,
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
     private val userSession: UserSession,
-) : CoroutineWorker(context, workerParams) {
+) : CoroutineWorker(appContext, params) {
     @AssistedFactory
     interface Factory : AbstractWorkerFactory<UserSessionRefreshWorker>
 

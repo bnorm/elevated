@@ -1,37 +1,42 @@
 [versions]
 
-agp = "8.10.1"
+agp = "8.13.2"
 
 # Common libraries.
-kotlin = "2.2.0"
+kotlin = "2.3.20"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
-kotlinx-serialization = "1.9.0"
-junit = "5.10.2"
+kotlinx-serialization = "1.10.0"
+junit = "6.0.3"
+metro = "0.13.1"
 
 # Server-side libraries.
-spring-boot = "3.5.3"
-testcontainers = "1.21.3"
+spring-boot = "4.0.5"
+testcontainers = "2.0.4"
 
 # Client-side libraries.
-ktor = "3.2.2"
-slf4j = "1.7.36"
+ktor = "3.4.2"
+slf4j = "2.0.17"
 
 ## Raspberry PI libraries.
-pi4j = "2.4.0"
+pi4j = "4.0.0"
 
 ## UI Libraries
-jb-compose = "1.8.2"
-androidx-compose = "1.8.3"
+jb-compose = "1.10.3"
+androidx-compose = "1.10.6"
 material-icons-core = "1.7.3"
-molecule = "2.1.0"
+material-icons-extended = "1.7.8"
+molecule = "2.2.0"
 
 ### Android libraries.
 
 ### Web libraries.
 
-kotlinx-browser = "0.3"
+kotlinx-browser = "0.5.0"
 
+###
+# Plugins
+###
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -48,7 +53,11 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 
 compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 
-metro = { id = "dev.zacsweers.metro", version = "0.5.1" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
+
+###
+# Libraries
+###
 
 [libraries]
 
@@ -78,15 +87,15 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 spring-boot-starter-security = { module = "org.springframework.boot:spring-boot-starter-security" }
-spring-boot-starter-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
+spring-boot-starter-security-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-data-mongodb-reactive = { module = "org.springframework.boot:spring-boot-starter-data-mongodb-reactive" }
-spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
-spring-security-test = { module = "org.springframework.security:spring-security-test" }
+spring-boot-starter-security-test = { module = "org.springframework.boot:spring-boot-starter-security-test" }
+spring-boot-starter-security-oauth2-resource-server-test = { module = "org.springframework.boot:spring-boot-starter-security-oauth2-resource-server-test" }
 
 testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
-testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
-testcontainers-mongodb = { module = "org.testcontainers:mongodb" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-mongodb = { module = "org.testcontainers:testcontainers-mongodb" }
 
 
 # Client-side libraries.
@@ -119,24 +128,27 @@ molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref 
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "androidx-compose" }
-androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-core" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons-extended" }
 jetbrains-compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "material-icons-core" }
 
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.10.1" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.2" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.7" }
 
-google-android-material = { module = "com.google.android.material:material", version = "1.12.0" }
+google-android-material = { module = "com.google.android.material:material", version = "1.13.0" }
 
-androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.9.2" }
+androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.10.0" }
 
-androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.10.2" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version = "2.11.2" }
 
 
 ### Web libraries.
 
 kotlinx-browser = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinx-browser" }
 
+###
+# Bundles
+###
 
 [bundles]
 pi4j-raspberrypi = ["pi4j-core", "pi4j-plugin-raspberrypi", "pi4j-plugin-pigpio", "pi4j-plugin-linuxfs"]

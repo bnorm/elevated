@@ -6,13 +6,20 @@ import dev.bnorm.elevated.service.auth.ROLE_CLAIM
 import java.nio.charset.StandardCharsets
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
+import org.aopalliance.intercept.MethodInvocation
+import org.springframework.beans.factory.config.BeanDefinition
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.lang.Nullable
-import org.springframework.security.access.expression.AbstractSecurityExpressionHandler
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Role
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy
+import org.springframework.security.authorization.AuthorizationManagerFactory
+import org.springframework.security.authorization.DefaultAuthorizationManagerFactory
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
+import org.springframework.security.config.core.GrantedAuthorityDefaults
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.invoke
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -28,7 +35,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain
 
 @Configuration
 @EnableWebFluxSecurity
-@EnableReactiveMethodSecurity(useAuthorizationManager = false)
+@EnableReactiveMethodSecurity
 class SecurityConfig {
 
     @Bean
@@ -52,12 +59,6 @@ class SecurityConfig {
         NimbusJwtEncoder(ImmutableSecret(secretKey))
 
     @Bean
-    fun roleHierarchy(@Nullable handler: AbstractSecurityExpressionHandler<*>?): RoleHierarchy =
-        AuthorityRoleHierarchy().apply {
-            handler?.setRoleHierarchy(this)
-        }
-
-    @Bean
     fun jwtAuthenticationConverter(): ReactiveJwtAuthenticationConverter {
         val jwtGrantedAuthoritiesConverter = ReactiveJwtGrantedAuthoritiesConverterAdapter { jwt ->
             listOfNotNull(jwt.getClaimAsString(ROLE_CLAIM))
@@ -68,6 +69,24 @@ class SecurityConfig {
             setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter)
         }
     }
+
+    @Bean
+    fun roleHierarchy(): RoleHierarchy =
+        AuthorityRoleHierarchy()
+
+    @Bean
+    fun <T> authorizationManagerFactory(roleHierarchy: RoleHierarchy): AuthorizationManagerFactory<T> =
+        DefaultAuthorizationManagerFactory<T>().apply {
+            setRoleHierarchy(roleHierarchy)
+        }
+
+    @Bean
+    fun methodSecurityExpressionHandlerPrimary(
+        authorizationManagerFactory: AuthorizationManagerFactory<MethodInvocation>
+    ): MethodSecurityExpressionHandler =
+        DefaultMethodSecurityExpressionHandler().apply {
+            setAuthorizationManagerFactory(authorizationManagerFactory)
+        }
 
     @Bean
     fun springSecurityFilterChain(

@@ -6,7 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 
 @OptIn(PasswordUsage::class)
 fun PasswordEncoder.encode(password: Password): String =
-    encode(password.value)
+    encode(password.value)!!
 
 @OptIn(PasswordUsage::class)
 fun PasswordEncoder.matches(password: Password, encoded: String): Boolean =

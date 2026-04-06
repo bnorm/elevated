@@ -54,7 +54,7 @@ class UpdateBuilder<T> {
         update.pull(property.toDotPath(), value)
     }
 
-    fun <E> pullAll(property: KProperty1<T, E>, values: Array<out E>) {
+    fun <E> pullAll(property: KProperty1<T, E>, values: Array<out E & Any>) {
         update.pullAll(property.toDotPath(), values)
     }
 
