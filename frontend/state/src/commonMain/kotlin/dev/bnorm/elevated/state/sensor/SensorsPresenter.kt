@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import dev.bnorm.elevated.asyncMap
 import dev.bnorm.elevated.client.ElevatedClient
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
 import kotlin.time.Clock
@@ -62,6 +63,12 @@ fun SensorPresenter(
                 client.getSensors().asyncMap { sensor ->
                     val averagedReadings = client.getSensorReadings(sensor.id, after)
                         .sortedBy { it.timestamp }
+                        .map {
+                            when (sensor.type) {
+                                MeasurementType.TMP -> it.copy(value = it.value * 9.0 / 5.0 + 32.0)
+                                else -> it
+                            }
+                        }
                         .simpleMovingAverage()
 
                     SensorGraph.create(sensor, bounds[sensor.id], averagedReadings)

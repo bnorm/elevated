@@ -10,6 +10,7 @@ import dev.bnorm.elevated.asyncMap
 import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.model.devices.Device
 import dev.bnorm.elevated.model.devices.DeviceAction
+import dev.bnorm.elevated.model.sensors.MeasurementType
 import dev.bnorm.elevated.model.sensors.SensorId
 import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
@@ -56,6 +57,12 @@ fun DevicePresenter(
                         val latestReadings = device.sensors
                             .asyncMap { client.getLatestSensorReadings(it.id, count = 1) }
                             .mapNotNull { it.singleOrNull() }
+                            .map { reading ->
+                                when (device.sensors.find { reading.sensorId == it.id }?.type) {
+                                    MeasurementType.TMP -> reading.copy(value = reading.value * 9.0 / 5.0 + 32.0)
+                                    else -> reading
+                                }
+                            }
                             .associateBy { it.sensorId }
 
                         DeviceModel.Summary(

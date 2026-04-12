@@ -27,17 +27,27 @@ kotlin {
         commonMain {
             dependencies {
                 api(project(":common:client"))
+                api(project(":frontend:state"))
+
                 api(libs.molecule.runtime)
+
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.material)
+
+                implementation(libs.androidx.navigation.compose)
+                implementation(libs.jetbrains.compose.material.icons.core)
             }
         }
         jvmMain {
             dependencies {
-                implementation(libs.kotlinx.coroutines.swing)
+                implementation(compose.desktop.currentOs)
             }
         }
         androidMain {
             dependencies {
-                implementation(libs.kotlinx.coroutines.android)
+                implementation(libs.androidx.lifecycle.runtime.ktx)
             }
         }
     }
@@ -46,7 +56,7 @@ kotlin {
 android {
     compileSdk = 36
 
-    namespace = "dev.bnorm.elevated.state"
+    namespace = "dev.bnorm.elevated.components"
     defaultConfig {
         minSdk = 26
     }

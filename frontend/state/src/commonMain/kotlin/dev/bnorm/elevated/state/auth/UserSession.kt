@@ -6,11 +6,16 @@ import dev.bnorm.elevated.model.auth.AuthenticatedUser
 import dev.bnorm.elevated.model.auth.Password
 import dev.bnorm.elevated.model.users.Email
 import dev.bnorm.elevated.model.users.UserLoginRequest
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import io.ktor.client.plugins.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+@SingleIn(AppScope::class)
+@Inject
 class UserSession(
     private val client: ElevatedClient,
     private val store: TokenStore,

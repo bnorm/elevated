@@ -49,7 +49,7 @@ dependencies {
 
 if (System.getenv("CI") == "true") {
     tasks.processResources.configure {
-        from(tasks.getByPath(":frontend:webapp:wasmJsBrowserDistribution")) {
+        from(tasks.getByPath(":frontend:platforms:web:wasmJsBrowserDistribution")) {
             into("static")
         }
     }
