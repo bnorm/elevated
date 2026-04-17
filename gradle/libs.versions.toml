@@ -19,7 +19,7 @@ ktor = "3.4.2"
 slf4j = "2.0.17"
 
 ## Raspberry PI libraries.
-pi4j = "4.0.0"
+pi4j = "4.0.1"
 
 ## UI Libraries
 jb-compose = "1.10.3"
