@@ -24,8 +24,18 @@ fun PumpPresenter(
     var model by remember { NetworkResult.stateOf<PumpModel>() }
 
     LaunchedEffect(client) {
-        model = NetworkResult.of { PumpModel(client.getPumps()) }
+        model = NetworkResult.of { getPumpModel(client) }
+    }
+
+    // Processes incoming events.
+    LaunchedEffect(events) {
+        events.collect {
+        }
     }
 
     return model
+}
+
+private suspend fun getPumpModel(client: ElevatedClient): PumpModel {
+    return PumpModel(client.getPumps())
 }

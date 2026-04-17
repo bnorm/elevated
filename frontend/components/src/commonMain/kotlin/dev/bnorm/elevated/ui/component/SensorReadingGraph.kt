@@ -60,6 +60,7 @@ fun SensorReadingGraph(
 
     fun SensorReading.toX(): Float = with(graph) { toX(size.width.toDouble()).toFloat() }
     fun SensorReading.toY(): Float = with(graph) { toY(size.height.toDouble()).toFloat() }
+    fun Instant.toX(): Float = with(graph) { toX(size.width.toDouble()).toFloat() }
     fun Double.toY(): Float = with(graph) { toY(size.height.toDouble()).toFloat() }
 
     // TODO SampledReadings
@@ -167,12 +168,23 @@ fun SensorReadingGraph(
                         pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f))
                     )
                 }
+
+                for (instant in graph.actions) {
+                    val x = instant.toX()
+                    drawLine(
+                        start = Offset(x, 0f),
+                        end = Offset(x, size.height),
+                        color = secondary,
+                        strokeWidth = 3f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f))
+                    )
+                }
             }
         }
     }
 }
 
-private fun Double.format(decimals: Int): String {
+fun Double.format(decimals: Int): String {
     require(decimals >= 0) { "decimals must be non-negative" }
     val integerComponent = this.toLong()
     var decimalComponent = abs(this - integerComponent)

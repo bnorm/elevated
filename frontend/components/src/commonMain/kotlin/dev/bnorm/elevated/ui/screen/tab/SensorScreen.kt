@@ -64,9 +64,8 @@ class SensorScreen(
         @Composable
         fun Chart(graph: SensorGraph) {
             Surface(
-                elevation = 12.dp,
+                elevation = 8.dp,
                 shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.padding(8.dp),
             ) {
                 Column(
                     modifier = Modifier
@@ -86,6 +85,7 @@ class SensorScreen(
                 }
             }
         }
+
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier.fillMaxWidth(),
@@ -115,7 +115,8 @@ class SensorScreen(
                 val scrollState = rememberScrollState()
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.verticalScroll(scrollState),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.verticalScroll(scrollState).padding(8.dp),
                 ) {
                     when (val result = model.graphs) {
                         NetworkResult.Loading -> Text(text = "Loading sensors...")

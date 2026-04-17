@@ -1,5 +1,6 @@
 package dev.bnorm.elevated.web
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
 import dev.bnorm.elevated.client.StorageTokenStore
@@ -9,9 +10,12 @@ import kotlinx.browser.localStorage
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    val graph = createGraphFactory<ElevatedGraph.Factory>()
-        .create(StorageTokenStore(localStorage))
     ComposeViewport {
+        val graph = createGraphFactory<ElevatedGraph.Factory>().create(
+            tokenStore = StorageTokenStore(localStorage),
+            viewModelCoroutineScope = rememberCoroutineScope(),
+        )
+
         graph.mainScreen.Render()
     }
 }

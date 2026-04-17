@@ -1,7 +1,7 @@
 package dev.bnorm.elevated
 
 import android.app.Application
-import android.content.Context
+import androidx.compose.ui.platform.AndroidUiDispatcher
 import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -14,14 +14,17 @@ import dev.bnorm.elevated.work.UserSessionRefreshWorker
 import dev.bnorm.elevated.work.constraints
 import dev.zacsweers.metro.createGraphFactory
 import java.time.Duration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
 
 class ElevatedApplication : Application() {
     lateinit var graph: ElevatedAppGraph
 
     override fun onCreate() {
-        val tokenStore = SharedPreferenceTokenStore(getSharedPreferences("KEYS", Context.MODE_PRIVATE))
-        graph = createGraphFactory<ElevatedAppGraph.Factory>()
-            .create(tokenStore)
+        graph = createGraphFactory<ElevatedAppGraph.Factory>().create(
+            tokenStore = SharedPreferenceTokenStore(getSharedPreferences("KEYS", MODE_PRIVATE)),
+            viewModelCoroutineScope = CoroutineScope(SupervisorJob() + AndroidUiDispatcher.Main),
+        )
 
         super.onCreate()
 

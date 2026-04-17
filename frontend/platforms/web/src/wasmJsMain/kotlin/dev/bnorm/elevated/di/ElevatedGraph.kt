@@ -8,6 +8,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
+import kotlinx.coroutines.CoroutineScope
 
 @DependencyGraph(AppScope::class)
 interface ElevatedGraph {
@@ -15,7 +16,10 @@ interface ElevatedGraph {
 
     @DependencyGraph.Factory
     interface Factory {
-        fun create(@Provides tokenStore: TokenStore): ElevatedGraph
+        fun create(
+            @Provides tokenStore: TokenStore,
+            @Provides viewModelCoroutineScope: CoroutineScope,
+        ): ElevatedGraph
     }
 
     @Binds

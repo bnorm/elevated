@@ -9,6 +9,7 @@ class SensorGraph(
     val sensor: Sensor,
     val bound: Chart.Bound?,
     val readings: List<SensorReading>,
+    val actions: List<Instant>,
     val minX: Double,
     val maxX: Double,
     val minY: Double,
@@ -49,6 +50,10 @@ class SensorGraph(
         return (height * (maxY - value) / spanY)
     }
 
+    fun Instant.toX(width: Double): Double {
+        return (width * (epochSeconds.toDouble() - minX) / spanX)
+    }
+
     fun Double.toY(height: Double): Double {
         return (height * (maxY - this) / spanY)
     }
@@ -57,7 +62,8 @@ class SensorGraph(
         fun create(
             sensor: Sensor,
             bound: Chart.Bound?,
-            readings: List<SensorReading>
+            readings: List<SensorReading>,
+            actions: List<Instant>,
         ): SensorGraph {
             var minTimestamp = Long.MAX_VALUE
             var maxTimestamp = Long.MIN_VALUE
@@ -84,6 +90,7 @@ class SensorGraph(
                 sensor = sensor,
                 bound = bound,
                 readings = readings,
+                actions = actions,
                 minX = minTimestamp.toDouble(),
                 maxX = maxTimestamp.toDouble(),
                 minY = minReading,

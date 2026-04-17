@@ -14,13 +14,15 @@ import dev.bnorm.elevated.state.pump.PumpViewEvent
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 @SingleIn(AppScope::class)
 @Inject
 class PumpViewModel(
+    scope: CoroutineScope,
     private val client: ElevatedClient,
-) : ViewModel<PumpViewEvent, NetworkResult<PumpModel>>() {
+) : ViewModel<PumpViewEvent, NetworkResult<PumpModel>>(scope) {
     suspend fun dispense(pumpId: PumpId, deviceId: DeviceId, amount: Double) {
         client.submitDeviceAction(
             deviceId = deviceId,

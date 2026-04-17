@@ -16,9 +16,11 @@ import dev.bnorm.elevated.model.sensors.SensorReading
 import dev.bnorm.elevated.state.NetworkResult
 import dev.bnorm.elevated.state.valueOrNull
 import kotlin.time.Clock
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
@@ -48,33 +50,7 @@ fun DevicePresenter(
     LaunchedEffect(instant) {
         withContext(Dispatchers.Default) {
             val now = instant
-            model = NetworkResult.of { client.getDevices() }
-                .map { devices ->
-                    devices.asyncMap { device ->
-                        val actions = async {
-                            client.getDeviceActions(device.id, submittedAfter = now - 48.hours)
-                        }
-                        val latestReadings = device.sensors
-                            .asyncMap { client.getLatestSensorReadings(it.id, count = 1) }
-                            .mapNotNull { it.singleOrNull() }
-                            .map { reading ->
-                                when (device.sensors.find { reading.sensorId == it.id }?.type) {
-                                    MeasurementType.TMP -> reading.copy(value = reading.value * 9.0 / 5.0 + 32.0)
-                                    else -> reading
-                                }
-                            }
-                            .associateBy { it.sensorId }
-
-                        DeviceModel.Summary(
-                            device = device,
-                            readings = latestReadings,
-                            actions = actions.await()
-                        )
-                    }
-                }
-                .map { summaries ->
-                    DeviceModel(devices = summaries)
-                }
+            model = NetworkResult.of { getDeviceModel(client, now) }
         }
     }
 
@@ -90,4 +66,38 @@ fun DevicePresenter(
     }
 
     return model.valueOrNull ?: DeviceModel(emptyList())
+}
+
+private suspend fun getDeviceModel(
+    client: ElevatedClient,
+    now: Instant
+): DeviceModel {
+    val devices = client.getDevices()
+
+    val summaries = devices.asyncMap { device ->
+        coroutineScope {
+            val actions = async {
+                client.getDeviceActions(device.id, submittedAfter = now - 7.days)
+            }
+
+            val latestReadings = device.sensors
+                .asyncMap { client.getLatestSensorReadings(it.id, count = 1) }
+                .mapNotNull { it.singleOrNull() }
+                .map { reading ->
+                    when (device.sensors.find { reading.sensorId == it.id }?.type) {
+                        MeasurementType.TMP -> reading.copy(value = reading.value * 9.0 / 5.0 + 32.0)
+                        else -> reading
+                    }
+                }
+                .associateBy { it.sensorId }
+
+            DeviceModel.Summary(
+                device = device,
+                readings = latestReadings,
+                actions = actions.await()
+            )
+        }
+    }
+
+    return DeviceModel(devices = summaries)
 }

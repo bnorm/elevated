@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.plugin.compose)
     alias(libs.plugins.compose)
@@ -10,8 +9,6 @@ plugins {
 
 kotlin {
     jvm()
-
-    androidTarget()
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -30,29 +27,5 @@ kotlin {
                 api(libs.molecule.runtime)
             }
         }
-        jvmMain {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.swing)
-            }
-        }
-        androidMain {
-            dependencies {
-                implementation(libs.kotlinx.coroutines.android)
-            }
-        }
-    }
-}
-
-android {
-    compileSdk = 36
-
-    namespace = "dev.bnorm.elevated.state"
-    defaultConfig {
-        minSdk = 26
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
     }
 }

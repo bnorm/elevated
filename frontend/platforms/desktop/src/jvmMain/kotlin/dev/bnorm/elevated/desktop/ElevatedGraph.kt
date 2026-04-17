@@ -4,7 +4,6 @@ import dev.bnorm.elevated.client.ElevatedClient
 import dev.bnorm.elevated.client.HttpElevatedClient
 import dev.bnorm.elevated.client.TokenStore
 import dev.bnorm.elevated.ui.screen.AndroidHomeScreen
-import dev.bnorm.elevated.ui.screen.DesktopHomeScreen
 import dev.bnorm.elevated.ui.screen.HomeScreen
 import dev.bnorm.elevated.ui.screen.MainScreen
 import dev.zacsweers.metro.AppScope
@@ -15,6 +14,7 @@ import dev.zacsweers.metro.SingleIn
 import io.ktor.client.HttpClient
 import io.ktor.http.Url
 import io.ktor.serialization.kotlinx.json.DefaultJson
+import kotlinx.coroutines.CoroutineScope
 
 @DependencyGraph(AppScope::class)
 interface ElevatedGraph {
@@ -26,6 +26,7 @@ interface ElevatedGraph {
             @Provides hostUrl: Url,
             @Provides httpClient: HttpClient,
             @Provides tokenStore: TokenStore,
+            @Provides viewModelCoroutineScope: CoroutineScope,
         ): ElevatedGraph
     }
 

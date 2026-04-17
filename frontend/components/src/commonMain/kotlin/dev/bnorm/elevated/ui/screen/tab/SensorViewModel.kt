@@ -10,13 +10,15 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlin.time.Duration
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 @SingleIn(AppScope::class)
 @Inject
 class SensorViewModel(
+    scope: CoroutineScope,
     private val client: ElevatedClient,
-) : ViewModel<SensorViewEvent, SensorModel>() {
+) : ViewModel<SensorViewEvent, SensorModel>(scope) {
     fun refresh() {
         take(SensorViewEvent.Refresh)
     }

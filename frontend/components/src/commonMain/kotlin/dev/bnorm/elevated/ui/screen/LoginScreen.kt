@@ -12,20 +12,23 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -49,7 +52,10 @@ class LoginScreen(
 ) : Screen {
     @Composable
     override fun Render() {
-        val focusManager = LocalFocusManager.current
+        val focusRequestUsername = remember { FocusRequester() }
+        val focusRequestPassword = remember { FocusRequester() }
+        val focusRequestLogin = remember { FocusRequester() }
+
         var error by rememberSaveable { mutableStateOf<String?>(null) }
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
@@ -97,21 +103,22 @@ class LoginScreen(
                         autoCorrectEnabled = false,
                         keyboardType = KeyboardType.Email,
                     ),
-                    modifier = Modifier.onPreviewKeyEvent {
-                        when {
-                            it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
-                                if (isValidLogin()) login()
-                                true
-                            }
-
-                            it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
-                                focusManager.moveFocus(FocusDirection.Next)
-                                true
-                            }
-
-                            else -> false
+                    modifier = Modifier
+                        .focusRequester(focusRequestUsername)
+                        .focusProperties {
+                            previous = focusRequestLogin
+                            next = focusRequestPassword
                         }
-                    }
+                        .onPreviewKeyEvent {
+                            when {
+                                it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                    if (isValidLogin()) login()
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        }
                 )
 
                 OutlinedTextField(
@@ -143,30 +150,39 @@ class LoginScreen(
                             })
                         }
                     },
-                    modifier = Modifier.onPreviewKeyEvent {
-                        when {
-                            it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
-                                if (isValidLogin()) login()
-                                true
-                            }
-
-                            it.type == KeyEventType.KeyUp && it.key == Key.Tab -> {
-                                focusManager.moveFocus(FocusDirection.Next)
-                                true
-                            }
-
-                            else -> false
+                    modifier = Modifier
+                        .focusRequester(focusRequestPassword)
+                        .focusProperties {
+                            previous = focusRequestUsername
+                            next = focusRequestLogin
                         }
-                    }
+                        .onPreviewKeyEvent {
+                            when {
+                                it.type == KeyEventType.KeyUp && it.key == Key.Enter -> {
+                                    if (isValidLogin()) login()
+                                    true
+                                }
+
+                                else -> false
+                            }
+                        }
                 )
 
                 Button(
                     enabled = isValidLogin(),
                     onClick = { login() },
+                    modifier = Modifier
+                        .focusRequester(focusRequestLogin)
+                        .focusProperties {
+                            previous = focusRequestPassword
+                            next = focusRequestUsername
+                        }
                 ) {
                     Text(text = "Login")
                 }
             }
         }
+
+        LaunchedEffect(Unit) { focusRequestUsername.requestFocus() }
     }
 }
