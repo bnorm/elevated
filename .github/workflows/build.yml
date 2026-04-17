@@ -21,16 +21,16 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Configure JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
-        distribution: zulu
-        java-version: 21
+        distribution: temurin
+        java-version: 26
 
     - name: Configure Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v5
       with:
         build-scan-publish: true
         build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
@@ -41,13 +41,13 @@ jobs:
 
     - name: Publish Test Report
       if: success() || failure()
-      uses: mikepenz/action-junit-report@v4
+      uses: mikepenz/action-junit-report@v6
       with:
         report_paths: '**/build/test-results/test/TEST-*.xml'
 
-    - uses: docker/setup-qemu-action@v3
-    - uses: docker/setup-buildx-action@v3
-    - uses: docker/login-action@v3
+    - uses: docker/setup-qemu-action@v4
+    - uses: docker/setup-buildx-action@v4
+    - uses: docker/login-action@v4
       if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
       with:
         registry: ghcr.io
@@ -56,7 +56,7 @@ jobs:
 
     # Build elevated-service
     # TODO can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
-    - uses: docker/metadata-action@v5
+    - uses: docker/metadata-action@v6
       id: meta-service
       if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
       with:
@@ -64,7 +64,7 @@ jobs:
           ghcr.io/bnorm/elevated-service
         tags: |
           type=raw,value=latest,enable={{is_default_branch}}
-    - uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@v7
       if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
       with:
         context: ./service
@@ -74,7 +74,7 @@ jobs:
 
     # Build elevated-raspberry
     # TODO can this be put in a matrix? https://github.com/docker/build-push-action/issues/561
-    - uses: docker/metadata-action@v5
+    - uses: docker/metadata-action@v6
       id: meta-iot-raspberry
       if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
       with:
@@ -82,7 +82,7 @@ jobs:
           ghcr.io/bnorm/elevated-iot-raspberry
         tags: |
           type=raw,value=latest,enable={{is_default_branch}}
-    - uses: docker/build-push-action@v5
+    - uses: docker/build-push-action@v7
       if: ${{ github.ref == 'refs/heads/main' && github.repository == 'bnorm/elevated' }}
       with:
         context: ./iot/raspberry
