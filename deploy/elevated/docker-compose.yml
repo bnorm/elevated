@@ -13,7 +13,7 @@ services:
     depends_on:
       - mongodb
     environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongodb/test
+      SPRING_MONGODB_URI: mongodb://mongodb/test
       SPRING_PROFILES_ACTIVE: cloud
       JWT_SECRET: ${JWT_SECRET}
 
