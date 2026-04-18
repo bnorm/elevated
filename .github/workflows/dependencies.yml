@@ -18,4 +18,4 @@ jobs:
           distribution: temurin
           java-version-file: .github/workflows/.java-version
 
-      - uses: gradle/actions/dependency-submission@v4
+      - uses: gradle/actions/dependency-submission@v6
