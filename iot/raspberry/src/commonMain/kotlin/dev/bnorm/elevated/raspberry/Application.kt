@@ -43,6 +43,7 @@ class DefaultApplication(
             }
 
             launch(context = context) {
+                schedule(name = "WebSocket Health Check", frequency = 1.hours, context = context) {}
                 processActions()
             }
         }
@@ -52,16 +53,16 @@ class DefaultApplication(
         val log = getLogger("dev.bnorm.elevated.raspberry.Application.actions")
         suspend fun processAction(action: DeviceAction) {
             try {
-                log.info { "Received action: $action" }
+                log.info { "marker=WebSocket.Actions msg=Received action: $action" }
                 when (val args = action.args) {
                     is PumpDispenseArguments -> {
                         pumpService[args.pumpId ?: return]?.dispense(args.amount)
                         elevatedClient.completeDeviceAction(action.id)
                     }
                 }
-                log.info { "Completed action: $action" }
+                log.info { "marker=WebSocket.Actions msg=Completed action: $action" }
             } catch (t: Throwable) {
-                log.warn(t) { "Exception processing action: $action" }
+                log.warn(t) { "marker=WebSocket.Actions msg=Exception processing action: $action" }
                 throw t
             }
         }
@@ -73,7 +74,7 @@ class DefaultApplication(
                         elevatedClient.getActionQueue()
                             .collect { processAction(it) }
                     } catch (t: Throwable) {
-                        log.warn(t) { "Exception processing action queue" }
+                        log.warn(t) { "marker=WebSocket.Actions msg=Exception processing action queue" }
                         throw t
                     }
                 }
