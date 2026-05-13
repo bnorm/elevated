@@ -16,7 +16,7 @@ testcontainers = "2.0.5"
 
 # Client-side libraries.
 ktor = "3.4.3"
-slf4j = "2.0.17"
+slf4j = "2.0.18"
 
 ## Raspberry PI libraries.
 pi4j = "4.0.1"
