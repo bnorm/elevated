@@ -22,7 +22,7 @@ slf4j = "2.0.17"
 pi4j = "4.0.1"
 
 ## UI Libraries
-jb-compose = "1.10.3"
+jb-compose = "1.11.0"
 androidx-compose = "1.11.1"
 material-icons-core = "1.7.3"
 material-icons-extended = "1.7.8"
